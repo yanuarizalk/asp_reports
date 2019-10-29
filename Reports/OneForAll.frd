@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Dictionary>
+  <MsSqlDataConnection Name="Connection" ConnectionString="rijcmlqHwzMSgwTFaHpjtG3vsOj8TrCVffhCR2JFv7xvPWo98Q8hzUJp60SVHnXxIECwHKNp6oMNBpbLqcLrui6V1MI+xWP/56XPL5FBIgQjGknIMZ9/1Xy5wraKxi2qe2SGsp2UfAM9IAHsB67CMW/btEGhCTKDHMNfMzct0nOUax+60E/WnQ6z29ogYWizk67rd0ty+BfafreDVbRkDt8E8qVIQ==">
+    <TableDataSource Name="Table" Alias="Brief" DataType="System.Int32" Enabled="true" SelectCommand="SELECT Cast(Substring(MAX(S.YYYYMM), 5, 2) AS int) &quot;LastMonth&quot;, Cast(Substring(MAX(S.YYYYMM), 1, 4) AS int) &quot;LastYear&quot;, Cast(Substring(MIN(S.YYYYMM), 1, 4) AS int) &quot;EarlyYear&quot;, MIN(S.YYYYMM) &quot;MinDate&quot;, MAX(S.YYYYMM) &quot;MaxDate&quot;&#13;&#10;FROM &quot;USD_QTY&quot; S&#13;&#10;">
+      <Column Name="LastMonth" DataType="System.Int32"/>
+      <Column Name="LastYear" DataType="System.Int32"/>
+      <Column Name="EarlyYear" DataType="System.Int32"/>
+      <Column Name="MinDate" DataType="System.String"/>
+      <Column Name="MaxDate" DataType="System.String"/>
+    </TableDataSource>
+    <TableDataSource Name="PARAM" DataType="System.Int32" Enabled="true" TableName="PARAM">
+      <Column Name="PERIOD" DataType="System.DateTime"/>
+    </TableDataSource>
+  </MsSqlDataConnection>
+  <Relation Name="USD_QTY_SACU" ParentDataSource="USD_QTY" ChildDataSource="null" ParentColumns="YYYYMM" ChildColumns="YYYYMM" Enabled="true"/>
+  <Relation Name="SACU_USD_QTY" ParentDataSource="SACU" ChildDataSource="USD_QTY" ParentColumns="YYYYMM" ChildColumns="YYYYMM" Enabled="true"/>
+  <Parameter Name="Month" DataType="System.Int32" Expression="0"/>
+  <Parameter Name="Year" DataType="System.Int32" Expression="0"/>
+  <Parameter Name="GetMonth" DataType="System.Int32" Expression="IIf([Month] &gt; 0 &amp;&amp; [Month] &lt; 13,[Month],[Brief.LastMonth])"/>
+  <Parameter Name="GetYear" DataType="System.Int32" Expression="IIf([Year] &gt;= [Brief.EarlyYear] &amp;&amp; [Year] &lt; [Brief.LastYear],[Year],[Brief.LastYear])"/>
+  <Parameter Name="RangeYear" DataType="System.Int32" Expression="8"/>
+  <Total Name="TotalMonth" TotalType="Count" Evaluator="Data1" PrintOn="GroupFooter1" ResetOnReprint="true"/>
+</Dictionary>

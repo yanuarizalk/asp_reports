@@ -1,0 +1,340 @@
+﻿
+@{
+    var fPhoto = Html.DevExtreme().FileUploader().Name("photo").ID("photo").MaxFileSize(5242880)
+        .Accept("image/*").UploadMode(FileUploadMode.UseForm).LabelText("").OnValueChanged("onPhotoChange")
+        .SelectButtonText("Browse...").ToTemplate();
+    //var tAlert = Html.DevExtreme().Popup().
+    ViewData["Title"] = "Master - User";
+    var tvAccess = Html.DevExtreme().TreeView().ID("access")
+        .DataSource(ds => ds.RemoteController()
+            .LoadMethod("POST")
+            .LoadUrl((string)ViewData["BaseUrl"] + "/Api/Menus/TreeList")
+            .Key("ID"))
+        .ExpandAllEnabled(true).SearchMode(CollectionSearchMode.Contains)
+        .SearchEnabled(true)
+        .KeyExpr("id").ParentIdExpr("pid").DisplayExpr("name")
+        .DataStructure(TreeViewDataStructure.Plain).ShowCheckBoxesMode(TreeViewCheckBoxMode.SelectAll)
+        .SelectByClick(true)//.SelectNodesRecursive(true)
+        .OnInitialized("onAccessInit").OnItemSelectionChanged("onAccessChange")
+        .ToTemplate();
+}
+
+
+
+    <div class="page">
+        <h2>
+            <img src="~/images/group.svg" alt="" />
+            @ViewData["Title"]
+        </h2>
+        @(Html.DevExtreme().DataGrid().ID("gridUser")
+            .Columns(c => {
+                c.Add().DataField("ID").SortOrder(SortOrder.Asc).HidingPriority(3);
+                c.Add().DataField("Username").HidingPriority(4).CellTemplate(
+                @<div>
+                    <img src="~/images/profiles/<%- data.ID %>.jpg" width="64" style="vertical-align: middle;" /> &nbsp; <%- value %>
+                </div>);
+                c.Add().DataField("Role").HidingPriority(2);
+                c.Add().DataField("Email").HidingPriority(1);
+                c.Add().DataField("Status").HidingPriority(0);//.FalseText("Inactive").TrueText("Active");
+                c.Add().DataField("IdGroup").Visible(false);
+                c.Add().DataField("Access").Visible(false);
+                c.Add().DataField("Changed").Visible(false).DataType(GridColumnDataType.Boolean).FormItem(fi => fi.Editor(editor => editor.CheckBox().ID("Changed")));
+            })
+            .ColumnHidingEnabled(true).ShowBorders(true)
+            .SearchPanel(sp => sp.Visible(true).Placeholder("Search User..."))
+            .ShowRowLines(true)
+            .DataSource(ds => ds.RemoteController()
+                .LoadMethod("POST").LoadUrl((string)ViewData["BaseUrl"] + "/Api/Users/DataList")
+                /*.DeleteMethod("POST").DeleteUrl((string)ViewData["BaseUrl"] + "Api/Users/Delete")
+                .InsertMethod("POST").InsertUrl((string)ViewData["BaseUrl"] + "Api/Users/New")
+                .UpdateMethod("POST").UpdateUrl((string)ViewData["BaseUrl"] + "Api/Users/Update")*/
+                .Key("ID")/*.OnBeforeSend("prepSend")*/
+            )
+            .ShowColumnHeaders(true)
+            .RemoteOperations(rmt => rmt.Filtering(true).Paging(true).Summary(true).GroupPaging(true))
+            .Paging(p => p.PageSize(10))
+            .Pager(p => {
+                p.AllowedPageSizes(new[] { 10, 25, 50 });
+                p.ShowInfo(true);
+                p.ShowNavigationButtons(true);
+                p.ShowPageSizeSelector(true);
+                p.Visible(true);
+            }).CacheEnabled(false)
+            .Export(ex => ex.Enabled(true).FileName("User List"))
+            .Editing(e => e
+                .UseIcons(true).RefreshMode(GridEditRefreshMode.Full)
+                .AllowUpdating(true).AllowDeleting(true)
+                .AllowAdding(true).Mode(GridEditMode.Popup)
+                .Popup(p => p
+                    .ShowTitle(true).ID("popEdit").Title("User Information").OnTitleRendered(new JS("function() {$('#popTitle').parent().removeClass('dx-popup-title');}").Value)
+                    .Shading(true).Position(PositionAlignment.Center)
+                    .OnShown("onEditInit")
+                    .Width("80%").Height("95vh")
+                    .TitleTemplate(@<div id="popTitle" class="dx-toolbar dx-widget dx-visibility-change-handler dx-collection dx-popup-title" role="toolbar">
+    <div class="dx-toolbar-items-container">
+        <div class="dx-toolbar-before">
+            <div class="dx-item dx-toolbar-item dx-toolbar-label">
+                <div class="dx-item-content dx-toolbar-item-content">
+                    <div id="popTitleText">User Information</div>
+                </div>
+            </div>
+        </div>
+        <div class="dx-toolbar-center"></div>
+        <div class="dx-toolbar-after">
+            <div class="dx-item dx-toolbar-item dx-toolbar-button">
+                <div class="dx-item-content dx-toolbar-item-content">
+                    <div onclick="$('#popEdit').dxPopup('hide');" class="dx-closebutton dx-button dx-button-normal dx-button-mode-contained dx-widget dx-button-has-icon" role="button" aria-label="close" tabindex="0">
+                        <div class="dx-button-content"><i class="dx-icon dx-icon-close"></i></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        $('#popTitle').addClass("dx-toolbar dx-widget dx-visibility-change-handler dx-collection dx-popup-title");
+        $('#popTitleText').html(eData == null ? "User Information - New Data" : "User Information - Update Data");
+    </script>
+                    </div>)
+                )
+            .Form(f => f.ShowColonAfterLabel(true).ColCount(1).Items(i => {
+                i.AddGroup().ColCount(4).Caption("Authentication").Items(gi => {
+                    gi.AddSimple()
+                        .Editor(editor => editor
+                            .TextBox().MaxLength(30).Name("uid").ID("uid")
+                        ).ValidationRules(vr => {
+                            vr.AddRequired();
+                            vr.AddStringLength().Trim(true).Min(3).Max(30);
+                        }).DataField("uid")
+                    .Label(lbl => lbl.Text("Username"));
+                    gi.AddSimple()
+                        .Editor(editor => editor
+                            .TextBox().Mode(TextBoxMode.Password).Name("pwdNew").MaxLength(30).ID("pwdNew")
+                        ).ValidationRules(vr => {
+                            vr.AddRequired();
+                            vr.AddStringLength().Min(3).Max(200);
+                        }).DataField("pwdNew")
+                        .Label(lbl => lbl.Text("New Password"));
+                    gi.AddSimple()
+                        .Editor(editor => editor
+                            .TextBox().Mode(TextBoxMode.Password).Name("pwdNewConfirm").MaxLength(30).ID("pwdNewConfirm")
+                        ).ValidationRules(vr => {
+                            vr.AddRequired();
+                            vr.AddCompare().ComparisonTarget("function() {return $('#pwdNew').dxTextBox('option').value; }")
+                                .Message("Password Confirmation didn't match");
+                            vr.AddStringLength().Min(3).Max(200);
+                        }).DataField("pwdNewConfirm")
+                        .Label(lbl => lbl.Text("Confirm Password"));
+                    gi.AddSimple()
+                        .Editor(editor => editor
+                            .TextBox().Mode(TextBoxMode.Password).Name("pwdOld").MaxLength(30).ID("pwdOld")
+                        ).ValidationRules(vr => {
+                            vr.AddRequired();
+                            vr.AddStringLength().Min(3).Max(200);
+                        }).DataField("pwdOld")
+                        .Label(lbl => lbl.Text("Old Password"));
+                });
+                i.AddGroup().ColCount(3).Caption("Detail").Items(gi => {
+                    gi.AddSimple().Editor(editor => editor
+                        .TextBox().Mode(TextBoxMode.Email).Name("email").MaxLength(255).ID("email"))
+                        .ValidationRules(vr => {
+                            vr.AddRequired().Message("Email field must not be empty");
+                            vr.AddEmail().Message("Email format isn't valid.");
+                        }).DataField("email").Label(lbl => lbl.Text("Email"));
+                    gi.AddSimple().Editor(editor => editor
+                        .CheckBox().Text("Active").Name("status").ID("status")
+                        /*.OnValueChanged(new JS("function(e) { console.log(e); }").Value)*/)
+                        .CssClass("align-middle").Label(lbl => lbl.Text("Status")
+                            .Location(FormLabelLocation.Left))
+                        .DataField("status");
+                    gi.AddSimple().HelpText("Let it blank if you want to use Custom Access")
+                        .Editor(editor => editor
+                            .SelectBox().DataSource(ds => ds.RemoteController()
+                                .LoadMethod("POST").LoadUrl(ViewData["BaseUrl"] + "/Api/Groups/List"))
+                            .Name("role").ShowClearButton(true).DisplayExpr("Name").ValueExpr("Value")
+                            .Placeholder("< Custom >").SearchEnabled(true).AcceptCustomValue(true)
+                            .ID("role").OnValueChanged("onRoleChange")
+                        ).DataField("role").Label(lbl => lbl.Text("Role"));
+                    /*gi.AddSimple().Editor(editor => editor
+                        .TagBox().DataSource(ds => ds.RemoteController()
+                            .LoadMethod("POST").LoadUrl(ViewData["BaseUrl"] + "/Api/Menus/List"))
+                        .DisplayExpr("Name").ValueExpr("Value").Name("access").ID("access")
+                        .SearchEnabled(true).AcceptCustomValue(true)
+                        .ApplyValueMode(EditorApplyValueMode.UseButtons).ShowSelectionControls(true)
+                        .ShowDropDownButton(true)
+                    ).Label(lbl => lbl.Text("Access")).DataField("customAccess");*/
+                    gi.AddSimple().Template(tvAccess + "").CssClass("tvAccess")
+                    .Label(lbl => lbl.Text("Access")).DataField("customAccess");
+                    gi.AddSimple()
+                        .Template("<div>" + fPhoto + "</div>")
+                        .Label(lbl => lbl.Text("Photo")).DataField("id");
+                    gi.AddSimple()
+                        .Template("<div id=\"prevPhoto\"><img onload=\"loadPreview($(this))\" /></div>");
+                    gi.AddSimple().DataField("Changed").CssClass("hidden");
+                });
+            }).ID("editForm").OnEditorEnterKey("onEnter") )
+            ).OnEditingStart("onEditInit").OnInitNewRow("onNewInit").OnRowInserting("onNew")
+            .OnRowRemoving("onDelete").OnRowUpdating("onEdit")
+            .OnExporting("onExport")
+        )
+    </div>
+<style>
+    .align-middle {
+        margin: auto 0;
+    }
+    .tvAccess .dx-scrollable-container {
+        max-height: 300px;
+        border-bottom: 1px solid var(--prim-color);
+    }
+    #prevPhoto img {
+        max-width: 120px;
+        max-height: 200px;
+    }
+</style>
+<script>
+    var eData;
+
+    $(document).ready(function () {
+        $(document).on('click', '#clearFile', function () {
+            $('#photo').dxFileUploader('option').value = null;
+            $('#photo').dxFileUploader('repaint');
+            $('#prevPhoto img').attr('src', "");
+            $(this).remove();
+            eData.clear = true;
+        });
+
+        @*if ((int)ViewData["id"] != 0) {
+            
+        }*@
+
+    });
+    function onAccessChange(e) {
+        if (e.event != null) {
+            if ($('#role').dxSelectBox('option').value != null) {
+                $('#editForm').dxForm('option').formData.role = null;
+                $('#role').dxSelectBox('option').value = null;
+                $('#role').dxSelectBox('repaint');
+            }
+        }
+    }
+    function onRoleChange(e) {
+        if (e.event != null && e.value != null)
+            /*if ($('#role').dxSelectBox('option').items == null)
+                $('#role').dxSelectBox('getDataSource').reload();*/
+            dxTVSetSelected('access', $('#role').dxSelectBox('option').items.find(function (el) {
+                return el.Value == $('#editForm').dxForm('option').formData.role;
+            }).Access);
+    }
+    function onEnter(e) {
+        $('#gridUser').dxDataGrid('saveEditData');
+    }
+    function onAccessInit(e) {
+        if (eData != null)
+            $('#access').dxTreeView("getDataSource").load().done(function () {
+                dxTVSetSelected('access', eData.CustomAccess);
+            });
+    }
+    function onExport(e) {
+        e.cancel = true;
+        //console.log(e);
+        //showAlert("", "Export feature still under construction");
+        window.open('@ViewData["BaseUrl"]' + "/User/Report", "_blank");
+    }
+    function loadPreview(img) {
+        a = img;
+        if (img.parent().children("button").length > 0) return false;
+        var close = $('<button id="clearFile">Clear</button>');
+        img.parent().append(close);
+        if (eData != null)
+            eData.clear = false;
+    }
+    function onPhotoChange(file) {
+        var fReader = new FileReader();
+        fReader.onload = function (e) {
+            $('#prevPhoto img').attr('src', e.target.result);
+        };
+        fReader.readAsDataURL(file.value[0]);
+    }
+    function onEdit(e) {
+        e.cancel = true;
+        var bClear = false;
+        $('#editForm').dxForm('option').formData.role = $('#editForm').dxForm('option').formData.role == "" ? 0 : $('#editForm').dxForm('option').formData.role;
+        if (eData.clear == true) bClear = true;
+        SendDxForm('editForm', '@ViewData["BaseUrl"]/API/Users/Update', 'photo',
+            function (data, status, xhr) {
+                if (data.status == "success") {
+                    showAlert("", "User has been updated successfully");
+                    $('#popEdit').dxPopup('hide');
+                    $('#gridUser').dxDataGrid('refresh');
+                } else if (data.status.toLowerCase() == "error") {
+                    showAlert("Error", data.desc);
+                }
+            }, null, [['clearPhoto', bClear], ['id', eData.ID],
+                ['customAccess', dxTVGetSelected('access').toString()]]
+        );
+    }
+    function onDelete(e) {
+        e.cancel = true;
+        showLoading();
+        $.ajax({
+            url: '@ViewData["BaseUrl"]/Api/Users/Delete',
+            method: 'POST',
+            data: {id: e.data.ID},
+            dataType: 'json',
+            success: function (data, status, xhr) {
+                hideLoading();
+                if (data.status == "success") {
+                    showAlert("", "User has been removed successfully");
+                    $('#gridUser').dxDataGrid('refresh');
+                } else if (data.status == "error")
+                    showAlert("Error", data.desc);
+            },
+            error: function (xhr, status, err) { hideLoading(); console.log(xhr) }
+        });
+    }
+    function onNew(e) {
+        e.cancel = true;
+        SendDxForm('editForm', '@ViewData["BaseUrl"]/API/Users/New', 'photo',
+            function (data, status, xhr) {
+                if (data.status == "success") {
+                    showAlert("", "User has been added successfully");
+                    $('#popEdit').dxPopup('hide');
+                    $('#gridUser').dxDataGrid('refresh');
+                } else if (data.status.toLowerCase() == "error") {
+                    showAlert("Error", data.desc);
+                }
+            }
+            , null, [['customAccess', dxTVGetSelected('access').toString()]]);
+    }
+    function onNewInit(e) {
+        eData = null;
+    }
+    function onEditInit(e) {
+        if (e.data != null) {
+            eData = e.data;
+        }
+        else {
+            $('#Changed').trigger('click');
+            if (eData == null) {
+                $('#editForm').dxForm('resetValues');
+                $('#editForm').dxForm('option').items[0].items[3].visible = false;
+                $('#editForm').dxForm('repaint');
+            } else {
+                $('#editForm').dxForm('option').items[0].items[3].visible = true;
+                /*var plainAccess = eData.CustomAccess.split(','), arrAccess = [];
+                for (var iFor in plainAccess) {
+                    iFor = parseInt(iFor);
+                    arrAccess.push(parseInt(plainAccess[iFor]));
+                }*/
+                $('#editForm').dxForm('option').formData = {
+                    uid: eData.Username, email: eData.Email, status: eData.Status,
+                    role: eData.IdGroup == 0 ? "" : eData.IdGroup, /*customAccess: eData.CustomAccess == "" || eData.CustomAccess == null ? null : arrAccess*/
+                };
+                $('#editForm').dxForm('repaint');
+                $('#role').dxSelectBox('option').text = eData.Role;
+                $('#role').dxSelectBox('repaint');
+                $('#prevPhoto img').attr('src', '@ViewData["BaseUrl"]/images/profiles/' + eData.ID + '.jpg');
+                //dxTVSetSelected('access', eData.CustomAccess);
+            }
+        }
+    }
+</script>

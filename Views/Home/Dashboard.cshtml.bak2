@@ -1,0 +1,107 @@
+﻿
+@{
+    ViewData["Title"] = "Dashboard";
+}
+<div class="page-20">
+    <div class="dblist">
+        <div class="dblist-item">
+            <img src="~/images/cash-register.svg" alt="" />
+            <div class="dblist-title">
+                Sales
+            </div>
+            <div class="dblist-desc">
+                
+            </div>
+        </div><div class="dblist-item">
+            <img src="~/images/change.svg" alt="" />
+            <div class="dblist-title">
+                Payroll
+            </div>
+            <div class="dblist-desc">
+                
+            </div>
+        </div><div class="dblist-item">
+            <img src="~/images/warehouse-2.svg" alt="" />
+            <div class="dblist-title">
+                Inventory
+            </div>
+            <div class="dblist-desc">
+                
+            </div>
+        </div><div class="dblist-item">
+            <img src="~/images/line-chart.svg" alt="" />
+            <div class="dblist-title">
+                Other
+            </div>
+            <div class="dblist-desc">
+                
+            </div>
+        </div>
+    </div>
+</div><div class="page-80">
+    <div class="page">
+        <h2>
+            <img src="~/images/business-statistics.svg" alt="Alternate Text" />
+            Dashboard
+        </h2>
+        <!--div class="breadcrumb"></div-->
+        <div class="tab">
+            @if ((bool)ViewData["Access_Sales"] == true) 
+                {<a asp-controller="Dashboard" asp-action="Sales" id="tab-sales">
+                Sales
+            </a>}<!--
+         -->@if ((bool)ViewData["Access_Payroll"] == true) 
+                {<a asp-controller="Dashboard" asp-action="Payroll" id="tab-payroll">
+                Payroll
+            </a>}<!--
+         -->@if ((bool)ViewData["Access_Inventory"] == true) 
+                {<a asp-controller="Dashboard" asp-action="Inventory"  id="tab-inventory">
+                Inventory
+            </a>}
+        </div>
+        <div id="db" class="tabpage">
+
+        </div>
+    </div>
+</div>
+
+
+    <style>
+        .tab a {
+            width: calc(10% - 40px);
+        }
+    </style>
+
+    <script>
+        $(document).ready(function () {
+            $('.tab a').click(function (ev) {
+                ev.preventDefault();
+                switch ($(this).attr('id')) {
+                    case 'tab-sales':
+                        showLoading();
+                        $('#db').load('@ViewData["BaseUrl"]/Dashboard/Sales', null, function () {
+                            hideLoading();
+                        });
+                        break;
+                    case 'tab-payroll':
+                        showLoading();
+                        $('#db').load('@ViewData["BaseUrl"]/Dashboard/Payroll', null, function () {
+                            hideLoading();
+                        });
+                        break;
+                    case 'tab-inventory':
+                        showLoading();
+                        $('#db').load('@ViewData["BaseUrl"]/Dashboard/Inventory', null, function () {
+                            hideLoading();
+                        });
+                        break;
+                    default:
+
+                        break;
+                }
+            });
+
+            //late, let the function init it self
+            $('.tab a:nth-child(1)').trigger('click');
+        });
+    </script>

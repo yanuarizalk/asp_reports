@@ -1,0 +1,102 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+*@
+
+@if (ViewData["MenuState"] == null) {
+    <li>
+        <a asp-controller="Home" asp-action="Index">Home</a>
+    </li>
+
+    @if (ViewData["AccessMaster"] != null)
+        @if ((bool)ViewData["AccessSales"]) {
+            <li class="dropdown">
+                <a href="#0">Sales</a>
+                <ol class="dropdown-menu">
+                    <li><a href="~/Reports/Sales/Raws">Raw Materials</a></li>
+                    <li><a href="~/Reports/Sales/Annual_Summary">Annual Summary</a></li>
+                    <li><a href="~/Reports/Sales/Usd_Qty">USD Amount & Quantity</a></li>
+                    <li><a href="~/Reports/Sales/Denim">Denim Finishing</a></li>
+                    <li><a href="~/Reports/Sales/Prod_Group">Production Group</a></li>
+                    <li><a href="~/Reports/Sales/Currency">Currency Summary</a></li>
+                    <li><a href="~/Reports/Sales/Destination">Summary by Destination</a></li>
+                    <li><a href="~/Reports/Sales/Production">Summary by Production</a></li>
+                    <li><a href="~/Reports/Sales/Customer12">Customer 12 Months</a></li>
+                    <li><a href="~/Reports/Sales/Customer24">Customer 24 Months</a></li>
+                    <li><a href="~/Reports/Sales/DenimYard">Denim Yardage</a></li>
+                </ol>
+            </li>
+        }
+    @if (ViewData["AccessMaster"] != null)
+        @if ((bool)ViewData["AccessMaster"]) {
+            <li class="dropdown">
+                <a href="#0">Master</a>
+                <ol class="dropdown-menu">
+                    <!--li class="dropside">
+                        <a href="#0">Department</a>
+                        <ol class="dropdown-menu" data-drop="side">
+                            <li><a asp-controller="Department" asp-action="Division">Division</a></li>
+                            <li><a asp-controller="Department" asp-action="Group">Group</a></li>
+                        </ol>
+                    </li-->
+                    <li><a asp-controller="User" asp-action="Index">Users</a></li>
+                    <!--li><a asp-controller="Menu" asp-action="Index">Menu Trust</a></li-->
+                </ol>
+            </li>}
+        <!--li class="dropdown">
+            <a href="#0">Reports</a>
+            <ol class="dropdown-menu">
+                <li class="dropside">
+                    <a href="#0">Sales</a>
+                    <ol class="dropdown-menu" data-drop="side">
+                        <li><a href="~/Reports/Sales/Currency">Currency</a></li>
+                        <li><a href="~/Reports/Sales/Summary-1">Summary 1</a></li>
+                        <li><a href="~/Reports/Sales/Summary-2">Summary 2</a></li>
+                        <li><a href="~/Reports/Sales/Summary-3">Summary 3</a></li>
+                    </ol>
+                </li>
+                <li>
+                    <a asp-controller="Worker" asp-action="Index">Worker List</a>
+                </li>
+            </ol>
+        </li-->
+        <li class="dropdown" href="#0">
+            <a href="#0" style="padding: 0"><img src="~/images/user-default.svg" width="24" style="padding: 9px"></a>
+            <ol class="dropdown-menu">
+                <li id="change_pw">
+                    <a href="#change_pw">Change Password</a>
+                </li>
+                <li id="change_lang">
+                    <a href="#change_lang">Language</a>
+                </li>
+            </ol>
+        </li>
+        <!--
+        -->
+        <a asp-controller="User" asp-action="Logout">
+            <img src="~/images/power-sign.svg" width="24" alt="">
+        </a>
+
+        <script>
+        $(document).ready(function () {
+            $('#change_pw').on('click', function () {
+                if ($('#cp-pop').length > 0) {
+                    $('#cp-pop').dxPopup('show');
+                    return;
+                }
+                showLoading();
+                $.ajax({
+                    url: "@ViewData["BaseUrl"]/api/users/form/change_password",
+                    method: 'GET',
+                    success: function (data, status, xhr) {
+                        hideLoading();
+                        if (status == "success") {
+                            $('body').append(data);
+                            $('#cp-pop').dxPopup('show');
+                        }
+                    },
+                    error: function (xhr, status, err) { hideLoading(); ApiFetchError(); }
+                });
+            });
+        });
+        </script>
+    }

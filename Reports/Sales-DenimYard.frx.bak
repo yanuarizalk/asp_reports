@@ -1,0 +1,434 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report ScriptLanguage="CSharp" StartReportEvent="_StartReport" ReportInfo.Created="10/18/2019 08:07:26" ReportInfo.Modified="10/18/2019 11:40:52" ReportInfo.CreatorVersion="2019.3.5.0">
+  <ScriptText>using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Windows.Forms;
+using System.Drawing;
+using System.Data;
+using FastReport;
+using FastReport.Data;
+using FastReport.Dialog;
+using FastReport.Barcode;
+using FastReport.Table;
+using FastReport.Utils;
+
+namespace FastReport
+{
+  public class ReportScript
+  {
+    string[] Sales = {&quot;YARN&quot;, &quot;DENIM&quot;, &quot;GREY&quot;, &quot;COLOUR&quot;, &quot;HOM&quot;, &quot;TOWEL&quot;, &quot;GARMENT&quot;};
+    string[] Currencies = {&quot;RP&quot;, &quot;USD&quot;, &quot;EUR&quot;};
+    
+    private double NanResolver(double num) {
+      if (Double.IsNaN(num))
+        return 0;
+      else
+        return num;
+    }
+    private void _StartReport(object sender, EventArgs e)
+    {
+      //MaxDate = (DateTime)Report.GetColumnValue(&quot;PARAM.PERIOD&quot;);
+      foreach (string sSale in Sales) {
+        Total tLoSales = new Total(); Total tExSales = new Total();
+        //temp1.ResetOnReprint = true;
+        tLoSales.ResetAfterPrint = true;
+        tLoSales.Evaluator = Data1;
+        tLoSales.Expression = &quot;[USD_QTY.LO_&quot; + sSale + &quot;_USD]&quot;;
+        tLoSales.SetName(&quot;LO_&quot; + sSale);
+        tLoSales.PrintOn = GroupFooter1;
+        Report.Dictionary.Totals.Add(tLoSales);
+        
+        tExSales.ResetAfterPrint = true;
+        tExSales.Evaluator = Data1;
+        tExSales.Expression = &quot;[USD_QTY.EX_&quot; + sSale + &quot;_USD]&quot;;
+        tExSales.SetName(&quot;EX_&quot; + sSale);
+        tExSales.PrintOn = GroupFooter1;
+        Report.Dictionary.Totals.Add(tExSales);
+      }
+      foreach (string sCurr in Currencies) {
+        Total tLoCurr = new Total(); Total tExCurr = new Total();
+        //temp1.ResetOnReprint = true;
+        tLoCurr.ResetAfterPrint = true;
+        tLoCurr.Evaluator = Data1;
+        tLoCurr.Expression = &quot;[USD_QTY.SACU.LO_&quot; + sCurr + &quot;_INUSD]&quot;;
+        tLoCurr.SetName(&quot;LO_&quot; + sCurr);
+        tLoCurr.PrintOn = GroupFooter1;
+        Report.Dictionary.Totals.Add(tLoCurr);
+        
+        tExCurr.ResetAfterPrint = true;
+        tExCurr.Evaluator = Data1;
+        tExCurr.Expression = &quot;[USD_QTY.SACU.EX_&quot; + sCurr + &quot;_INUSD]&quot;;
+        tExCurr.SetName(&quot;EX_&quot; + sCurr);
+        tExCurr.PrintOn = GroupFooter1;
+        Report.Dictionary.Totals.Add(tExCurr);
+      }
+      //MessageBox.Show(Report.Dictionary.Totals.Count.ToString());
+      Report.Parameters.FindByName(&quot;TotalSales&quot;).Expression = &quot;[LO_YARN]+[LO_DENIM]+[LO_GREY]+[LO_COLOUR]+[LO_HOM]+[LO_TOWEL]+[LO_GARMENT]+[EX_YARN]+[EX_DENIM]+[EX_GREY]+[EX_COLOUR]+[EX_HOM]+[EX_TOWEL]+[EX_GARMENT]&quot;;
+      Report.Parameters.FindByName(&quot;TotalCurrencies&quot;).Expression = &quot;[LO_RP]+[LO_USD]+[LO_EUR]+[EX_RP]+[EX_USD]+[EX_EUR]&quot;;
+      foreach (Base oTable in SalesTable.AllObjects) {
+        if (oTable.ClassName != &quot;TableCell&quot;) continue;
+        TableCell oCell = (TableCell)oTable;
+        oCell.AllowExpressions = true;
+      }
+      foreach (Base oTable in CurrencyTable.AllObjects) {
+        if (oTable.ClassName != &quot;TableCell&quot;) continue;
+        TableCell oCell = (TableCell)oTable;
+        oCell.AllowExpressions = true;
+      }
+    }
+
+    private void AnnualSales_BeforePrint(object sender, EventArgs e)
+    {
+      //MessageBox.Show(Report.GetParameterValue(&quot;TotalSales&quot;));
+      //MessageBox.Show((string)Report.GetTotalValue(&quot;LO_YARN&quot;));
+      
+    }
+  }
+}
+</ScriptText>
+  <Dictionary>
+    <MsSqlDataConnection Name="Connection" ConnectionString="rijcmlqHwzMSgwTFaHpjtG3vsOj8TrCVffhCR2JFv7xvPWo98Q8hzUJp60SVHnXxIECwHKNp6oMNBpbLqcLrui6V1MI+xWP/56XPL5FBIgQjGknIMZ9/1Xy5wraKxi2qe2SGsp2UfAM9IAHsB67CMW/btEGhCTKDHMNfMzct0nOUax+60E/WnQ6z29ogYWizk67rd0t/CwEuUlHbNwN5zAS4qQ1WA==">
+      <TableDataSource Name="USD_QTY" DataType="System.Int32" Enabled="true" TableName="USD_QTY">
+        <Column Name="EX_COLOUR_KG" DataType="System.Double"/>
+        <Column Name="EX_COLOUR_USD" DataType="System.Double"/>
+        <Column Name="EX_COLOUR_YARD" DataType="System.Double"/>
+        <Column Name="EX_DENIM_KG" DataType="System.Double"/>
+        <Column Name="EX_DENIM_USD" DataType="System.Double"/>
+        <Column Name="EX_DENIM_YARD" DataType="System.Double"/>
+        <Column Name="EX_GARMENT_PIECE" DataType="System.Double"/>
+        <Column Name="EX_GARMENT_USD" DataType="System.Double"/>
+        <Column Name="EX_GREY_KG" DataType="System.Double"/>
+        <Column Name="EX_GREY_USD" DataType="System.Double"/>
+        <Column Name="EX_GREY_YARD" DataType="System.Double"/>
+        <Column Name="EX_HOM_KG" DataType="System.Double"/>
+        <Column Name="EX_HOM_PIECE" DataType="System.Double"/>
+        <Column Name="EX_HOM_SET" DataType="System.Double"/>
+        <Column Name="EX_HOM_USD" DataType="System.Double"/>
+        <Column Name="EX_TOWEL_BALE" DataType="System.Double"/>
+        <Column Name="EX_TOWEL_USD" DataType="System.Double"/>
+        <Column Name="EX_YARN_BALE" DataType="System.Double"/>
+        <Column Name="EX_YARN_USD" DataType="System.Double"/>
+        <Column Name="LO_COLOUR_KG" DataType="System.Double"/>
+        <Column Name="LO_COLOUR_USD" DataType="System.Double"/>
+        <Column Name="LO_COLOUR_YARD" DataType="System.Double"/>
+        <Column Name="LO_DENIM_KG" DataType="System.Double"/>
+        <Column Name="LO_DENIM_USD" DataType="System.Double"/>
+        <Column Name="LO_DENIM_YARD" DataType="System.Double"/>
+        <Column Name="LO_GARMENT_PIECE" DataType="System.Double"/>
+        <Column Name="LO_GARMENT_USD" DataType="System.Double"/>
+        <Column Name="LO_GREY_KG" DataType="System.Double"/>
+        <Column Name="LO_GREY_USD" DataType="System.Double"/>
+        <Column Name="LO_GREY_YARD" DataType="System.Double"/>
+        <Column Name="LO_HOM_KG" DataType="System.Double"/>
+        <Column Name="LO_HOM_PIECE" DataType="System.Double"/>
+        <Column Name="LO_HOM_SET" DataType="System.Double"/>
+        <Column Name="LO_HOM_USD" DataType="System.Double"/>
+        <Column Name="LO_TOWEL_BALE" DataType="System.Double"/>
+        <Column Name="LO_TOWEL_USD" DataType="System.Double"/>
+        <Column Name="LO_YARN_BALE" DataType="System.Double"/>
+        <Column Name="LO_YARN_USD" DataType="System.Double"/>
+        <Column Name="YYYYMM" DataType="System.String"/>
+      </TableDataSource>
+      <TableDataSource Name="Table" Alias="Brief" DataType="System.Int32" Enabled="true" SelectCommand="SELECT Cast(Substring(MAX(S.YYYYMM), 5, 2) AS int) &quot;LastMonth&quot;, Cast(Substring(MAX(S.YYYYMM), 1, 4) AS int) &quot;LastYear&quot;, Cast(Substring(MIN(S.YYYYMM), 1, 4) AS int) &quot;EarlyYear&quot;, MIN(S.YYYYMM) &quot;MinDate&quot;, MAX(S.YYYYMM) &quot;MaxDate&quot;&#13;&#10;FROM &quot;USD_QTY&quot; S&#13;&#10;">
+        <Column Name="LastMonth" DataType="System.Int32"/>
+        <Column Name="LastYear" DataType="System.Int32"/>
+        <Column Name="EarlyYear" DataType="System.Int32"/>
+        <Column Name="MinDate" DataType="System.String"/>
+        <Column Name="MaxDate" DataType="System.String"/>
+      </TableDataSource>
+      <TableDataSource Name="PARAM" DataType="System.Int32" Enabled="true" TableName="PARAM">
+        <Column Name="PERIOD" DataType="System.DateTime"/>
+      </TableDataSource>
+      <TableDataSource Name="Table2" Alias="Currency" DataType="System.Int32" Enabled="true" SelectCommand="SELECT&#13;&#10;	SUBSTRING(yyyymm, 1, 4),&#13;&#10;	SUM(LO_RP_INUSD) LO_RP_USD, SUM(LO_USD_INUSD) LO_USD_USD, &#13;&#10;	SUM(EX_RP_INUSD) EX_RP_USD, SUM(EX_USD_INUSD) EX_USD_USD,&#13;&#10;	SUM(EX_EUR_INUSD) EX_EUR_USD&#13;&#10;FROM sacu&#13;&#10;where cast(yyyymm as int) between @DateFrom and @DateTo&#13;&#10;GROUP BY SUBSTRING(yyyymm, 1, 4)">
+        <CommandParameter Name="DateFrom" DataType="8" Expression="[DateFrom]"/>
+        <CommandParameter Name="DateTo" DataType="8" Expression="[DateTo]"/>
+      </TableDataSource>
+      <TableDataSource Name="SACU" DataType="System.Int32" Enabled="true" TableName="SACU">
+        <Column Name="YYYYMM" DataType="System.String"/>
+        <Column Name="LO_RP_INRP" Enabled="false" DataType="System.Double"/>
+        <Column Name="LO_RP_INUSD" DataType="System.Double"/>
+        <Column Name="LO_USD_INUSD" DataType="System.Double"/>
+        <Column Name="EX_RP_INRP" Enabled="false" DataType="System.Double"/>
+        <Column Name="EX_RP_INUSD" DataType="System.Double"/>
+        <Column Name="EX_USD_INUSD" DataType="System.Double"/>
+        <Column Name="EX_EUR_INEUR" Enabled="false" DataType="System.Double"/>
+        <Column Name="EX_EUR_INUSD" DataType="System.Double"/>
+        <Column Name="Column" Alias="LO_EUR_INUSD" DataType="System.Double" Calculated="true" Expression=""/>
+      </TableDataSource>
+    </MsSqlDataConnection>
+    <Relation Name="USD_QTY_SACU" ParentDataSource="USD_QTY" ChildDataSource="null" ParentColumns="YYYYMM" ChildColumns="YYYYMM" Enabled="true"/>
+    <Relation Name="SACU_USD_QTY" ParentDataSource="SACU" ChildDataSource="USD_QTY" ParentColumns="YYYYMM" ChildColumns="YYYYMM" Enabled="true"/>
+    <Parameter Name="Month" DataType="System.Int32" Expression="0"/>
+    <Parameter Name="Year" DataType="System.Int32" Expression="0"/>
+    <Parameter Name="GetMonth" DataType="System.Int32" Expression="IIf([Month] &gt; 0 &amp;&amp; [Month] &lt; 13,[Month],[Brief.LastMonth])"/>
+    <Parameter Name="GetYear" DataType="System.Int32" Expression="IIf([Year] &gt;= [Brief.EarlyYear] &amp;&amp; [Year] &lt; [Brief.LastYear],[Year],[Brief.LastYear])"/>
+    <Parameter Name="RangeYear" DataType="System.Int32" Expression="8"/>
+    <Parameter Name="TotalSales" DataType="FastReport.Variant"/>
+    <Parameter Name="DateFrom" DataType="System.Int32"/>
+    <Parameter Name="DateTo" DataType="System.Int32"/>
+    <Parameter Name="TotalCurrencies" DataType="FastReport.Variant"/>
+    <Total Name="TotalMonth" TotalType="Count" Evaluator="Data1" PrintOn="GroupFooter1" ResetOnReprint="true"/>
+  </Dictionary>
+  <ReportPage Name="Page1" Landscape="true" PaperWidth="330" PaperHeight="215" LeftMargin="5" TopMargin="5" RightMargin="5" BottomMargin="5" FirstPageSource="261" OtherPagesSource="261" Watermark.Font="Arial, 60pt">
+    <ReportTitleBand Name="ReportTitle1" Width="1209.6" Height="37.8">
+      <TextObject Name="Text116" Top="9.45" Width="1209.6" Height="18.9" Text="SALES DENIM YARDAGE IN THE LAST 8 MONTHS PERIOD: " HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt, style=Underline"/>
+      <TextObject Name="Text115" Left="1048.95" Width="160.65" Height="18.9" Text="DATE: [Day([Date])]-[UpperCase(Substring(MonthName(Month([Date])), 0, 3))]-[Year([Date])]" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt">
+        <Formats>
+          <GeneralFormat/>
+          <GeneralFormat/>
+          <GeneralFormat/>
+        </Formats>
+      </TextObject>
+    </ReportTitleBand>
+    <PageHeaderBand Name="PageHeader1" Top="41.8" Width="1209.6" Height="37.8">
+      <TableObject Name="Table7" Width="795.69" Height="37.8">
+        <TableColumn Name="Column243" Width="37.8"/>
+        <TableColumn Name="Column244" Width="47.25"/>
+        <TableColumn Name="Column245" Width="47.25"/>
+        <TableColumn Name="Column246" Width="41.58"/>
+        <TableColumn Name="Column247" Width="47.25"/>
+        <TableColumn Name="Column248" Width="41.58"/>
+        <TableColumn Name="Column249" Width="47.25"/>
+        <TableColumn Name="Column250" Width="41.58"/>
+        <TableColumn Name="Column251" Width="47.25"/>
+        <TableColumn Name="Column252" Width="41.58"/>
+        <TableColumn Name="Column253" Width="47.25"/>
+        <TableColumn Name="Column254" Width="41.58"/>
+        <TableColumn Name="Column255" Width="47.25"/>
+        <TableColumn Name="Column256" Width="41.58"/>
+        <TableColumn Name="Column257" Width="47.25"/>
+        <TableColumn Name="Column258" Width="41.58"/>
+        <TableColumn Name="Column259" Width="47.25"/>
+        <TableColumn Name="Column260" Width="41.58"/>
+        <TableRow Name="Row26">
+          <TableCell Name="Cell493" Border.Lines="All" Border.TopLine.Style="Double" Text="YEAR" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt" RowSpan="2"/>
+          <TableCell Name="Cell494" Border.Lines="All" Border.TopLine.Style="Double" Text="AREA" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt" RowSpan="2"/>
+          <TableCell Name="Cell495" Border.Lines="All" Border.TopLine.Style="Double" Text="YARN" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt" ColSpan="2"/>
+          <TableCell Name="Cell496" Border.Lines="All" Border.TopLine.Style="Double" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell497" Border.Lines="All" Border.TopLine.Style="Double" Text="DENIM" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt" ColSpan="2"/>
+          <TableCell Name="Cell518" Border.Lines="All" Border.TopLine.Style="Double" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell519" Border.Lines="All" Border.TopLine.Style="Double" Text="GREY" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt" ColSpan="2"/>
+          <TableCell Name="Cell520" Border.Lines="All" Border.TopLine.Style="Double" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell521" Border.Lines="All" Border.TopLine.Style="Double" Text="COLOUR" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt" ColSpan="2"/>
+          <TableCell Name="Cell522" Border.Lines="All" Border.TopLine.Style="Double" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell523" Border.Lines="All" Border.TopLine.Style="Double" Text="SEWING" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt" ColSpan="2"/>
+          <TableCell Name="Cell524" Border.Lines="All" Border.TopLine.Style="Double" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell525" Border.Lines="All" Border.TopLine.Style="Double" Text="ST/DT" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt" ColSpan="2"/>
+          <TableCell Name="Cell526" Border.Lines="All" Border.TopLine.Style="Double" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell527" Border.Lines="All" Border.TopLine.Style="Double" Text="GARMENT" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt" ColSpan="2"/>
+          <TableCell Name="Cell528" Border.Lines="All" Border.TopLine.Style="Double" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell529" Border.Lines="All" Border.TopLine.Style="Double" Text="TOTAL" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt" ColSpan="2"/>
+          <TableCell Name="Cell530" Border.Lines="All" Border.TopLine.Style="Double" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt"/>
+        </TableRow>
+        <TableRow Name="Row27">
+          <TableCell Name="Cell498" Border.Lines="All" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell499" Border.Lines="All" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell500" Border.Lines="All" Border.RightLine.Color="DarkGray" Text="USD" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell501" Border.Lines="Right, Top, Bottom" Text="PCT" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell502" Border.Lines="All" Border.RightLine.Color="DarkGray" Text="USD" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell531" Border.Lines="Right, Top, Bottom" Text="PCT" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell532" Border.Lines="All" Border.RightLine.Color="DarkGray" Text="USD" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell533" Border.Lines="Right, Top, Bottom" Text="PCT" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell534" Border.Lines="All" Border.RightLine.Color="DarkGray" Text="USD" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell535" Border.Lines="Right, Top, Bottom" Text="PCT" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell536" Border.Lines="All" Border.RightLine.Color="DarkGray" Text="USD" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell537" Border.Lines="Right, Top, Bottom" Text="PCT" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell538" Border.Lines="All" Border.RightLine.Color="DarkGray" Text="USD" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell539" Border.Lines="Right, Top, Bottom" Text="PCT" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell540" Border.Lines="All" Border.RightLine.Color="DarkGray" Text="USD" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell541" Border.Lines="Right, Top, Bottom" Text="PCT" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell542" Border.Lines="All" Border.RightLine.Color="DarkGray" Text="USD" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell543" Border.Lines="Right, Top, Bottom" Text="PCT" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+        </TableRow>
+      </TableObject>
+      <TableObject Name="Table1" Left="854.28" Width="355.32" Height="37.8">
+        <TableColumn Name="Column279" Width="47.25"/>
+        <TableColumn Name="Column280" Width="41.58"/>
+        <TableColumn Name="Column281" Width="47.25"/>
+        <TableColumn Name="Column282" Width="41.58"/>
+        <TableColumn Name="Column283" Width="47.25"/>
+        <TableColumn Name="Column284" Width="41.58"/>
+        <TableColumn Name="Column285" Width="47.25"/>
+        <TableColumn Name="Column286" Width="41.58"/>
+        <TableRow Name="Row32">
+          <TableCell Name="Cell616" Border.Lines="All" Border.TopLine.Style="Double" Text="RP" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt" ColSpan="2"/>
+          <TableCell Name="Cell617" Border.Lines="All" Border.TopLine.Style="Double" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell618" Border.Lines="All" Border.TopLine.Style="Double" Text="USD" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt" ColSpan="2"/>
+          <TableCell Name="Cell619" Border.Lines="All" Border.TopLine.Style="Double" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell620" Border.Lines="All" Border.TopLine.Style="Double" Text="EURO" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt" ColSpan="2"/>
+          <TableCell Name="Cell621" Border.Lines="All" Border.TopLine.Style="Double" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell622" Border.Lines="All" Border.TopLine.Style="Double" Text="TOTAL" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt" ColSpan="2"/>
+          <TableCell Name="Cell623" Border.Lines="All" Border.TopLine.Style="Double" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt"/>
+        </TableRow>
+        <TableRow Name="Row33">
+          <TableCell Name="Cell634" Border.Lines="All" Text="USD" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell635" Border.Lines="All" Text="PCT" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell636" Border.Lines="All" Border.RightLine.Color="DarkGray" Text="USD" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell637" Border.Lines="Right, Top, Bottom" Text="PCT" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell638" Border.Lines="All" Border.RightLine.Color="DarkGray" Text="USD" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell639" Border.Lines="Right, Top, Bottom" Text="PCT" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell640" Border.Lines="All" Border.RightLine.Color="DarkGray" Text="USD" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell641" Border.Lines="Right, Top, Bottom" Text="PCT" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+        </TableRow>
+      </TableObject>
+    </PageHeaderBand>
+    <GroupHeaderBand Name="GroupHeader1" Top="83.6" Width="1209.6" Condition="Substring([USD_QTY.YYYYMM],0,4)" SortOrder="Descending">
+      <DataBand Name="Data1" Top="87.6" Width="1209.6" DataSource="USD_QTY" Filter="ToBoolean(IIf(ToInt32(Substring([USD_QTY.YYYYMM],0,4)) &gt;= Year([PARAM.PERIOD]), ToInt32(Substring([USD_QTY.YYYYMM],4,2)) &lt;= Month([PARAM.PERIOD]), true)) &amp;&amp; ToBoolean((ToInt32(Substring([USD_QTY.YYYYMM],0,4)) &gt;=  [GetYear] - [RangeYear])) &amp;&amp; ToBoolean((ToInt32(Substring([USD_QTY.YYYYMM],0,4)) &lt;= [GetYear]))"/>
+      <GroupFooterBand Name="GroupFooter1" Top="91.6" Width="1209.6" Height="75.6" BeforePrintEvent="AnnualSales_BeforePrint">
+        <TableObject Name="SalesTable" Width="795.69" Height="75.6" Border.Lines="Left, Right, Bottom">
+          <TableColumn Name="Column261" Width="37.8"/>
+          <TableColumn Name="Column262" Width="47.25"/>
+          <TableColumn Name="Column263" Width="47.25"/>
+          <TableColumn Name="Column264" Width="41.58"/>
+          <TableColumn Name="Column265" Width="47.25"/>
+          <TableColumn Name="Column266" Width="41.58"/>
+          <TableColumn Name="Column267" Width="47.25"/>
+          <TableColumn Name="Column268" Width="41.58"/>
+          <TableColumn Name="Column269" Width="47.25"/>
+          <TableColumn Name="Column270" Width="41.58"/>
+          <TableColumn Name="Column271" Width="47.25"/>
+          <TableColumn Name="Column272" Width="41.58"/>
+          <TableColumn Name="Column273" Width="47.25"/>
+          <TableColumn Name="Column274" Width="41.58"/>
+          <TableColumn Name="Column275" Width="47.25"/>
+          <TableColumn Name="Column276" Width="41.58"/>
+          <TableColumn Name="Column277" Width="47.25"/>
+          <TableColumn Name="Column278" Width="41.58"/>
+          <TableRow Name="Row28">
+            <TableCell Name="Cell544" Border.Lines="Right, Bottom" Border.BottomLine.Color="DarkGray" Text="[Substring([USD_QTY.YYYYMM],0,4)]" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell545" Border.Lines="Right, Bottom" Border.BottomLine.Color="DarkGray" Text="LOCAL" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell546" Border.Lines="Right, Bottom" Border.RightLine.Color="DarkGray" Border.BottomLine.Color="DarkGray" Text="[[LO_YARN] / 1000]" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell547" Border.Lines="Right, Bottom" Border.BottomLine.Color="DarkGray" Text="[[LO_YARN] / [TotalSales] * 100]%" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="1" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell548" Border.Lines="Right, Bottom" Border.RightLine.Color="DarkGray" Border.BottomLine.Color="DarkGray" Text="[[LO_DENIM] / 1000]" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell554" Border.Lines="Right, Bottom" Border.BottomLine.Color="DarkGray" Text="[[LO_DENIM] / [TotalSales] * 100]%" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="1" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell555" Border.Lines="Right, Bottom" Border.RightLine.Color="DarkGray" Border.BottomLine.Color="DarkGray" Text="[[LO_GREY] / 1000]" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell556" Border.Lines="Right, Bottom" Border.BottomLine.Color="DarkGray" Text="[[LO_GREY] / [TotalSales] * 100]%" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="1" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell557" Border.Lines="Right, Bottom" Border.RightLine.Color="DarkGray" Border.BottomLine.Color="DarkGray" Text="[[LO_COLOUR] / 1000]" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell558" Border.Lines="Right, Bottom" Border.BottomLine.Color="DarkGray" Text="[[LO_COLOUR] / [TotalSales] * 100]%" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="1" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell559" Border.Lines="Right, Bottom" Border.RightLine.Color="DarkGray" Border.BottomLine.Color="DarkGray" Text="[[LO_HOM] / 1000]" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell560" Border.Lines="Right, Bottom" Border.BottomLine.Color="DarkGray" Text="[[LO_HOM] / [TotalSales] * 100]%" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="1" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell561" Border.Lines="Right, Bottom" Border.RightLine.Color="DarkGray" Border.BottomLine.Color="DarkGray" Text="[[LO_TOWEL] / 1000]" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell562" Border.Lines="Right, Bottom" Border.BottomLine.Color="DarkGray" Text="[[LO_TOWEL] / [TotalSales] * 100]%" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="1" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell563" Border.Lines="Right, Bottom" Border.RightLine.Color="DarkGray" Border.BottomLine.Color="DarkGray" Text="[[LO_GARMENT] / 1000]" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell564" Border.Lines="Right, Bottom" Border.BottomLine.Color="DarkGray" Text="[[LO_GARMENT] / [TotalSales] * 100]%" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="1" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell565" Border.Lines="Right, Bottom" Border.RightLine.Color="DarkGray" Border.BottomLine.Color="DarkGray" Text="[([LO_YARN]+[LO_DENIM]+[LO_GREY]+[LO_COLOUR]+[LO_HOM]+[LO_TOWEL]+[LO_GARMENT])  / 1000]" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell566" Border.Lines="Bottom" Border.BottomLine.Color="DarkGray" Text="[([LO_YARN]+[LO_DENIM]+[LO_GREY]+[LO_COLOUR]+[LO_HOM]+[LO_TOWEL]+[LO_GARMENT]) / [TotalSales] * 100]%" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="1" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          </TableRow>
+          <TableRow Name="Row29">
+            <TableCell Name="Cell549" Border.Lines="Right, Bottom" Border.BottomLine.Color="DarkGray" Text="[IIf(Year([PARAM.PERIOD]) == ToInt32(Substring([USD_QTY.YYYYMM], 0, 4)), IIf(Month([PARAM.PERIOD]) == 12, &quot;&quot;, &quot;(&quot; + UpperCase(Substring(MonthName(Month([PARAM.PERIOD])), 0, 3)) + &quot;)&quot;), &quot;&quot;)]" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell550" Border.Lines="Right, Bottom" Border.BottomLine.Color="DarkGray" Text="EXPORT" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell551" Border.Lines="Right, Bottom" Border.RightLine.Color="DarkGray" Border.BottomLine.Color="DarkGray" Text="[[EX_YARN] / 1000]" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell552" Border.Lines="Right, Bottom" Border.BottomLine.Color="DarkGray" Text="[[EX_YARN] / [TotalSales] * 100]%" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="1" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell553" Border.Lines="Right, Bottom" Border.RightLine.Color="DarkGray" Border.BottomLine.Color="DarkGray" Text="[[EX_DENIM] / 1000]" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell567" Border.Lines="Right, Bottom" Border.BottomLine.Color="DarkGray" Text="[[EX_DENIM] / [TotalSales] * 100]%" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="1" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell568" Border.Lines="Right, Bottom" Border.RightLine.Color="DarkGray" Border.BottomLine.Color="DarkGray" Text="[[EX_GREY] / 1000]" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell569" Border.Lines="Right, Bottom" Border.BottomLine.Color="DarkGray" Text="[[EX_GREY] / [TotalSales] * 100]%" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="1" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell570" Border.Lines="Right, Bottom" Border.RightLine.Color="DarkGray" Border.BottomLine.Color="DarkGray" Text="[[EX_COLOUR] / 1000]" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell571" Border.Lines="Right, Bottom" Border.BottomLine.Color="DarkGray" Text="[[EX_COLOUR] / [TotalSales] * 100]%" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="1" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell572" Border.Lines="Right, Bottom" Border.RightLine.Color="DarkGray" Border.BottomLine.Color="DarkGray" Text="[[EX_HOM] / 1000]" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell573" Border.Lines="Right, Bottom" Border.BottomLine.Color="DarkGray" Text="[[EX_HOM] / [TotalSales] * 100]%" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="1" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell574" Border.Lines="Right, Bottom" Border.RightLine.Color="DarkGray" Border.BottomLine.Color="DarkGray" Text="[[EX_TOWEL] / 1000]" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell575" Border.Lines="Right, Bottom" Border.BottomLine.Color="DarkGray" Text="[[EX_TOWEL] / [TotalSales] * 100]%" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="1" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell576" Border.Lines="Right, Bottom" Border.RightLine.Color="DarkGray" Border.BottomLine.Color="DarkGray" Text="[[EX_GARMENT] / 1000]" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell577" Border.Lines="Right, Bottom" Border.BottomLine.Color="DarkGray" Text="[[EX_GARMENT] / [TotalSales] * 100]%" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="1" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell578" Border.Lines="Right, Bottom" Border.RightLine.Color="DarkGray" Border.BottomLine.Color="DarkGray" Text="[ ([EX_YARN]+[EX_DENIM]+[EX_GREY]+[EX_COLOUR]+[EX_HOM]+[EX_TOWEL]+[EX_GARMENT]) / 1000 ]" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell579" Border.Lines="Bottom" Border.BottomLine.Color="DarkGray" Text="[([EX_YARN]+[EX_DENIM]+[EX_GREY]+[EX_COLOUR]+[EX_HOM]+[EX_TOWEL]+[EX_GARMENT]) / [TotalSales] * 100]%" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="1" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          </TableRow>
+          <TableRow Name="Row30">
+            <TableCell Name="Cell580" Border.Lines="Right, Bottom" Fill.Color="Gainsboro" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell581" Border.Lines="Right, Bottom" Fill.Color="Gainsboro" Text="TOTAL" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell582" Border.Lines="Right, Bottom" Border.RightLine.Color="DarkGray" Fill.Color="Gainsboro" Text="[([LO_YARN] + [EX_YARN]) / 1000]" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell583" Border.Lines="Right, Bottom" Fill.Color="Gainsboro" Text="[([LO_YARN] + [EX_YARN]) / [TotalSales] * 100]%" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="1" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell584" Border.Lines="Right, Bottom" Border.RightLine.Color="DarkGray" Fill.Color="Gainsboro" Text="[([LO_DENIM] + [EX_DENIM]) / 1000]" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell585" Border.Lines="Right, Bottom" Fill.Color="Gainsboro" Text="[([LO_DENIM] + [EX_DENIM]) / [TotalSales] * 100]%" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="1" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell586" Border.Lines="Right, Bottom" Border.RightLine.Color="DarkGray" Fill.Color="Gainsboro" Text="[([LO_GREY] + [EX_GREY]) / 1000]" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell587" Border.Lines="Right, Bottom" Fill.Color="Gainsboro" Text="[([LO_GREY] + [EX_GREY]) / [TotalSales] * 100]%" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="1" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell588" Border.Lines="Right, Bottom" Border.RightLine.Color="DarkGray" Fill.Color="Gainsboro" Text="[([LO_COLOUR] + [EX_COLOUR]) / 1000]" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell589" Border.Lines="Right, Bottom" Fill.Color="Gainsboro" Text="[([LO_COLOUR] + [EX_COLOUR]) / [TotalSales] * 100]%" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="1" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell590" Border.Lines="Right, Bottom" Border.RightLine.Color="DarkGray" Fill.Color="Gainsboro" Text="[([LO_HOM] + [EX_HOM]) / 1000]" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell591" Border.Lines="Right, Bottom" Fill.Color="Gainsboro" Text="[([LO_HOM] + [EX_HOM]) / [TotalSales] * 100]%" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="1" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell592" Border.Lines="Right, Bottom" Border.RightLine.Color="DarkGray" Fill.Color="Gainsboro" Text="[([LO_TOWEL] + [EX_TOWEL]) / 1000]" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell593" Border.Lines="Right, Bottom" Fill.Color="Gainsboro" Text="[([LO_TOWEL] + [EX_TOWEL]) / [TotalSales] * 100]%" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="1" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell594" Border.Lines="Right, Bottom" Border.RightLine.Color="DarkGray" Fill.Color="Gainsboro" Text="[([LO_GARMENT] + [EX_GARMENT]) / 1000]" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell595" Border.Lines="Right, Bottom" Fill.Color="Gainsboro" Text="[([LO_GARMENT] + [EX_GARMENT]) / [TotalSales] * 100]%" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="1" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell596" Border.Lines="Right, Bottom" Border.RightLine.Color="DarkGray" Fill.Color="Gainsboro" Text="[[TotalSales] / 1000]" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell597" Border.Lines="Bottom" Fill.Color="Gainsboro" Text="[([EX_YARN]+[EX_DENIM]+[EX_GREY]+[EX_COLOUR]+[EX_HOM]+[EX_TOWEL]+[EX_GARMENT] + [LO_YARN]+[LO_DENIM]+[LO_GREY]+[LO_COLOUR]+[LO_HOM]+[LO_TOWEL]+[LO_GARMENT]) / [TotalSales] * 100]%" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="1" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          </TableRow>
+          <TableRow Name="Row31">
+            <TableCell Name="Cell598" Border.Lines="Right" Font="Arial, 8pt"/>
+            <TableCell Name="Cell599" Border.Lines="Left, Right" Font="Arial, 8pt"/>
+            <TableCell Name="Cell600" Border.Lines="Right" Border.RightLine.Color="DarkGray" Font="Arial, 8pt"/>
+            <TableCell Name="Cell601" Border.Lines="Right" Font="Arial, 8pt"/>
+            <TableCell Name="Cell602" Border.Lines="Right" Border.RightLine.Color="DarkGray" Font="Arial, 8pt"/>
+            <TableCell Name="Cell603" Border.Lines="Right" Font="Arial, 8pt"/>
+            <TableCell Name="Cell604" Border.Lines="Right" Border.RightLine.Color="DarkGray" Font="Arial, 8pt"/>
+            <TableCell Name="Cell605" Border.Lines="Right" Font="Arial, 8pt"/>
+            <TableCell Name="Cell606" Border.Lines="Right" Border.RightLine.Color="DarkGray" Font="Arial, 8pt"/>
+            <TableCell Name="Cell607" Border.Lines="Right" Font="Arial, 8pt"/>
+            <TableCell Name="Cell608" Border.Lines="Right" Border.RightLine.Color="DarkGray" Font="Arial, 8pt"/>
+            <TableCell Name="Cell609" Border.Lines="Right" Font="Arial, 8pt"/>
+            <TableCell Name="Cell610" Border.Lines="Right" Border.RightLine.Color="DarkGray" Font="Arial, 8pt"/>
+            <TableCell Name="Cell611" Border.Lines="Right" Font="Arial, 8pt"/>
+            <TableCell Name="Cell612" Border.Lines="Right" Border.RightLine.Color="DarkGray" Font="Arial, 8pt"/>
+            <TableCell Name="Cell613" Border.Lines="Right" Font="Arial, 8pt"/>
+            <TableCell Name="Cell614" Border.Lines="Right" Border.RightLine.Color="DarkGray" Font="Arial, 8pt"/>
+            <TableCell Name="Cell615" Font="Arial, 8pt"/>
+          </TableRow>
+        </TableObject>
+        <TableObject Name="CurrencyTable" Left="854.28" Width="355.32" Height="75.6" Border.Lines="Left, Right, Bottom">
+          <TableColumn Name="Column287" Width="47.25"/>
+          <TableColumn Name="Column288" Width="41.58"/>
+          <TableColumn Name="Column289" Width="47.25"/>
+          <TableColumn Name="Column290" Width="41.58"/>
+          <TableColumn Name="Column291" Width="47.25"/>
+          <TableColumn Name="Column292" Width="41.58"/>
+          <TableColumn Name="Column293" Width="47.25"/>
+          <TableColumn Name="Column294" Width="41.58"/>
+          <TableRow Name="Row34">
+            <TableCell Name="Cell642" Border.Lines="Right, Bottom" Border.BottomLine.Color="DarkGray" Text="[[LO_RP]]" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell643" Border.Lines="Right, Bottom" Border.BottomLine.Color="DarkGray" Text="[[LO_RP] / [TotalCurrencies] * 100]%" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="1" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell644" Border.Lines="Right, Bottom" Border.RightLine.Color="DarkGray" Border.BottomLine.Color="DarkGray" Text="[[LO_USD]]" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell645" Border.Lines="Right, Bottom" Border.BottomLine.Color="DarkGray" Text="[[LO_USD] / [TotalCurrencies] * 100]%" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="1" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell646" Border.Lines="Right, Bottom" Border.RightLine.Color="DarkGray" Border.BottomLine.Color="DarkGray" Text="[[LO_EUR]]" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell647" Border.Lines="Right, Bottom" Border.BottomLine.Color="DarkGray" Text="[[LO_EUR] / [TotalCurrencies] * 100]%" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="1" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell648" Border.Lines="Right, Bottom" Border.RightLine.Color="DarkGray" Border.BottomLine.Color="DarkGray" Text="[[LO_RP] + [LO_USD] + [LO_EUR]]" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell649" Border.Lines="Right, Bottom" Border.BottomLine.Color="DarkGray" Text="[([LO_RP] + [LO_USD] + [LO_EUR])/ [TotalCurrencies] * 100]%" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="1" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          </TableRow>
+          <TableRow Name="Row35">
+            <TableCell Name="Cell660" Border.Lines="Right, Bottom" Border.BottomLine.Color="DarkGray" Text="[[EX_RP]]" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell661" Border.Lines="Right, Bottom" Border.BottomLine.Color="DarkGray" Text="[[EX_RP] / [TotalCurrencies] * 100]%" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="1" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell662" Border.Lines="Right, Bottom" Border.RightLine.Color="DarkGray" Border.BottomLine.Color="DarkGray" Text="[[EX_USD]]" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell663" Border.Lines="Right, Bottom" Border.BottomLine.Color="DarkGray" Text="[[EX_USD] / [TotalCurrencies] * 100]%" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="1" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell664" Border.Lines="Right, Bottom" Border.RightLine.Color="DarkGray" Border.BottomLine.Color="DarkGray" Text="[[EX_EUR]]" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell665" Border.Lines="Right, Bottom" Border.BottomLine.Color="DarkGray" Text="[[EX_EUR] / [TotalCurrencies] * 100]%" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="1" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell666" Border.Lines="Right, Bottom" Border.RightLine.Color="DarkGray" Border.BottomLine.Color="DarkGray" Text="[[EX_RP] + [EX_USD] + [EX_EUR]]" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell667" Border.Lines="Right, Bottom" Border.BottomLine.Color="DarkGray" Text="[([EX_RP] + [EX_USD] + [EX_EUR])/ [TotalCurrencies] * 100]%" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="1" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          </TableRow>
+          <TableRow Name="Row36">
+            <TableCell Name="Cell678" Border.Lines="Right, Bottom" Fill.Color="Gainsboro" Text="[[LO_RP] + [EX_RP]]" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell679" Border.Lines="Right, Bottom" Fill.Color="Gainsboro" Text="[([LO_RP] + [EX_RP])/ [TotalCurrencies] * 100]%" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="1" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell680" Border.Lines="Right, Bottom" Border.RightLine.Color="DarkGray" Fill.Color="Gainsboro" Text="[[LO_USD] + [EX_USD]]" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell681" Border.Lines="Right, Bottom" Fill.Color="Gainsboro" Text="[([LO_USD] + [EX_USD])/ [TotalCurrencies] * 100]%" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="1" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell682" Border.Lines="Right, Bottom" Border.RightLine.Color="DarkGray" Fill.Color="Gainsboro" Text="[[LO_EUR] + [EX_EUR]]" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell683" Border.Lines="Right, Bottom" Fill.Color="Gainsboro" Text="[([LO_EUR] + [EX_EUR])/ [TotalCurrencies] * 100]%" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell684" Border.Lines="Right, Bottom" Border.RightLine.Color="DarkGray" Fill.Color="Gainsboro" Text="[TotalCurrencies]" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell685" Border.Lines="Right, Bottom" Fill.Color="Gainsboro" Text="[[TotalCurrencies] / [TotalCurrencies] * 100]%" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="1" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          </TableRow>
+          <TableRow Name="Row37">
+            <TableCell Name="Cell696" Border.Lines="Right" Font="Arial, 10pt"/>
+            <TableCell Name="Cell697" Border.Lines="Left, Right" Font="Arial, 10pt"/>
+            <TableCell Name="Cell698" Border.Lines="Right" Border.RightLine.Color="DarkGray" Font="Arial, 10pt"/>
+            <TableCell Name="Cell699" Border.Lines="Right" Font="Arial, 10pt"/>
+            <TableCell Name="Cell700" Border.Lines="Right" Border.RightLine.Color="DarkGray" Font="Arial, 10pt"/>
+            <TableCell Name="Cell701" Border.Lines="Right" Font="Arial, 10pt"/>
+            <TableCell Name="Cell702" Border.Lines="Right" Border.RightLine.Color="DarkGray" Font="Arial, 10pt"/>
+            <TableCell Name="Cell703" Border.Lines="Right" Font="Arial, 10pt"/>
+          </TableRow>
+        </TableObject>
+      </GroupFooterBand>
+    </GroupHeaderBand>
+    <PageFooterBand Name="PageFooter1" Top="171.2" Width="1209.6"/>
+  </ReportPage>
+</Report>

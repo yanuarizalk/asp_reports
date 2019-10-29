@@ -1,0 +1,3 @@
+﻿@using ASP_Web_Reports
+@using ASP_Web_Reports.Models
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers

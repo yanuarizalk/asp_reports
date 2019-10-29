@@ -1,0 +1,113 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <!--TargetFramework>netcoreapp2.1</TargetFramework-->
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <ApplicationIcon>wwwroot\favicon.ico</ApplicationIcon>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <ServerGarbageCollection>true</ServerGarbageCollection>
+    <ConcurrentGarbageCollection>false</ConcurrentGarbageCollection>
+    <Authors>-</Authors>
+    <Company />
+    <Product />
+    <SignAssembly>false</SignAssembly>
+    <AssemblyOriginatorKeyFile>Mgm Key.pfx</AssemblyOriginatorKeyFile>
+    <OutputType>Exe</OutputType>
+    <StartupObject />
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>
+    </DocumentationFile>
+  </PropertyGroup>
+  <!--ItemGroup>
+    <Watch Include="**\*.cs" Exclude="Views\*;wwwroot\*;**\*.cshtml;obj\**\*;bin\**\*" />
+  </ItemGroup-->
+  <ItemGroup>
+    <Compile Remove="Controllers\Pages\SparepartController.cs" />
+    <Compile Remove="Controllers\TryController.cs" />
+    <Compile Remove="Data\ProdContext.cs" />
+    <Compile Remove="Data\SPContext.cs" />
+    <Compile Remove="Libs\DBLib.cs" />
+    <Compile Remove="Libs\FReports.cs" />
+    <Compile Remove="Libs\Helper.cs" />
+    <Compile Remove="Models\SessionModel.cs" />
+    <Compile Remove="Models\TB_MENU.cs" />
+    <Compile Remove="Models\TB_USER.cs" />
+    <Compile Remove="Reports\UserReport.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="appsettings.rar" />
+    <None Remove="ASP Web Reports.rar" />
+    <None Remove="ASP Web Reports_latest.rar" />
+    <None Remove="Reports\Section.frx" />
+    <None Remove="Reports\Try.frx" />
+    <None Remove="Reports\User - Copy.frx" />
+    <!--None Include="Reports\User.frx" CopyToOutputDirectory="always" CopyToPublishDirectory="always" /-->
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="BuildBundlerMinifier" Version="2.9.406" />
+    <PackageReference Include="FastReport.Core" Version="2019.3.4" />
+    <PackageReference Include="FastReport.Data.MsSql" Version="2019.3.0" />
+    <PackageReference Include="FastReport.Web" Version="2019.3.4" />
+    <PackageReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Abstractions" Version="2.1.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Server.IIS" Version="2.1.0-preview1-final" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Caching.SqlServer" Version="3.0.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.0.0" />
+    <PackageReference Include="DevExtreme.AspNet.Core" Version="19.1.5" />
+    <PackageReference Include="DevExtreme.AspNet.Data" Version="2.4.2" />
+    <PackageReference Include="MiniProfiler.AspNetCore" Version="4.0.180" />
+    <PackageReference Include="System.Collections.NonGeneric" Version="4.3.0" />
+    <!--PackageReference Include="Microsoft.Extensions.Caching.SqlServer" /-->
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="FastReport.Data.MsSql">
+      <HintPath>C:\Users\tyf\.nuget\packages\fastreport.data.mssql\2019.3.0\lib\netstandard2.0\FastReport.Data.MsSql.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Configuration">
+      <HintPath>C:\Windows\Microsoft.NET\Framework\v2.0.50727\System.Configuration.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Update="Views\Shared\Restricted.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\Dashboard\Inventories.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\Dashboard\Payrolls.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\Department\Division.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\Shared\404.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\Shared\Reports.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\Shared\_DE_Standalone.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\Shared\_LayoutSingle.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\User\Change_Password.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\User\Login.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Views\Reports\" />
+  </ItemGroup>
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties DismissedDevExtremeVersion="19.1.5" />
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>

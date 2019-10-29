@@ -1,0 +1,136 @@
+﻿
+@{
+
+}
+
+<div class="page-report">
+    <div class="report-header">
+        @ViewData["ReportHeader"]
+    </div>
+    @if (ViewData["ReportFilter"] != null) {
+        <div class="report-menus">
+            <div class="report-menu" id="filter-btn">Period<img src="~/images/calendar-2.svg" alt="" title="Filter / Selection options" />
+            </div>
+        </div>
+    }
+    @await ViewBag.WebReport.Render()
+
+    @*ViewBag.WebReport.RenderSync()*@
+</div>
+@if (ViewData["ReportFilter"] != null) {
+    @using (Html.DevExtreme().NamedTemplate("filter-template")) {
+        switch ((ViewData["ReportApi"] + "-" + ViewData["ReportName"]).ToString().ToLower()) {
+            case "sales-currencies":
+            case "sales-raws":
+            case "sales-usd_qty":
+            case "sales-prodgroup":
+            case "sales-byproduction":
+            case "sales-bydestination":
+            case "sales-annualraws":
+            case "sales-denim":
+            case "sales-denimyard":
+            case "sales-customer12":
+            case "sales-customer24": {
+                @(Html.DevExtreme().Form()
+                    .ID("filter-form").LabelLocation(FormLabelLocation.Left)
+                    .ShowColonAfterLabel(true)
+                    .Items(item => {
+                        item.AddSimple()
+                            .ValidationRules(vr => vr.AddRequired())
+                            .Editor(editor => editor.SelectBox()
+                                .ID("year").Placeholder("<Select which year from>")
+                                .SearchEnabled(true)
+                                .DataSource(ds => ds.Array().Data(new JS("years")))
+                            ).Label(label => label.Text("Year")).DataField("year");
+                        item.AddSimple()
+                            .ValidationRules(vr => vr.AddRequired())
+                            .Editor(editor => editor.SelectBox()
+                                .ID("month").Placeholder("<Select month>")
+                                .SearchEnabled(true)
+                                .DisplayExpr("val").ValueExpr("id")
+                                .DataSource(ds => ds.Array().Key("id").Data(new JS("months")))
+                            ).Label(label => label.Text("Month")).DataField("month");
+                        item.AddButton().ButtonOptions(option => option.Text("OK")
+                            .ID("filter-submit").UseSubmitBehavior(true).OnClick("onFilterSubmit"));
+                    }).OnEditorEnterKey("onFilterSubmit")
+                )
+                break;
+            }
+            default: break;
+        }
+
+    }
+    @(Html.DevExtreme().Popup()
+        .ID("filter-pop").Title("Filter").Visible(false).CloseOnOutsideClick(true)
+        .ContentTemplate(new TemplateName("filter-template")/*new JS("$('#filter-template')")*/)
+        .Width("300px").Height("250px").OnShowing("onFilterShow")
+    )
+
+    <script>
+        var months = [], years = [];
+        var ReportId = "@ViewData["ReportId"]";
+
+        function loadReportByFilter() {
+            showLoading();
+            $.ajax({
+                url: '@ViewData["BaseUrl"]/Api/@ViewData["ReportApi"]/Reports/@ViewData["ReportName"]',
+                method: 'GET',
+                data: $('#filter-form').dxForm('option').formData,
+                success: function (data, status, xhr) {
+                    hideLoading();
+                    //console.log(xhr.getResponseHeader("content-type"));                        
+                    if (status == 'success') {
+                        if (xhr.getResponseHeader("content-type") == "text/html") {
+                            $('.page-report > .fr' + ReportId + '-container').remove();
+                            $('.page-report').append(data);
+                        } else if (xhr.getResponseHeader("content-type") == "application/json") {
+                            if (data.status == "error") {
+                                showAlert("Error", data.desc);
+                            }
+                        }
+                    }
+                },
+                error: function (xhr, status, err) { hideLoading(); console.log(xhr) }
+            });
+        }
+
+        function onFilterShow(ev) {
+            //console.log(ev);
+            $('#month').dxSelectBox('getDataSource').reload().done(function () {
+                $('#year').dxSelectBox('getDataSource').reload().done(function () {
+                    $('#filter-form').dxForm('option').formData = {
+                        year: new Date().getFullYear(),
+                        month: new Date().getMonth() - 1
+                    };
+                    $('#filter-form').dxForm('repaint');
+                });
+            });
+        }
+        function onFilterSubmit(ev) {
+            if ($('#filter-form').dxForm('validate').isValid) {
+                loadReportByFilter();
+                $('#filter-pop').dxPopup('hide');
+            }
+        }
+        $(document).ready(function () {
+            for (iMonth = 0; iMonth <= 11; iMonth++) {
+                months.push({ id: iMonth, val: new Date(0, iMonth).toLocaleString('en', { month: 'long' }) });
+            }
+            for (iYear = 2015; iYear <= new Date().getFullYear(); iYear++) {
+                years.push(iYear);
+            }
+            $(document).on('click', '#filter-btn', function () {
+                $('#filter-pop').dxPopup("show");
+            });
+        });
+    </script>
+}
+
+<style>
+
+    #filter-form {
+        width: 90%;
+        margin: 0 auto;
+    }
+
+</style>

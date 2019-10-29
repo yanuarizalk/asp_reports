@@ -1,0 +1,21 @@
+﻿@model ErrorViewModel
+@{
+    ViewData["Title"] = "Error - Internal Server";
+}
+
+<div class="page-single">
+    <div class="page page-error">
+        <h2>Error - 500 Internal Server Error</h2>
+        <img src="~/images/coid.svg" width="128" alt="" /><br />
+        An error occured while processing your request!<br />
+        Please ask the current active Administrator to handle it<br /><br />
+        @if (Model.ShowRequestId) {
+            <p>
+                <strong>Request ID:</strong> <code>@Model.RequestId</code>
+            </p>
+            <p>
+                <strong>Stack Trace:</strong> <code>@Model.StackTrace</code>
+            </p>
+        }
+    </div>
+</div>

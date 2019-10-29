@@ -1,0 +1,502 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report ScriptLanguage="CSharp" ReferencedAssemblies="System.dll&#13;&#10;System.Drawing.dll&#13;&#10;System.Windows.Forms.dll&#13;&#10;System.Data.dll&#13;&#10;System.Xml.dll&#13;&#10;System.Collections.NonGeneric.dll&#13;&#10;System.Drawing.Primitives.dll" UseFileCache="true" StartReportEvent="_StartReport" ReportInfo.Created="10/18/2019 08:07:26" ReportInfo.Modified="10/29/2019 11:28:25" ReportInfo.CreatorVersion="2019.3.5.0">
+  <ScriptText>using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Windows.Forms;
+using System.Drawing;
+using System.Data;
+using FastReport;
+using FastReport.Data;
+using FastReport.Dialog;
+using FastReport.Barcode;
+using FastReport.Table;
+using FastReport.Utils;
+
+namespace FastReport
+{
+  public class ReportScript
+  {
+    const int START_COL = 3;
+    const string DIVIDER = &quot;'000&quot;;
+    
+    //double[] TPerYear = new double[2];
+    
+    private double NanResolver(double num) {
+      if (Double.IsNaN(num))
+        return 0;
+      else
+        return num;
+    }
+    private void _StartReport(object sender, EventArgs e)
+    {
+      //MaxDate = (DateTime)Report.GetColumnValue(&quot;PARAM.PERIOD&quot;);
+      for (int iMonth = 1; iMonth &lt;= 12; iMonth++) {
+        Total tSalesA = new Total(); Total tSalesB = new Total();
+        tSalesA.ResetAfterPrint = true;
+        tSalesA.Evaluator = Data1;
+        tSalesA.Expression = &quot;[SALES.A&quot; + iMonth.ToString().PadLeft(2, '0') + &quot;]&quot;;
+        tSalesA.SetName(&quot;TOTAL_A&quot; + iMonth.ToString().PadLeft(2, '0'));
+        tSalesA.PrintOn = GroupFooter1;
+        Report.Dictionary.Totals.Add(tSalesA);
+        tSalesB.ResetAfterPrint = true;
+        tSalesB.Evaluator = Data1;
+        tSalesB.Expression = &quot;[SALES.B&quot; + iMonth.ToString().PadLeft(2, '0') + &quot;]&quot;;
+        tSalesB.SetName(&quot;TOTAL_B&quot; + iMonth.ToString().PadLeft(2, '0'));
+        tSalesB.PrintOn = GroupFooter1;
+        Report.Dictionary.Totals.Add(tSalesB);
+      }
+      foreach (Base oTable in TGFooter.AllObjects) {
+        if (oTable.ClassName != &quot;TableCell&quot;) continue;
+        TableCell oCell = (TableCell)oTable;
+        oCell.AllowExpressions = true;
+      }
+      //Overall Table
+      Report.Dictionary.Connections[0].Tables[2].RefreshTable();
+      Report.SetParameterValue(&quot;Total.A&quot;, Report.GetColumnValue(&quot;Overall.TOTAL_A&quot;));
+      Report.SetParameterValue(&quot;Total.B&quot;, Report.GetColumnValue(&quot;Overall.TOTAL_B&quot;));
+      //MessageBox.Show(Report.GetColumnValue(&quot;Overall.TOTAL_A&quot;).ToString());
+      
+      TableInit();
+    }
+
+    private string NameOfMonth(int iMonth, int? iMonthTo) {
+      if (iMonthTo == null)
+        return DateTime.Parse(iMonth + &quot; 1&quot;).ToString(&quot;MMM&quot;).ToUpper();
+      else 
+        return DateTime.Parse(iMonth + &quot; 1&quot;).ToString(&quot;MMM&quot;).ToUpper() + &quot;-&quot; + DateTime.Parse(iMonthTo + &quot; 1&quot;).ToString(&quot;MMM&quot;).ToUpper();
+    }
+    
+    private void TableInit() {
+      int yearCol = 13 - (int)Report.GetParameterValue(&quot;GetMonth&quot;) + 3;
+      int curMonth = (int)Report.GetParameterValue(&quot;GetMonth&quot;);
+      
+      THeader[START_COL,0].ColSpan = yearCol;
+      THeader[START_COL,0].Text = &quot;YEAR &quot; + ((int)Report.GetParameterValue(&quot;GetYear&quot;) - 1);
+      THeader[START_COL + yearCol,0].ColSpan = (int)Report.GetParameterValue(&quot;GetMonth&quot;) + 3;
+      THeader[START_COL + yearCol,0].Text = &quot;YEAR &quot; + (int)Report.GetParameterValue(&quot;GetYear&quot;);
+      
+      for(int iCol = START_COL; iCol &lt;= 21; iCol++) {
+        if (!((iCol == START_COL + yearCol - 2) || (iCol == 22 - 2)))
+          THeader[iCol,2].Text = DIVIDER;
+        if (iCol == START_COL) {
+          THeader[iCol,1].Text = NameOfMonth(1, curMonth);
+          curMonth = curMonth &gt;= 12 ? 1 : curMonth + 1;
+        }
+        else if ((iCol == START_COL + yearCol - 1) || (iCol == 22 - 1)) {
+          THeader[iCol,1].Text = &quot;AVG/Y&quot;;
+          THeader[iCol,1].Border.RightLine.Color = Color.Black;
+          THeader[iCol,2].Border.RightLine.Color = Color.Black;
+          if (iCol == START_COL + yearCol - 1) {
+            THeader[iCol + 1,1].Border.LeftLine.Color = Color.Black;
+            THeader[iCol + 1,2].Border.LeftLine.Color = Color.Black;
+          }
+        }
+        else if ((iCol == START_COL + yearCol - 2) || (iCol == 22 - 2))
+          THeader[iCol,1].Text = &quot;(%)&quot;;
+        else if ((iCol == START_COL + yearCol - 3) || (iCol == 22 - 3)) {
+          THeader[iCol,1].Text = &quot;TOTAL&quot;;
+          THeader.Columns[iCol].Width = 57;
+          TData.Columns[iCol].Width = 57;
+          TGFooter.Columns[iCol].Width = 57;
+        }
+        else {
+          THeader[iCol,1].Text = NameOfMonth(curMonth, null);
+          curMonth = curMonth &gt;= 12 ? 1 : curMonth + 1;
+        }
+      }
+    }
+    
+    private void PageHeader1_BeforePrint(object sender, EventArgs e)
+    {
+    }
+
+    private void Data1_BeforePrint(object sender, EventArgs e)
+    {
+      int yearCol = 13 - (int)Report.GetParameterValue(&quot;GetMonth&quot;) + 3;
+      int curMonth = (int)Report.GetParameterValue(&quot;GetMonth&quot;);
+      
+      for(int iCol = START_COL; iCol &lt;= 21; iCol++) {
+        if (iCol == START_COL) {
+          double dTotal = 0;
+          for (int iMonthTo = 1; iMonthTo &lt;= curMonth; iMonthTo++)
+            dTotal += (double)Report.GetColumnValue(&quot;SALES.A&quot; +iMonthTo.ToString().PadLeft(2, '0'));
+          TData[iCol,0].Text = String.Format(&quot;{0:N0}&quot;, dTotal);
+          curMonth = curMonth &gt;= 12 ? 1 : curMonth + 1;
+        }
+        //Average
+        else if ((iCol == START_COL + yearCol - 1) || (iCol == 22 - 1)) {
+          double dTotal = 0;
+          for (int iMonthTo = 1; iMonthTo &lt;= (iCol &gt; START_COL + yearCol - 1 ? (int)Report.GetParameterValue(&quot;GetMonth&quot;) : 12); iMonthTo++)
+            dTotal += (double)Report.GetColumnValue(&quot;SALES.&quot; + (iCol &gt; START_COL + yearCol - 1 ? &quot;B&quot; : &quot;A&quot;) + iMonthTo.ToString().PadLeft(2, '0'));
+          dTotal /= (iCol &gt; START_COL + yearCol - 1 ? (int)Report.GetParameterValue(&quot;GetMonth&quot;) : 12);
+          TData[iCol,0].Text = String.Format(&quot;{0:N0}&quot;, dTotal);
+        }
+        //Percentile
+        else if ((iCol == START_COL + yearCol - 2) || (iCol == 22 - 2)) {
+          double dTotal = 0;
+          for (int iMonthTo = 1; iMonthTo &lt;= (iCol &gt; START_COL + yearCol ? (int)Report.GetParameterValue(&quot;GetMonth&quot;) : 12); iMonthTo++)
+            dTotal += (double)Report.GetColumnValue(&quot;SALES.&quot; + (iCol &gt; START_COL + yearCol ? &quot;B&quot; : &quot;A&quot;) + iMonthTo.ToString().PadLeft(2, '0'));
+          //MessageBox.Show(Report.GetColumnValue(&quot;Overall.Total_&quot; + (iCol &gt; START_COL + yearCol ? &quot;B&quot; : &quot;A&quot;)).ToString());
+          dTotal = dTotal / (double)Report.GetColumnValue(&quot;Overall.Total_&quot; + (iCol &gt; START_COL + yearCol ? &quot;B&quot; : &quot;A&quot;)) * 100;
+          TData[iCol,0].Text = String.Format(&quot;{0:N1}&quot;, dTotal) + &quot;%&quot;;
+        }
+        //Total
+        else if ((iCol == START_COL + yearCol - 3) || (iCol == 22 - 3)) {
+          double dTotal = 0;
+          for (int iMonthTo = 1; iMonthTo &lt;= (iCol &gt; START_COL + yearCol - 1 ? (int)Report.GetParameterValue(&quot;GetMonth&quot;) : 12); iMonthTo++)
+            dTotal += (double)Report.GetColumnValue(&quot;SALES.&quot; + (iCol &gt; START_COL + yearCol - 1 ? &quot;B&quot; : &quot;A&quot;) + iMonthTo.ToString().PadLeft(2, '0'));
+          TData[iCol,0].Text = String.Format(&quot;{0:N0}&quot;, dTotal);
+        }
+        //Otherwise
+        else {
+          //MessageBox.Show(Report.GetColumnValue(&quot;SALES.&quot; + (iCol &gt;= START_COL + yearCol - 1 ? &quot;B&quot; : &quot;A&quot;) + curMonth.ToString().PadLeft(2, '0')).ToString());
+          TData[iCol,0].Text = String.Format(&quot;{0:N0}&quot;, Report.GetColumnValue(&quot;SALES.&quot; + (iCol &gt;= START_COL + yearCol - 1 ? &quot;B&quot; : &quot;A&quot;) + curMonth.ToString().PadLeft(2, '0')));
+          curMonth = curMonth &gt;= 12 ? 1 : curMonth + 1;
+        }
+      }
+      
+      if ((((int)Report.GetVariableValue(&quot;Row#&quot;) + 2) / 3 % 2) == 0)
+        Data1.FillColor = Color.Gainsboro;
+      if ((int)Report.GetVariableValue(&quot;Row#&quot;) == (int)Report.GetColumnValue(&quot;Overall.TOTAL_ROW&quot;)) {
+        TData[1, 0].ColSpan = 2;
+        TData[1, 0].Text = TData[2, 0].Text;
+        TData[1, 0].Border.RightLine.Color = Color.Black;
+      }
+    }
+
+
+    private void Group_BeforePrint(object sender, EventArgs e)
+    {
+      int yearCol = 13 - (int)Report.GetParameterValue(&quot;GetMonth&quot;) + 3;
+      int curMonth = (int)Report.GetParameterValue(&quot;GetMonth&quot;);
+      
+      for(int iCol = START_COL; iCol &lt;= 21; iCol++) {
+        if (iCol == START_COL) {
+          double dTotal = 0;
+          for (int iMonthTo = 1; iMonthTo &lt;= curMonth; iMonthTo++)
+            dTotal += (double)Report.GetTotalValue(&quot;TOTAL_A&quot; + iMonthTo.ToString().PadLeft(2, '0'));
+          TGFooter[iCol,0].Text = String.Format(&quot;{0:N0}&quot;, dTotal);
+          curMonth = curMonth &gt;= 12 ? 1 : curMonth + 1;
+        }
+          //Average
+        else if ((iCol == START_COL + yearCol - 1) || (iCol == 22 - 1)) {
+          double dTotal = 0;
+          for (int iMonthTo = 1; iMonthTo &lt;= (iCol &gt; START_COL + yearCol - 1 ? (int)Report.GetParameterValue(&quot;GetMonth&quot;) : 12); iMonthTo++)
+            dTotal += (double)Report.GetTotalValue(&quot;TOTAL_&quot; + (iCol &gt; START_COL + yearCol - 1 ? &quot;B&quot; : &quot;A&quot;) + iMonthTo.ToString().PadLeft(2, '0'));
+          dTotal /= (iCol &gt; START_COL + yearCol - 1 ? (int)Report.GetParameterValue(&quot;GetMonth&quot;) : 12);
+          TGFooter[iCol,0].Text = String.Format(&quot;{0:N0}&quot;, dTotal);
+        }
+          //Percentile
+        else if ((iCol == START_COL + yearCol - 2) || (iCol == 22 - 2)) {
+          double dTotal = 0;
+          for (int iMonthTo = 1; iMonthTo &lt;= (iCol &gt; START_COL + yearCol ? (int)Report.GetParameterValue(&quot;GetMonth&quot;) : 12); iMonthTo++)
+            dTotal += (double)Report.GetTotalValue(&quot;TOTAL_&quot; + (iCol &gt; START_COL + yearCol ? &quot;B&quot; : &quot;A&quot;) + iMonthTo.ToString().PadLeft(2, '0'));
+          //MessageBox.Show(Report.GetColumnValue(&quot;Overall.Total_&quot; + (iCol &gt; START_COL + yearCol ? &quot;B&quot; : &quot;A&quot;)).ToString());
+          dTotal = dTotal / (double)Report.GetColumnValue(&quot;Overall.Total_&quot; + (iCol &gt; START_COL + yearCol ? &quot;B&quot; : &quot;A&quot;)) * 100;
+          TGFooter[iCol,0].Text = String.Format(&quot;{0:N1}&quot;, dTotal) + &quot;%&quot;;
+        }
+          //Total
+        else if ((iCol == START_COL + yearCol - 3) || (iCol == 22 - 3)) {
+          double dTotal = 0;
+          for (int iMonthTo = 1; iMonthTo &lt;= (iCol &gt; START_COL + yearCol - 1 ? (int)Report.GetParameterValue(&quot;GetMonth&quot;) : 12); iMonthTo++)
+            dTotal += (double)Report.GetTotalValue(&quot;TOTAL_&quot; + (iCol &gt; START_COL + yearCol - 1 ? &quot;B&quot; : &quot;A&quot;) + iMonthTo.ToString().PadLeft(2, '0'));
+          TGFooter[iCol,0].Text = String.Format(&quot;{0:N0}&quot;, dTotal);
+        }
+          //Otherwise
+        else {
+          //MessageBox.Show(Report.GetColumnValue(&quot;SALES.&quot; + (iCol &gt;= START_COL + yearCol - 1 ? &quot;B&quot; : &quot;A&quot;) + curMonth.ToString().PadLeft(2, '0')).ToString());
+          TGFooter[iCol,0].Text = String.Format(&quot;{0:N0}&quot;, (double)Report.GetTotalValue(&quot;TOTAL_&quot; + (iCol &gt;= START_COL + yearCol - 1 ? &quot;B&quot; : &quot;A&quot;) + curMonth.ToString().PadLeft(2, '0')));
+          curMonth = curMonth &gt;= 12 ? 1 : curMonth + 1;
+        }
+      }
+    }
+  }
+}
+</ScriptText>
+  <Dictionary>
+    <MsSqlDataConnection Name="Connection" ConnectionString="rijcmlqHwzMSgwTFaHpjtG3vsOj8TrCVffhCR2JFv7xvPWo98Q8hzUJp60SVHnXxIECwHKNp6oMNBpbLqcLrui6V1MI+xWP/56XPL5FBIgQjGknIMZ9/1Xy5wraKxi2qe2SGsp2UfAM9IAHsB67CMW/btEGhCTKDHMNfMzct0nOUax+60E/WnQ6z29ogYWizk67rd0td2qDxCtK2Edzek5cjvQCMQ==">
+      <TableDataSource Name="Table" Alias="Brief" DataType="System.Int32" Enabled="true" SelectCommand="SELECT Cast(Substring(MAX(S.YYYYMM), 5, 2) AS int) &quot;LastMonth&quot;, Cast(Substring(MAX(S.YYYYMM), 1, 4) AS int) &quot;LastYear&quot;, Cast(Substring(MIN(S.YYYYMM), 1, 4) AS int) &quot;EarlyYear&quot;, MIN(S.YYYYMM) &quot;MinDate&quot;, MAX(S.YYYYMM) &quot;MaxDate&quot;&#13;&#10;FROM &quot;SALE_CUST_24MO&quot; S&#13;&#10;">
+        <Column Name="LastMonth" DataType="System.Int32"/>
+        <Column Name="LastYear" DataType="System.Int32"/>
+        <Column Name="EarlyYear" DataType="System.Int32"/>
+        <Column Name="MinDate" DataType="System.String"/>
+        <Column Name="MaxDate" DataType="System.String"/>
+      </TableDataSource>
+      <TableDataSource Name="PARAM" DataType="System.Int32" Enabled="true" TableName="PARAM">
+        <Column Name="PERIOD" DataType="System.DateTime"/>
+      </TableDataSource>
+      <TableDataSource Name="Table1" Alias="Overall" DataType="System.Int32" Enabled="true" SelectCommand="EXEC('SELECT &#13;&#10;	sum(A01) + sum(A02) + sum(A03) + sum(A04) + sum(A05) + sum(A06) + sum(A07) + sum(A08) + sum(A09) + sum(A10) + sum(A11) + sum(A12) &quot;TOTAL_A&quot;, sum(B01) + sum(B02) + sum(B03) + sum(B04) + sum(B05) + sum(B06) + sum(B07) + sum(B08) + sum(B09) + sum(B10) + sum(B11) + sum(B12) &quot;TOTAL_B&quot;, count(*) &quot;TOTAL_ROW&quot;&#13;&#10;FROM SALE_CUST_24MO&#13;&#10;where yyyymm = ' + @yyyymm);">
+        <Column Name="TOTAL_ALL" DataType="System.Double"/>
+        <Column Name="TOTAL_ROW" DataType="System.Int32"/>
+        <CommandParameter Name="yyyymm" DataType="8" Expression="ToInt32([GetYear] + PadLeft(ToString([GetMonth]), 2, '0'))"/>
+      </TableDataSource>
+      <TableDataSource Name="SALE_CUST_24MO" Alias="SALES" DataType="System.Int32" Enabled="true" TableName="SALE_CUST_24MO">
+        <Column Name="YYYYMM" DataType="System.String"/>
+        <Column Name="CUST_CD" DataType="System.String"/>
+        <Column Name="CUST_NM" DataType="System.String"/>
+        <Column Name="A01" DataType="System.Double"/>
+        <Column Name="A02" DataType="System.Double"/>
+        <Column Name="A03" DataType="System.Double"/>
+        <Column Name="A04" DataType="System.Double"/>
+        <Column Name="A05" DataType="System.Double"/>
+        <Column Name="A06" DataType="System.Double"/>
+        <Column Name="A07" DataType="System.Double"/>
+        <Column Name="A08" DataType="System.Double"/>
+        <Column Name="A09" DataType="System.Double"/>
+        <Column Name="A10" DataType="System.Double"/>
+        <Column Name="A11" DataType="System.Double"/>
+        <Column Name="A12" DataType="System.Double"/>
+        <Column Name="B01" DataType="System.Double"/>
+        <Column Name="B02" DataType="System.Double"/>
+        <Column Name="B03" DataType="System.Double"/>
+        <Column Name="B04" DataType="System.Double"/>
+        <Column Name="B05" DataType="System.Double"/>
+        <Column Name="B06" DataType="System.Double"/>
+        <Column Name="B07" DataType="System.Double"/>
+        <Column Name="B08" DataType="System.Double"/>
+        <Column Name="B09" DataType="System.Double"/>
+        <Column Name="B10" DataType="System.Double"/>
+        <Column Name="B11" DataType="System.Double"/>
+        <Column Name="B12" DataType="System.Double"/>
+      </TableDataSource>
+    </MsSqlDataConnection>
+    <Relation Name="USD_QTY_SACU" ParentDataSource="null" ChildDataSource="null" ParentColumns="YYYYMM" ChildColumns="YYYYMM" Enabled="true"/>
+    <Relation Name="SACU_USD_QTY" ParentDataSource="null" ChildDataSource="null" ParentColumns="YYYYMM" ChildColumns="YYYYMM" Enabled="true"/>
+    <Parameter Name="Month" DataType="System.Int32" Expression="0"/>
+    <Parameter Name="Year" DataType="System.Int32" Expression="0"/>
+    <Parameter Name="GetMonth" DataType="System.Int32" Expression="IIf([Month] &gt; 0 &amp;&amp; [Month] &lt; 13,[Month],[Brief.LastMonth])"/>
+    <Parameter Name="GetYear" DataType="System.Int32" Expression="IIf([Year] &gt;= [Brief.EarlyYear] &amp;&amp; [Year] &lt; [Brief.LastYear],[Year],[Brief.LastYear])"/>
+    <Parameter Name="RangeYear" DataType="System.Int32" Expression="8"/>
+    <Parameter Name="DateFrom" DataType="System.String"/>
+    <Parameter Name="DateTo" DataType="System.String"/>
+    <Parameter Name="Total" DataType="System.String">
+      <Parameter Name="PerYear" DataType="System.Double"/>
+      <Parameter Name="A" DataType="System.Double" Expression="0"/>
+      <Parameter Name="B" DataType="System.Double" Expression="0"/>
+    </Parameter>
+    <Total Name="TotalMonth" TotalType="Count" Evaluator="Data1" PrintOn="GroupFooter1" ResetOnReprint="true"/>
+  </Dictionary>
+  <ReportPage Name="Page1" Landscape="true" PaperWidth="330" PaperHeight="215" FirstPageSource="261" OtherPagesSource="261" Watermark.Font="Arial, 60pt">
+    <ReportTitleBand Name="ReportTitle1" Width="1171.8" Height="47.25">
+      <TextObject Name="Text115" Left="1011.15" Width="160.65" Height="18.9" Text="DATE: [Day([Date])]-[UpperCase(Substring(MonthName(Month([Date])), 0, 3))]-[Year([Date])]" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt">
+        <Formats>
+          <GeneralFormat/>
+          <GeneralFormat/>
+          <GeneralFormat/>
+        </Formats>
+      </TextObject>
+      <TextObject Name="Text7" Top="9.45" Width="1171.8" Height="18.9" Text="SALES SUMMARY IN YEAR [GetYear]" HorzAlign="Center" Font="MS Gothic, 8pt"/>
+      <TextObject Name="Text8" Top="22.51" Width="1171.8" Height="18.9" Text="(IN TOTAL SALES OF YEAR 2019 SEQUENCE IN '000 USD)" ProcessAt="PageFinished" HorzAlign="Center" Font="MS Gothic, 8pt, style=Bold, Underline"/>
+      <TextObject Name="Text140" Left="1011.15" Top="28.35" Width="160.65" Height="18.9" Text="PAGE [Page#] OF [TotalPages#]" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt">
+        <Formats>
+          <GeneralFormat/>
+          <GeneralFormat/>
+          <GeneralFormat/>
+        </Formats>
+      </TextObject>
+    </ReportTitleBand>
+    <PageHeaderBand Name="PageHeader1" Top="51.25" Width="1171.8" Height="56.7" BeforePrintEvent="PageHeader1_BeforePrint">
+      <TableObject Name="THeader" Width="1152.9" Height="56.7">
+        <TableColumn Name="Column243" Width="28.35"/>
+        <TableColumn Name="Column244" Width="47.25"/>
+        <TableColumn Name="Column245" Width="170.1"/>
+        <TableColumn Name="Column246" Width="56.7"/>
+        <TableColumn Name="Column247" Width="47.25"/>
+        <TableColumn Name="Column248" Width="47.25"/>
+        <TableColumn Name="Column249" Width="47.25"/>
+        <TableColumn Name="Column250" Width="47.25"/>
+        <TableColumn Name="Column251" Width="47.25"/>
+        <TableColumn Name="Column252" Width="47.25"/>
+        <TableColumn Name="Column253" Width="47.25"/>
+        <TableColumn Name="Column254" Width="47.25"/>
+        <TableColumn Name="Column255" Width="47.25"/>
+        <TableColumn Name="Column256" Width="47.25"/>
+        <TableColumn Name="Column257" Width="47.25"/>
+        <TableColumn Name="Column258" Width="47.25"/>
+        <TableColumn Name="Column259" Width="47.25"/>
+        <TableColumn Name="Column260" Width="47.25"/>
+        <TableColumn Name="Column295" Width="47.25"/>
+        <TableColumn Name="Column334" Width="47.25"/>
+        <TableColumn Name="Column335" Width="47.25"/>
+        <TableColumn Name="Column336" Width="47.25"/>
+        <TableRow Name="Row26">
+          <TableCell Name="Cell493" Border.Lines="All" Border.TopLine.Style="Double" Border.RightLine.Color="DarkGray" Border.BottomLine.Style="Double" Text="NO." HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt" RowSpan="2"/>
+          <TableCell Name="Cell494" Border.Lines="Right, Top, Bottom" Border.TopLine.Style="Double" Border.RightLine.Color="DarkGray" Border.BottomLine.Style="Double" Text="CODE" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt" RowSpan="2"/>
+          <TableCell Name="Cell495" Border.Lines="Right, Top, Bottom" Border.TopLine.Style="Double" Border.BottomLine.Style="Double" Text="CUSTOMER NAME" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt" RowSpan="2"/>
+          <TableCell Name="Cell496" Border.Lines="Right, Top, Bottom" Border.TopLine.Style="Double" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell497" Border.Lines="Right, Top, Bottom" Border.TopLine.Style="Double" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell518" Border.Lines="Right, Top, Bottom" Border.TopLine.Style="Double" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell519" Border.Lines="Right, Top, Bottom" Border.TopLine.Style="Double" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell520" Border.Lines="Right, Top, Bottom" Border.TopLine.Style="Double" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell521" Border.Lines="Right, Top, Bottom" Border.TopLine.Style="Double" Text="&#13;&#10;" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell522" Border.Lines="Right, Top, Bottom" Border.TopLine.Style="Double" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell523" Border.Lines="Right, Top, Bottom" Border.TopLine.Style="Double" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell524" Border.Lines="Right, Top, Bottom" Border.TopLine.Style="Double" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell525" Border.Lines="Right, Top, Bottom" Border.TopLine.Style="Double" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell526" Border.Lines="Right, Top, Bottom" Border.TopLine.Style="Double" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell527" Border.Lines="Right, Top, Bottom" Border.TopLine.Style="Double" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell528" Border.Lines="Right, Top, Bottom" Border.TopLine.Style="Double" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell529" Border.Lines="Right, Top, Bottom" Border.TopLine.Style="Double" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell530" Border.Lines="Right, Top, Bottom" Border.TopLine.Style="Double" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell704" Border.Lines="Right, Top, Bottom" Border.TopLine.Style="Double" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell781" Border.Lines="Right, Top, Bottom" Border.TopLine.Style="Double" HorzAlign="Center" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell782" Border.Lines="Right, Top, Bottom" Border.TopLine.Style="Double" HorzAlign="Center" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell783" Border.Lines="Right, Top, Bottom" Border.TopLine.Style="Double" HorzAlign="Center" Font="MS Gothic, 8pt"/>
+        </TableRow>
+        <TableRow Name="Row29">
+          <TableCell Name="Cell743" Border.Lines="Left, Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell744" Border.Lines="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell745" Border.Lines="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell746" Border.Lines="Right, Bottom" Border.RightLine.Color="DarkGray" Border.BottomLine.Style="Double" HorzAlign="Right" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell747" Border.Lines="Right, Bottom" Border.RightLine.Color="DarkGray" Border.BottomLine.Style="Double" HorzAlign="Right" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell748" Border.Lines="Right, Bottom" Border.RightLine.Color="DarkGray" Border.BottomLine.Style="Double" HorzAlign="Right" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell749" Border.Lines="Right, Bottom" Border.RightLine.Color="DarkGray" Border.BottomLine.Style="Double" HorzAlign="Right" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell750" Border.Lines="Right, Bottom" Border.RightLine.Color="DarkGray" Border.BottomLine.Style="Double" HorzAlign="Right" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell751" Border.Lines="Right, Bottom" Border.RightLine.Color="DarkGray" Border.BottomLine.Style="Double" HorzAlign="Right" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell752" Border.Lines="Right, Bottom" Border.RightLine.Color="DarkGray" Border.BottomLine.Style="Double" HorzAlign="Right" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell753" Border.Lines="Right, Bottom" Border.RightLine.Color="DarkGray" Border.BottomLine.Style="Double" HorzAlign="Right" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell754" Border.Lines="Right, Bottom" Border.RightLine.Color="DarkGray" Border.BottomLine.Style="Double" HorzAlign="Right" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell755" Border.Lines="Right, Bottom" Border.RightLine.Color="DarkGray" Border.BottomLine.Style="Double" HorzAlign="Right" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell756" Border.Lines="Right, Bottom" Border.RightLine.Color="DarkGray" Border.BottomLine.Style="Double" HorzAlign="Right" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell757" Border.Lines="Right, Bottom" Border.RightLine.Color="DarkGray" Border.BottomLine.Style="Double" HorzAlign="Right" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell758" Border.Lines="Right, Bottom" Border.RightLine.Color="DarkGray" Border.BottomLine.Style="Double" HorzAlign="Right" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell759" Border.Lines="Right, Bottom" Border.RightLine.Color="DarkGray" Border.BottomLine.Style="Double" HorzAlign="Right" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell760" Border.Lines="Right, Bottom" Border.RightLine.Color="DarkGray" Border.BottomLine.Style="Double" HorzAlign="Right" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell761" Border.Lines="Right, Bottom" Border.RightLine.Color="DarkGray" Border.BottomLine.Style="Double" HorzAlign="Right" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell784" Border.Lines="Right, Bottom" Border.RightLine.Color="DarkGray" Border.BottomLine.Style="Double" HorzAlign="Right" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell785" Border.Lines="Right, Bottom" Border.RightLine.Color="DarkGray" Border.BottomLine.Style="Double" HorzAlign="Right" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell786" Border.Lines="Right, Bottom" Border.BottomLine.Style="Double" HorzAlign="Right" Font="MS Gothic, 8pt"/>
+        </TableRow>
+        <TableRow Name="Row30">
+          <TableCell Name="Cell762" Border.Lines="Left, Right" Border.RightLine.Color="DarkGray" Font="Arial, 10pt"/>
+          <TableCell Name="Cell763" Border.Lines="Right" Border.RightLine.Color="DarkGray" Font="Arial, 10pt"/>
+          <TableCell Name="Cell764" Border.Lines="Right" Font="Arial, 10pt"/>
+          <TableCell Name="Cell765" Border.Lines="Right" Border.RightLine.Color="DarkGray" HorzAlign="Right" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell766" Border.Lines="Right" Border.RightLine.Color="DarkGray" HorzAlign="Right" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell767" Border.Lines="Right" Border.RightLine.Color="DarkGray" HorzAlign="Right" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell768" Border.Lines="Right" Border.RightLine.Color="DarkGray" HorzAlign="Right" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell769" Border.Lines="Right" Border.RightLine.Color="DarkGray" HorzAlign="Right" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell770" Border.Lines="Right" Border.RightLine.Color="DarkGray" HorzAlign="Right" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell771" Border.Lines="Right" Border.RightLine.Color="DarkGray" HorzAlign="Right" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell772" Border.Lines="Right" Border.RightLine.Color="DarkGray" HorzAlign="Right" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell773" Border.Lines="Right" Border.RightLine.Color="DarkGray" HorzAlign="Right" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell774" Border.Lines="Right" Border.RightLine.Color="DarkGray" HorzAlign="Right" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell775" Border.Lines="Right" Border.RightLine.Color="DarkGray" HorzAlign="Right" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell776" Border.Lines="Right" Border.RightLine.Color="DarkGray" HorzAlign="Right" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell777" Border.Lines="Right" Border.RightLine.Color="DarkGray" HorzAlign="Right" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell778" Border.Lines="Right" Border.RightLine.Color="DarkGray" HorzAlign="Right" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell779" Border.Lines="Right" Border.RightLine.Color="DarkGray" HorzAlign="Right" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell780" Border.Lines="Right" Border.RightLine.Color="DarkGray" HorzAlign="Right" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell787" Border.Lines="Right" Border.RightLine.Color="DarkGray" HorzAlign="Right" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell788" Border.Lines="Right" Border.RightLine.Color="DarkGray" HorzAlign="Right" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell789" Border.Lines="Right" HorzAlign="Right" Font="MS Gothic, 8pt"/>
+        </TableRow>
+      </TableObject>
+    </PageHeaderBand>
+    <GroupHeaderBand Name="GroupHeader1" Top="111.95" Width="1171.8" Condition="[SALES.YYYYMM]" SortOrder="None">
+      <DataBand Name="Data1" Top="115.95" Width="1171.8" Height="22.68" CanGrow="true" CanShrink="true" BeforePrintEvent="Data1_BeforePrint" Guides="0,0,0,0" DataSource="SALE_CUST_24MO" Filter="[SALES.YYYYMM] == [GetYear] + &quot;&quot; + PadLeft(ToString([GetMonth]),2,'0')">
+        <TableObject Name="TData" Width="1152.9" Height="22.68">
+          <TableColumn Name="Column296" Width="28.35"/>
+          <TableColumn Name="Column297" Width="47.25"/>
+          <TableColumn Name="Column298" Width="170.1"/>
+          <TableColumn Name="Column299" Width="56.7"/>
+          <TableColumn Name="Column300" Width="47.25"/>
+          <TableColumn Name="Column301" Width="47.25"/>
+          <TableColumn Name="Column302" Width="47.25"/>
+          <TableColumn Name="Column303" Width="47.25"/>
+          <TableColumn Name="Column304" Width="47.25"/>
+          <TableColumn Name="Column305" Width="47.25"/>
+          <TableColumn Name="Column306" Width="47.25"/>
+          <TableColumn Name="Column307" Width="47.25"/>
+          <TableColumn Name="Column308" Width="47.25"/>
+          <TableColumn Name="Column309" Width="47.25"/>
+          <TableColumn Name="Column310" Width="47.25"/>
+          <TableColumn Name="Column311" Width="47.25"/>
+          <TableColumn Name="Column312" Width="47.25"/>
+          <TableColumn Name="Column313" Width="47.25"/>
+          <TableColumn Name="Column314" Width="47.25"/>
+          <TableColumn Name="Column337" Width="47.25"/>
+          <TableColumn Name="Column338" Width="47.25"/>
+          <TableColumn Name="Column339" Width="47.25"/>
+          <TableRow Name="Row27" MinHeight="22.68" MaxHeight="75.6" Height="22.68" AutoSize="true">
+            <TableCell Name="Cell705" Border.Lines="Left, Right" Border.TopLine.Style="Double" Border.RightLine.Color="DarkGray" Border.BottomLine.Style="Double" Text="[Row#]." HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell706" Border.Lines="Right" Border.TopLine.Style="Double" Border.RightLine.Color="DarkGray" Border.BottomLine.Style="Double" Text="[SALES.CUST_CD]" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell707" Border.Lines="Right" Border.TopLine.Style="Double" Border.BottomLine.Style="Double" Text="[SALES.CUST_NM]" Padding="2, 2, 2, 2" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell708" Border.Lines="Right" Border.TopLine.Style="Double" Border.RightLine.Color="DarkGray" Border.BottomLine.Style="Double" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell709" Border.Lines="Right" Border.TopLine.Style="Double" Border.RightLine.Color="DarkGray" Border.BottomLine.Style="Double" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell710" Border.Lines="Right" Border.TopLine.Style="Double" Border.RightLine.Color="DarkGray" Border.BottomLine.Style="Double" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell711" Border.Lines="Right" Border.TopLine.Style="Double" Border.RightLine.Color="DarkGray" Border.BottomLine.Style="Double" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell712" Border.Lines="Right" Border.TopLine.Style="Double" Border.RightLine.Color="DarkGray" Border.BottomLine.Style="Double" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell713" Border.Lines="Right" Border.TopLine.Style="Double" Border.RightLine.Color="DarkGray" Border.BottomLine.Style="Double" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell714" Border.Lines="Right" Border.TopLine.Style="Double" Border.RightLine.Color="DarkGray" Border.BottomLine.Style="Double" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell715" Border.Lines="Right" Border.TopLine.Style="Double" Border.RightLine.Color="DarkGray" Border.BottomLine.Style="Double" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell716" Border.Lines="Right" Border.TopLine.Style="Double" Border.RightLine.Color="DarkGray" Border.BottomLine.Style="Double" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell717" Border.Lines="Right" Border.TopLine.Style="Double" Border.RightLine.Color="DarkGray" Border.BottomLine.Style="Double" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell718" Border.Lines="Right" Border.TopLine.Style="Double" Border.RightLine.Color="DarkGray" Border.BottomLine.Style="Double" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell719" Border.Lines="Right" Border.TopLine.Style="Double" Border.RightLine.Color="DarkGray" Border.BottomLine.Style="Double" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell720" Border.Lines="Right" Border.TopLine.Style="Double" Border.RightLine.Color="DarkGray" Border.BottomLine.Style="Double" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell721" Border.Lines="Right" Border.TopLine.Style="Double" Border.RightLine.Color="DarkGray" Border.BottomLine.Style="Double" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell722" Border.Lines="Right" Border.TopLine.Style="Double" Border.RightLine.Color="DarkGray" Border.BottomLine.Style="Double" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell723" Border.Lines="Right" Border.TopLine.Style="Double" Border.RightLine.Color="DarkGray" Border.BottomLine.Style="Double" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell790" Border.Lines="Right" Border.RightLine.Color="DarkGray" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell791" Border.Lines="Right" Border.RightLine.Color="DarkGray" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell792" Border.Lines="Right" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          </TableRow>
+        </TableObject>
+      </DataBand>
+      <GroupFooterBand Name="GroupFooter1" Top="142.63" Width="1171.8" Height="28.35" BeforePrintEvent="Group_BeforePrint">
+        <TableObject Name="TGFooter" Width="1152.9" Height="22.68">
+          <TableColumn Name="Column315" Width="28.35"/>
+          <TableColumn Name="Column316" Width="47.25"/>
+          <TableColumn Name="Column317" Width="170.1"/>
+          <TableColumn Name="Column318" Width="56.7"/>
+          <TableColumn Name="Column319" Width="47.25"/>
+          <TableColumn Name="Column320" Width="47.25"/>
+          <TableColumn Name="Column321" Width="47.25"/>
+          <TableColumn Name="Column322" Width="47.25"/>
+          <TableColumn Name="Column323" Width="47.25"/>
+          <TableColumn Name="Column324" Width="47.25"/>
+          <TableColumn Name="Column325" Width="47.25"/>
+          <TableColumn Name="Column326" Width="47.25"/>
+          <TableColumn Name="Column327" Width="47.25"/>
+          <TableColumn Name="Column328" Width="47.25"/>
+          <TableColumn Name="Column329" Width="47.25"/>
+          <TableColumn Name="Column330" Width="47.25"/>
+          <TableColumn Name="Column331" Width="47.25"/>
+          <TableColumn Name="Column332" Width="47.25"/>
+          <TableColumn Name="Column333" Width="47.25"/>
+          <TableColumn Name="Column340" Width="47.25"/>
+          <TableColumn Name="Column341" Width="47.25"/>
+          <TableColumn Name="Column342" Width="47.25"/>
+          <TableRow Name="Row28" MinHeight="22.68" MaxHeight="75.6" Height="22.68" AutoSize="true">
+            <TableCell Name="Cell724" Border.Lines="All" Border.BottomLine.Style="Double" Text="TOTALS" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt" ColSpan="3"/>
+            <TableCell Name="Cell725" Border.Lines="All" Border.BottomLine.Style="Double" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell726" Border.Lines="All" Border.BottomLine.Style="Double" Padding="2, 2, 2, 2" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell727" Border.Lines="Right, Top, Bottom" Border.RightLine.Color="DarkGray" Border.BottomLine.Style="Double" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell728" Border.Lines="Right, Top, Bottom" Border.RightLine.Color="DarkGray" Border.BottomLine.Style="Double" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell729" Border.Lines="Right, Top, Bottom" Border.RightLine.Color="DarkGray" Border.BottomLine.Style="Double" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell730" Border.Lines="Right, Top, Bottom" Border.RightLine.Color="DarkGray" Border.BottomLine.Style="Double" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell731" Border.Lines="Right, Top, Bottom" Border.RightLine.Color="DarkGray" Border.BottomLine.Style="Double" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell732" Border.Lines="Right, Top, Bottom" Border.RightLine.Color="DarkGray" Border.BottomLine.Style="Double" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell733" Border.Lines="Right, Top, Bottom" Border.RightLine.Color="DarkGray" Border.BottomLine.Style="Double" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell734" Border.Lines="Right, Top, Bottom" Border.RightLine.Color="DarkGray" Border.BottomLine.Style="Double" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell735" Border.Lines="Right, Top, Bottom" Border.RightLine.Color="DarkGray" Border.BottomLine.Style="Double" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell736" Border.Lines="Right, Top, Bottom" Border.RightLine.Color="DarkGray" Border.BottomLine.Style="Double" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell737" Border.Lines="Right, Top, Bottom" Border.RightLine.Color="DarkGray" Border.BottomLine.Style="Double" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell738" Border.Lines="Right, Top, Bottom" Border.RightLine.Color="DarkGray" Border.BottomLine.Style="Double" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell739" Border.Lines="Right, Top, Bottom" Border.RightLine.Color="DarkGray" Border.BottomLine.Style="Double" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell740" Border.Lines="Right, Top, Bottom" Border.RightLine.Color="DarkGray" Border.BottomLine.Style="Double" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell741" Border.Lines="Right, Top, Bottom" Border.RightLine.Color="DarkGray" Border.BottomLine.Style="Double" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell742" Border.Lines="Right, Top, Bottom" Border.RightLine.Color="DarkGray" Border.BottomLine.Style="Double" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell793" Border.Lines="Right, Top, Bottom" Border.RightLine.Color="DarkGray" Border.BottomLine.Style="Double" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell794" Border.Lines="Right, Top, Bottom" Border.RightLine.Color="DarkGray" Border.BottomLine.Style="Double" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell795" Border.Lines="Right, Top, Bottom" Border.BottomLine.Style="Double" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          </TableRow>
+        </TableObject>
+      </GroupFooterBand>
+    </GroupHeaderBand>
+    <PageFooterBand Name="PageFooter1" Top="174.98" Width="1171.8"/>
+  </ReportPage>
+</Report>

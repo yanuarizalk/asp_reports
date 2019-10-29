@@ -1,0 +1,80 @@
+﻿
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+    <div class="dashboard">
+        <div class="db-menus hide">
+    
+    @(Html.DevExtreme().List()
+        /*.Width("100%").Height("100%")*/
+        .Items(item => {
+            item.Add().Option("img_src", "cash-register.svg")
+                .Option("text", "Sales").Option("url", "Sales");
+            item.Add().Option("img_src", "change.svg")
+                .Option("text", "Payroll").Option("url", "Payrolls");
+            item.Add().Option("img_src", "warehouse-2.svg")
+                .Option("text", "Inventory").Option("url", "Inventories");
+            /*item.Add().Option("img_src", "manufacturing.svg")
+                .Option("text", "Production").Option("url", "Productions");*/
+            item.Add().Option("img_src", "right-arrow.svg")
+                .Option("text", "Back").Option("url", "#hide_nav-db");
+        })
+        .ItemTemplate(
+            @<div class="db-menu" data-url="<%- url %>">
+                <img src="~/images/<%- img_src %>" />
+                <div class="db-menu-text"><%- text %></div>
+            </div>)
+        .BounceEnabled(true).FocusStateEnabled(false)
+        .ScrollingEnabled(false)
+        .PageLoadMode(ListPageLoadMode.ScrollBottom).ID("db-menus")
+        .OnItemClick("onDBMenuClick")
+    )
+        </div><div class="db-slider">
+            <img src="~/images/right-arrow.svg" alt="" />
+        </div><div class="db-contents">
+            <h2 id="title">
+                
+            </h2>
+            <div id="content">
+
+            </div>
+        </div>
+    </div>
+
+<script>
+    function onDBMenuClick(e) {
+        if (e.itemData.url == "#hide_nav-db") {
+            $('.db-menus').removeClass("show");
+            $('.db-menus').addClass("hide");
+            /*setTimeout(function () {
+            }, 1500);*/
+            //$('.db-menus').removeClass("active");
+            return;
+        }
+        showLoading();
+        $('#title').html('<img src="@ViewData["BaseUrl"]/images/' + e.itemData.img_src  + '" /> ' + e.itemData.text);
+        $('#content').load('@ViewData["BaseUrl"]/Dashboard/' + e.itemData.url, null, function () {
+            hideLoading();
+            $('.db-menus').removeClass("show");
+            $('.db-menus').addClass("hide");
+        });
+    }
+    $(document).ready(function () {
+        $('.dx-list-item')[0].click();
+        //onDBMenuClick({itemData.img_src = });
+        $('body').click(function (e) {
+            if (($(e.target).parents(".db-menus").length == 0) &&
+                $('.db-menus').hasClass("show") &&
+                (
+                    ($(e.target).parents(".db-slider").length == 0) &&
+                    !$(e.target).hasClass("db-slider")
+                ))
+                onDBMenuClick({ itemData: { url: "#hide_nav-db" } });
+        });
+        $('.db-slider').click(function (e) {
+            $('.db-menus').removeClass("hide");
+            $('.db-menus').addClass("show");
+        });
+    });
+</script>

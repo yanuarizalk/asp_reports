@@ -1,0 +1,72 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>@ViewData["Title"] | Reporting System</title>
+    <link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+
+    <link href="~/css/devextreme/dx.greenmist.css" rel="stylesheet" />
+    <link href="~/css/devextreme/dx.common.css" rel="stylesheet" />
+    <link href="~/css/dx.custom.css" rel="stylesheet" />
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+    <script src="~/js/devextreme/cldr.min.js"></script>
+    <script src="~/js/devextreme/cldr/event.min.js"></script>
+    <script src="~/js/devextreme/cldr/supplemental.min.js"></script>
+    <script src="~/js/devextreme/cldr/unresolved.min.js"></script>
+
+    <script src="~/js/devextreme/globalize.min.js"></script>
+    <script src="~/js/devextreme/globalize/message.min.js"></script>
+    <script src="~/js/devextreme/globalize/number.min.js"></script>
+    <script src="~/js/devextreme/globalize/currency.min.js"></script>
+    <script src="~/js/devextreme/globalize/date.min.js"></script>
+
+    @* JSZip for client side export *@
+    <script src="~/js/devextreme/jszip.min.js"></script>
+    
+    <script src="~/js/devextreme/dx.all.js"></script>
+    <script src="~/js/devextreme/vectormap-data/world.js"></script>
+    <script src="~/js/devextreme/aspnet/dx.aspnet.data.js"></script>
+    <script src="~/js/devextreme/aspnet/dx.aspnet.mvc.js"></script>
+
+</head>
+
+<body>
+    @(Html.DevExtreme().Toolbar()
+        .Items(item => {
+            item.Add().Location(ToolbarItemLocation.Before).ShowText(ToolbarItemShowTextMode.Always)
+                .Text("Management System");
+            item.Add().Location(ToolbarItemLocation.After).Widget(w =>
+                w.Menu().AdaptivityEnabled(true).Items(subItem => {
+                    subItem.Add().Icon("user").Items(i => {
+                        i.Add().Text("Logout").Option("link", "Logout");
+                    });
+                    subItem.Add().Text("Master").Items(i => {
+                        i.Add().Text("Users").Option("link", "Users");
+                    });
+                })
+            );
+        })
+        .RenderAs(ToolbarRenderMode.TopToolbar)
+        .OnItemClick("onMenuClick")
+    )
+    <main role="main" class="container">
+        @RenderBody()
+    </main>
+    
+    <script>
+        function onMenuClick(a, b) {
+            console.log(a);
+            console.log(b);
+        }
+    </script>
+</body>
+
+</html>

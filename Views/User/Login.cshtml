@@ -1,0 +1,71 @@
+﻿
+@{
+    ViewData["Title"] = "Login";
+    ViewData["Header"] = "LOGIN - USER";
+    //Layout = "~/Views/Shared/_LayoutSingle.cshtml";
+}
+<div class="page-single">
+    <form method="post" class="form" id="login" asp-antiforgery="false">
+        <h3>
+            <img src="~/images/locked-padlock-and-key.svg" alt="" />
+            @ViewData["Header"]
+        </h3>
+        <table>
+            <tr>
+                <td>Username</td>
+                <td><input type="text" name="uid" maxlength="30" minlength="3" required /></td>
+            </tr>
+            <tr>
+                <td>Password</td>
+                <td><input type="password" name="pwd" maxlength="200" minlength="3" required /></td>
+            </tr>
+        </table>
+        <button type="submit" class="btn">Login</button>
+    </form>
+</div>
+    <style>
+        .form tr td:nth-child(1) {
+            width: 45%;
+            text-align: right;
+            padding-right: 10px;
+        }
+        .form tr td:nth-child(2) {
+            width: 55%;
+            text-align: left;
+            padding-left: 10px;
+        }
+        input[type="text"], input[type="password"] {
+            width: 80%;
+            max-width: 150px;
+        }
+        @@media (max-width: 600px) {
+            input[type="text"], input[type="password"] {
+                width: 60%;
+                min-width: 100px;
+            }
+        }
+        /*input[name="uid"] {
+            width: 96px;
+        }*/
+    </style>
+
+    <script>
+        $(document).ready(function () {
+            $('input[name="uid"]').focus();
+            $('#login').submit(function (ev) {
+                ev.preventDefault();
+                SendAPI('login', '@ViewData["BaseUrl"]/api/users/auth', true, function (data, status) {
+                    if (data.status == 'success') {
+                        location.assign('@ViewData["BaseUrl"]/');
+                    } else if (data.status == 'error') {
+                        showAlert('Error', data.desc);
+                        $('#modal-public').on($.modal.AFTER_CLOSE, function (ev, modal) {
+                            $('input[name="uid"]').focus();
+                        });
+                    } else console.log(data);
+                }, function (xhr, status) {
+                    showAlert('Error', 'Unexpected error occured, please contact Administrator!');
+                }, /*[['action', 'login']]*/);
+            });
+        });
+    </script>

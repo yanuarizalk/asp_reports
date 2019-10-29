@@ -1,0 +1,219 @@
+﻿
+@{
+    Layout = null;
+    ViewData["ChartTitle"] = "Sales";
+    ViewData["ChartSubTitle"] = "Year " + ViewData["min"] + " - " + ViewData["max"];
+
+
+}
+
+<script>
+    function showInfoChart(dataSend) {
+        //var bLarge = $(window).width() > 720 ? true : false;
+        var devSize;
+        if ($(window).width() <= 720) {
+            devSize = {
+                size: {
+                    height: 300
+                },
+                legend: {
+                    horizontalAlignment: 'center',
+                    verticalAlignment: 'bottom'
+                },
+                adaptiveLayout: {
+                    height: 120, width: 300
+                }
+            };
+        } else {
+            devSize = {
+                size: {
+                    height: 200
+                }
+            };
+        }
+        $.ajax({
+            url: '@ViewData["BaseUrl"]/Api/Sales/Detail',
+            method: 'POST', dataType: 'json',
+            data: dataSend,
+            success: function (data, status, xhr) {
+                if (data.status == "success") {
+                    $('#info').dxPieChart(devSize);
+                    $('#info').dxPieChart({
+                        dataSource: data.data,
+                        series: [
+                            {
+                                argumentField: "arg",
+                                valueField: "val"
+                            }
+                        ],
+                        title: {
+                            text: '<h3>Sales of ' + (dataSend.month ? dataSend.month : "") + ' ' + dataSend.year + '</h3>',
+                            textOverflow: 'none',
+                            wordWrap: 'none',
+                            horizontalAlignment: 'left'
+                        },
+                        theme: 'generic.greenmist',
+                        tooltip: {
+                            enabled: true,
+                            customizeTooltip: function (arg) {
+                                return { html: "<b>" + arg.argument + "</b><br />" + toCurrency(arg.valueText) + ' (' + arg.percentText + ')' }
+                            }
+                        },
+                        /*elementAttr: {
+                            id: 'chart-info'
+                        },*/
+                        onLegendClick: function (e) {
+                            e.points[0]._visible ? e.points[0].hide() : e.points[0].show();
+                        }
+                    });
+                } else if (data.status == "error")
+                    console.log(data.desc);
+            },
+            error: function (xhr, status, err) { console.log(xhr); }
+        });
+    }
+
+    function onLegendClick(e) {
+        var year = e.target.name;
+        showInfoChart({ month: null, year: year, showBy: "year" });
+    }
+    function onGraphClick(e) {
+        //console.log('month: ' + e.target.argument + '  year: ' + e.target.series.name);
+        //$('#chart-sales').dxChart('hideTooltip');
+        var year = e.target.series.name;
+        var month = e.target.argument;
+        showInfoChart({ month: month, year: year, showBy: "month" });
+    }
+    function onGraphHover(e) {
+        //console.log(e);
+        //$('#chart-sales').dxChart('showTooltip');
+        /*$('#chart-tooltip').dxTooltip('option').target = $(e.target);
+        $('#chart-tooltip').dxTooltip('option').contentTemplate = e.target.originalArgument;*/
+        //$('#chart-tooltip').dxTooltip('show');
+
+        //e.target.showTooltip();
+    }
+    function getSummary() {
+        $.ajax({
+            url: '@ViewData["BaseUrl"]/Api/Sales/Summary',
+            method: 'POST',
+            dataType: 'json',
+            success: function (data, status, xhr) {
+                if (data.status == "success") {
+                    /*var total = 0; */var yearNow = new Date().getFullYear();
+                    /*for (index in data.data) {
+                        total += data.data[index].value;
+                    }*/
+                    //var avg = parseFloat(total / 7).toFixed(2);
+                    var year0 = data.data.find(function (e) { return e.year == yearNow }).value;
+                    var year1 = data.data.find(function (e) { return e.year == yearNow - 1 }).value;
+                    var year2 = data.data.find(function (e) { return e.year == yearNow - 2 }).value;
+                    var year3 = data.data.find(function (e) { return e.year == yearNow - 3 }).value;
+                    $('#sum-0').html(toCurrency(year0)); $('#sum-1').html(toCurrency(year1));
+                    $('#sum-2').html(toCurrency(year2)); $('#sum-3').html(toCurrency(year3));
+                    //$('#avg').html(toCurrency(avg));
+                    $('#totals').html(toCurrency(data.total));
+                } else if (data.status == "error")
+                    console.log(data.desc);
+            },
+            error: function (xhr, status, err) { console.log(xhr) }
+        });
+    }
+
+    $(document).ready(function () {
+        document.title = "Dashboard - Sales | Reporting System";
+        getSummary();
+    });
+</script>
+<div class="db-info">
+    <div class="frame">
+        <h3>Annualy Sales Summary</h3>
+        <div class="frame-inner">
+            <div class="frame-borderless">
+                <h4>Average of This year</h4>
+                <div class="frame-inner bolder" id="sum-0">
+                    0
+                </div>
+            </div>
+            <div class="frame-borderless">
+                <h4>Average of Past 1 years</h4>
+                <div class="frame-inner bolder" id="sum-1">
+                    0
+                </div>
+            </div>
+            <div class="frame-borderless">
+                <h4>Average of Past 2 years</h4>
+                <div class="frame-inner bolder" id="sum-2">
+                    0
+                </div>
+            </div>
+            <div class="frame-borderless">
+                <h4>Average of Past 3 years</h4>
+                <div class="frame-inner bolder" id="sum-3">
+                    0
+                </div>
+            </div>
+            <div class="frame-borderless">
+                <h4>Totals within past 3 years</h4>
+                <div class="frame-inner bolder" id="totals">
+                    0
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="info">
+
+    </div>
+</div>
+
+@(Html.DevExtreme().Chart()
+    .Title(t => t.Text((string)ViewData["ChartTitle"]).Subtitle((string)ViewData["ChartSubTitle"]))
+    .ID("chart-sales").DataSource(ds => ds.RemoteController()
+        .LoadMethod("POST").LoadUrl((string)ViewData["BaseUrl"] + "/Api/Sales/Chart")
+        .LoadParams(new { range = "year", min = ViewData["min"], max = ViewData["max"] }))
+    .CommonSeriesSettings(s => s
+        .Type(SeriesType.Bar).ArgumentField("month")
+        /*.Label(lbl => lbl.Format(f => f.Type(Format.Thousands)).Visible(true))*/
+    ).Series(s => {
+        s.Add().ValueField("year4").Name(((int)ViewData["max"] - 3).ToString());
+        s.Add().ValueField("year3").Name(((int)ViewData["max"] - 2).ToString());
+        s.Add().ValueField("year2").Name(((int)ViewData["max"] - 1).ToString());
+        s.Add().ValueField("year1").Name(Convert.ToString(ViewData["max"]));
+    })
+    .Legend(legend => legend.VerticalAlignment(VerticalEdge.Bottom).HorizontalAlignment(HorizontalAlignment.Center))
+    .LoadingIndicator(li => li.Show(true))
+    .AdaptiveLayout(l => l.Width(120).Height(40))
+    .Theme(VizTheme.GenericSoftBlue).LoadingIndicator(li => li.Show(true))
+    .Export(e => e.Enabled(true).FileName("Sales statistic"))
+    .Tooltip(tt => tt
+        .Enabled(false).Format(Format.Thousands).Location(ChartTooltipLocation.Edge)
+        .Shared(false)
+        /*.CustomizeTooltip(
+            @<script>
+                function(e) {
+                    //console.log(e);
+                    //e.point.show();
+                    return {
+                        text: 'Totals: ' + toCurrency(e.value) + '<br />Click to show more'
+                    };
+                }
+            </script>)*/
+    ).OnLegendClick("onLegendClick")
+    .OnPointClick("onGraphClick").OnPointHoverChanged("onGraphHover")
+)
+@(Html.DevExtreme().Tooltip()
+    .ID("chart-tooltip")
+)
+
+
+<style>
+    .bolder {
+        font-weight: bolder;
+        font-size: 16px;
+        color: var(--dark-color);
+    }
+
+    .frame, .frame-borderless {
+        color: var(--semi-dark-color);
+    }
+</style>

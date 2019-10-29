@@ -1,0 +1,308 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report ScriptLanguage="CSharp" UseFileCache="true" SmoothGraphics="true" FinishReportEvent="_FinishReport" ReportInfo.Created="09/18/2019 10:20:46" ReportInfo.Modified="10/17/2019 16:21:38" ReportInfo.CreatorVersion="2019.3.5.0">
+  <ScriptText>using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Windows.Forms;
+using System.Drawing;
+using System.Data;
+using FastReport;
+using FastReport.Data;
+using FastReport.Dialog;
+using FastReport.Barcode;
+using FastReport.Table;
+using FastReport.Utils;
+
+namespace FastReport
+{
+  public class ReportScript
+  {
+    /*string[] Sales = {
+      &quot;LO_RP_INRP&quot;, &quot;LO_RP_INUSD&quot;, &quot;LO_USD_INUSD&quot;, &quot;EX_RP_INRP&quot;, &quot;EX_RP_INUSD&quot;, &quot;EX_USD_INUSD&quot;, 
+      &quot;EX_EUR_INEUR&quot;, &quot;EX_EUR_INUSD&quot;};*/
+    double TotalLocal = 0; double TotalExport = 0; double TotalAll = 0;
+    
+    private void GF_2_BeforePrint(object sender, EventArgs e)
+    {
+      //MessageBox.Show(Report.GetParameter(&quot;GetMonth&quot;).Value.ToString());
+      TOTAL_LOCAL.Text = String.Format(&quot;{0:N0}&quot;, TotalLocal);
+      TOTAL_EXPORT.Text = String.Format(&quot;{0:N0}&quot;, TotalExport);
+      TOTAL_ALL.Text = String.Format(&quot;{0:N0}&quot;, TotalAll);
+      AVG_LOCAL.Text = String.Format(&quot;{0:N0}&quot;, TotalLocal / (int)Report.GetTotalValue(&quot;Total_Month&quot;)); TotalLocal = 0;
+      AVG_EXPORT.Text = String.Format(&quot;{0:N0}&quot;, TotalExport / (int)Report.GetTotalValue(&quot;Total_Month&quot;)); TotalExport = 0;
+      AVG_ALL.Text = String.Format(&quot;{0:N0}&quot;, TotalAll / (int)Report.GetTotalValue(&quot;Total_Month&quot;)); TotalAll = 0;
+      
+    }
+
+    private void _FinishReport(object sender, EventArgs e)
+    {
+      //Report.Dispose();
+    }
+
+    private void GF_3_BeforePrint(object sender, EventArgs e)
+    {
+      TotalLocal += Convert.ToDouble(Report.GetParameter(&quot;Total_3.Local&quot;).Value);
+      TotalExport += Convert.ToDouble(Report.GetParameter(&quot;Total_3.Export&quot;).Value);
+      TotalAll += Convert.ToDouble(Report.GetParameter(&quot;Total_3&quot;).Value);
+    }
+  }
+}
+</ScriptText>
+  <Styles>
+    <Style Name="MinStyle" Fill.Color="ControlLight" Font="Arial, 10pt" ApplyBorder="false" ApplyTextFill="false" ApplyFont="false"/>
+    <Style Name="MaxStyle" Fill.Color="PaleTurquoise" Font="Arial, 10pt" ApplyBorder="false" ApplyTextFill="false" ApplyFont="false"/>
+    <Style Name="EvenStyle" Border.Lines="All" Border.Color="Gray" Fill.Color="Gainsboro" Font="Arial, 10pt" ApplyTextFill="false" ApplyFont="false"/>
+  </Styles>
+  <Dictionary>
+    <MsSqlDataConnection Name="Connection" ConnectionString="rijcmlqHwzMSgwTFaHpjtG3vsOj8TrCVffhCR2JFv7xvPWo98Q8hzUJp60SVHnXxIECwHKNp6oMNBpbLqcLrui6V1MI+xWP/56XPL5FBIgQjGknIMZ9/1Xy5wraKxi2qe2SGsp2UfAM9IAHsB67CMW/btEGhCTKDHMNfMzct0nOUax+60E/WnQ6z29ogYWizk67rd0tDQ5v+7yS0r1y2oazOJIoxg==">
+      <TableDataSource Name="SACU" DataType="System.Int32" Enabled="true" TableName="SACU">
+        <Column Name="YYYYMM" DataType="System.String"/>
+        <Column Name="LO_RP_INRP" DataType="System.Double"/>
+        <Column Name="LO_RP_INUSD" DataType="System.Double"/>
+        <Column Name="LO_USD_INUSD" DataType="System.Double"/>
+        <Column Name="EX_RP_INRP" DataType="System.Double"/>
+        <Column Name="EX_RP_INUSD" DataType="System.Double"/>
+        <Column Name="EX_USD_INUSD" DataType="System.Double"/>
+        <Column Name="EX_EUR_INEUR" DataType="System.Double"/>
+        <Column Name="EX_EUR_INUSD" DataType="System.Double"/>
+      </TableDataSource>
+      <TableDataSource Name="Table" Alias="Brief" DataType="System.Int32" Enabled="true" SelectCommand="SELECT Cast(Substring(MAX(S.YYYYMM), 5, 2) AS int) &quot;LastMonth&quot;, Cast(Substring(MAX(S.YYYYMM), 1, 4) AS int) &quot;LastYear&quot;, Cast(Substring(MIN(S.YYYYMM), 1, 4) AS int) &quot;EarlyYear&quot;, MIN(S.YYYYMM) &quot;MinDate&quot;, MAX(S.YYYYMM) &quot;MaxDate&quot;&#13;&#10;FROM &quot;SACU&quot; S&#13;&#10;">
+        <Column Name="LastMonth" DataType="System.Int32"/>
+        <Column Name="MinDate" DataType="System.String"/>
+        <Column Name="MaxDate" DataType="System.String"/>
+        <Column Name="LastYear" DataType="System.Int32"/>
+        <Column Name="EarlyYear" DataType="System.Int32"/>
+      </TableDataSource>
+      <TableDataSource Name="Table1" Alias="Overall" DataType="System.Int32" Enabled="true" SelectCommand="SELECT Substring(S.YYYYMM, 0, 4) &quot;Year&quot;, MIN(S.LO_RP_INRP) &quot;MIN_LO_RP_INRP&quot;, MAX(S.LO_RP_INRP) &quot;MAX_LO_RP_INRP&quot;, MIN(S.LO_RP_INUSD) &quot;MIN_LO_RP_INUSD&quot;, MAX(S.LO_RP_INUSD) &quot;MAX_LO_RP_INUSD&quot;, MIN(S.LO_USD_INUSD) &quot;MIN_LO_USD_INUSD&quot;, MAX(S.LO_USD_INUSD) &quot;MAX_LO_USD_INUSD&quot;, MIN(S.EX_RP_INRP) &quot;MIN_EX_RP_INRP&quot;, MAX(S.EX_RP_INRP) &quot;MAX_EX_RP_INRP&quot;, MIN(S.EX_RP_INUSD) &quot;MIN_EX_RP_INUSD&quot;, MAX(S.EX_RP_INUSD) &quot;MAX_EX_RP_INUSD&quot;, MIN(S.EX_USD_INUSD) &quot;MIN_EX_USD_INUSD&quot;, MAX(S.EX_USD_INUSD) &quot;MAX_EX_USD_INUSD&quot;, MIN(S.EX_EUR_INEUR) &quot;MIN_EX_EUR_INEUR&quot;, MAX(S.EX_EUR_INEUR) &quot;MAX_EX_EUR_INEUR&quot;, MIN(S.EX_EUR_INUSD) &quot;MIN_EX_EUR_INUSD&quot;, MAX(S.EX_EUR_INUSD) &quot;MAX_EX_EUR_INUSD&quot;&#13;&#10;FROM &quot;SACU&quot; S&#13;&#10;GROUP BY Substring(S.YYYYMM, 0, 4)&#13;&#10;">
+        <Column Name="Year" DataType="System.String"/>
+        <Column Name="MIN_LO_RP_INRP" DataType="System.Double"/>
+        <Column Name="MAX_LO_RP_INRP" DataType="System.Double"/>
+        <Column Name="MIN_LO_RP_INUSD" DataType="System.Double"/>
+        <Column Name="MAX_LO_RP_INUSD" DataType="System.Double"/>
+        <Column Name="MIN_LO_USD_INUSD" DataType="System.Double"/>
+        <Column Name="MAX_LO_USD_INUSD" DataType="System.Double"/>
+        <Column Name="MIN_EX_RP_INRP" DataType="System.Double"/>
+        <Column Name="MAX_EX_RP_INRP" DataType="System.Double"/>
+        <Column Name="MIN_EX_RP_INUSD" DataType="System.Double"/>
+        <Column Name="MAX_EX_RP_INUSD" DataType="System.Double"/>
+        <Column Name="MIN_EX_USD_INUSD" DataType="System.Double"/>
+        <Column Name="MAX_EX_USD_INUSD" DataType="System.Double"/>
+        <Column Name="MIN_EX_EUR_INEUR" DataType="System.Double"/>
+        <Column Name="MAX_EX_EUR_INEUR" DataType="System.Double"/>
+        <Column Name="MIN_EX_EUR_INUSD" DataType="System.Double"/>
+        <Column Name="MAX_EX_EUR_INUSD" DataType="System.Double"/>
+      </TableDataSource>
+    </MsSqlDataConnection>
+    <Parameter Name="MinDate" DataType="System.String" Expression="IIf(ToInt32(Substring([Brief.MinDate], 0, 4)) &gt;= Year([Date]) - 3, [Brief.MinDate], ToString(Year([Date]) - 3) + &quot;01&quot;)"/>
+    <Parameter Name="MonthShorten" DataType="System.String" Expression="UpperCase(Substring(ToString(IIf(ToInt32(Substring([SACU.YYYYMM], 4, 2)) &lt; 12, MonthName(1), MonthName(ToInt32(IIf([GetMonth] &gt;= 12, 0, [GetMonth])) + 1))), 0, 3)) + &quot;-&quot; + UpperCase(Substring(ToString(IIf(ToInt32(Substring([SACU.YYYYMM], 4, 2)) &gt;= 12, MonthName(12), MonthName([GetMonth]))), 0, 3))"/>
+    <Parameter Name="Total_3" DataType="FastReport.Variant" Expression="[Total_3.Local] + [Total_3.Export]">
+      <Parameter Name="Local" DataType="FastReport.Variant" Expression="[LO_RP_INUSD_3] + [LO_USD_INUSD_3]"/>
+      <Parameter Name="Export" DataType="FastReport.Variant" Expression="[EX_RP_INUSD_3] + [EX_USD_INUSD_3] + [EX_EUR_INUSD_3]"/>
+    </Parameter>
+    <Parameter Name="Total_2" DataType="FastReport.Variant" Expression="[Total_2.Local] + [Total_2.Export]">
+      <Parameter Name="Local" DataType="FastReport.Variant" Expression="[LO_RP_INUSD_2] + [LO_USD_INUSD_2]"/>
+      <Parameter Name="Export" DataType="FastReport.Variant" Expression="[EX_RP_INUSD_2] + [EX_USD_INUSD_2] + [EX_EUR_INUSD_2]"/>
+    </Parameter>
+    <Parameter Name="Month" DataType="System.Int32" Expression="0"/>
+    <Parameter Name="GetMonth" DataType="System.Int32" Expression="IIf([Month] &gt; 0 &amp;&amp; [Month] &lt; 13,[Month],[Brief.LastMonth])"/>
+    <Parameter Name="MonthName" DataType="System.String" Expression="Substring(UpperCase(MonthName(ToInt32(Substring([SACU.YYYYMM],4,2)))),0,3)"/>
+    <Parameter Name="Year" DataType="System.Int32" Expression="0"/>
+    <Parameter Name="GetYear" DataType="System.Int32" Expression="IIf([Year] &gt;= [Brief.EarlyYear] &amp;&amp; [Year] &lt; [Brief.LastYear],[Year],[Brief.LastYear])"/>
+    <Parameter Name="RangeYear" DataType="System.Int32" Expression="3"/>
+    <Total Name="LO_RP_INRP_3" Expression="[SACU.LO_RP_INRP]" Evaluator="SACU_Data" PrintOn="GF_3" ResetOnReprint="true"/>
+    <Total Name="LO_RP_INUSD_3" Expression="[SACU.LO_RP_INUSD]" Evaluator="SACU_Data" PrintOn="GF_3" ResetOnReprint="true"/>
+    <Total Name="LO_USD_INUSD_3" Expression="[SACU.LO_USD_INUSD]" Evaluator="SACU_Data" PrintOn="GF_3" ResetOnReprint="true"/>
+    <Total Name="EX_RP_INRP_3" Expression="[SACU.EX_RP_INRP]" Evaluator="SACU_Data" PrintOn="GF_3" ResetOnReprint="true"/>
+    <Total Name="EX_RP_INUSD_3" Expression="[SACU.EX_RP_INUSD]" Evaluator="SACU_Data" PrintOn="GF_3" ResetOnReprint="true"/>
+    <Total Name="EX_USD_INUSD_3" Expression="[SACU.EX_USD_INUSD]" Evaluator="SACU_Data" PrintOn="GF_3" ResetOnReprint="true"/>
+    <Total Name="EX_EUR_INEUR_3" Expression="[SACU.EX_EUR_INEUR]" Evaluator="SACU_Data" PrintOn="GF_3" ResetOnReprint="true"/>
+    <Total Name="EX_EUR_INUSD_3" Expression="[SACU.EX_EUR_INUSD]" Evaluator="SACU_Data" PrintOn="GF_3" ResetOnReprint="true"/>
+    <Total Name="LO_RP_INRP_2" Expression="[SACU.LO_RP_INRP]" Evaluator="SACU_Data" PrintOn="GF_2" ResetOnReprint="true"/>
+    <Total Name="LO_RP_INUSD_2" Expression="[SACU.LO_RP_INUSD]" Evaluator="SACU_Data" PrintOn="GF_2" ResetOnReprint="true"/>
+    <Total Name="LO_USD_INUSD_2" Expression="[SACU.LO_USD_INUSD]" Evaluator="SACU_Data" PrintOn="GF_2" ResetOnReprint="true"/>
+    <Total Name="EX_RP_INRP_2" Expression="[SACU.EX_RP_INRP]" Evaluator="SACU_Data" PrintOn="GF_2" ResetOnReprint="true"/>
+    <Total Name="EX_RP_INUSD_2" Expression="[SACU.EX_RP_INUSD]" Evaluator="SACU_Data" PrintOn="GF_2" ResetOnReprint="true"/>
+    <Total Name="EX_USD_INUSD_2" Expression="[SACU.EX_USD_INUSD]" Evaluator="SACU_Data" PrintOn="GF_2" ResetOnReprint="true"/>
+    <Total Name="EX_EUR_INEUR_2" Expression="[SACU.EX_EUR_INEUR]" Evaluator="SACU_Data" PrintOn="GF_2" ResetOnReprint="true"/>
+    <Total Name="EX_EUR_INUSD_2" Expression="[SACU.EX_EUR_INUSD]" Evaluator="SACU_Data" PrintOn="GF_2" ResetOnReprint="true"/>
+    <Total Name="Total_Month" TotalType="Count" Evaluator="SACU_Data" PrintOn="GF_2" ResetOnReprint="true"/>
+  </Dictionary>
+  <ReportPage Name="Page1" Landscape="true" PaperWidth="330" PaperHeight="215" LeftMargin="5" RightMargin="5" FirstPageSource="261" OtherPagesSource="261" Guides="141.75,708.75,831.6,1124.55,878.85,66.15,387.45,189,264.6,0,226.8,311.85,349.65,510.3,585.9,633.15,926.1,1171.8,1086.75,1048.95,1001.7,756,793.8,963.9" Watermark.Font="Arial, 60pt">
+    <ReportTitleBand Name="ReportTitle1" Width="1209.6" Height="50.86">
+      <TextObject Name="Text1" Top="9.45" Width="1171.8" Height="18.9" Text="SALES SUMMARY IN [GetYear]" HorzAlign="Center" Font="MS Gothic, 9pt"/>
+      <TextObject Name="Text2" Top="22.51" Width="1171.8" Height="18.9" Text="(CLASSFIED BY SALES ORIGINAL CURRENCY)" HorzAlign="Center" Font="MS Gothic, 9pt, style=Bold, Underline"/>
+    </ReportTitleBand>
+    <PageHeaderBand Name="PageHeader1" Top="54.86" Width="1209.6" Height="56.7" Border.Lines="All" Border.TopLine.Style="Double" Border.BottomLine.Style="Double" Guides="18.9,37.8,0,56.7">
+      <TextObject Name="Text3" Width="66.15" Height="56.7" Border.Lines="Right" Border.TopLine.Style="Double" Border.RightLine.Width="2" Text="MONTH" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 9pt"/>
+      <TextObject Name="Text4" Left="66.15" Width="444.15" Height="18.9" Border.Lines="Left, Right, Bottom" Border.TopLine.Style="Double" Border.RightLine.Width="2" Text="LOCAL" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 9pt"/>
+      <TextObject Name="Text5" Left="510.3" Width="614.25" Height="18.9" Border.Lines="Left, Right, Bottom" Border.TopLine.Style="Double" Border.RightLine.Width="2" Text="EXPORT" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 9pt"/>
+      <TextObject Name="Text6" Left="66.15" Top="18.9" Width="198.45" Height="18.9" Border.Lines="Right, Top, Bottom" Text="IDR CURRENCY" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 9pt"/>
+      <TextObject Name="Text7" Left="264.6" Top="18.9" Width="122.85" Height="18.9" Border.Lines="Right, Top, Bottom" Text="USD CURRENCY" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 9pt"/>
+      <TextObject Name="Text8" Left="510.3" Top="18.9" Width="198.45" Height="18.9" Border.Lines="All" Text="IDR CURRENCY" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 9pt"/>
+      <TextObject Name="Text9" Left="708.75" Top="18.9" Width="122.85" Height="18.9" Border.Lines="Right, Top, Bottom" Text="USD CURRENCY" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 9pt"/>
+      <TextObject Name="Text10" Left="831.6" Top="18.9" Width="170.1" Height="18.9" Border.Lines="Right, Top, Bottom" Text="EURO CURRENCY" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 9pt"/>
+      <TextObject Name="Text11" Left="66.15" Top="37.8" Width="75.6" Height="18.9" Border.Lines="Right" Border.RightLine.Color="DarkGray" Text="IDR" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 9pt"/>
+      <TextObject Name="Text12" Left="141.75" Top="37.8" Width="47.25" Height="18.9" Border.Lines="Right" Border.RightLine.Color="DarkGray" Text="IN-USD" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 9pt"/>
+      <TextObject Name="Text13" Left="510.3" Top="37.8" Width="75.6" Height="18.9" Border.Lines="Right" Border.RightLine.Color="DarkGray" Text="IDR" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 9pt"/>
+      <TextObject Name="Text14" Left="585.9" Top="37.8" Width="47.25" Height="18.9" Border.Lines="Right" Border.RightLine.Color="DarkGray" Text="IN-USD" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 9pt"/>
+      <TextObject Name="Text15" Left="831.6" Top="37.8" Width="47.25" Height="18.9" Border.Lines="Right" Border.RightLine.Color="DarkGray" Text="EUR" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 9pt"/>
+      <TextObject Name="Text16" Left="878.85" Top="37.8" Width="47.25" Height="18.9" Border.Lines="Right" Border.RightLine.Color="DarkGray" Text="IN-USD" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 9pt"/>
+      <TextObject Name="Text36" Left="264.6" Top="37.8" Width="47.25" Height="18.9" Border.Lines="Right" Border.RightLine.Color="DarkGray" Text="USD" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 9pt"/>
+      <TextObject Name="Text37" Left="189" Top="37.8" Width="37.8" Height="18.9" Border.Lines="Right" Border.RightLine.Color="DarkGray" Text="%" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 9pt"/>
+      <TextObject Name="Text38" Left="226.8" Top="37.8" Width="37.8" Height="18.9" Border.Lines="Right, Top" Text="%" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 9pt"/>
+      <TextObject Name="Text39" Left="311.85" Top="37.8" Width="37.8" Height="18.9" Border.Lines="Right" Border.RightLine.Color="DarkGray" Text="%" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 9pt"/>
+      <TextObject Name="Text40" Left="349.65" Top="37.8" Width="37.8" Height="18.9" Border.Lines="Right, Top" Text="%" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 9pt"/>
+      <TextObject Name="Text45" Left="1124.55" Width="85.05" Height="37.8" Border.Lines="Left, Right, Bottom" Border.TopLine.Style="Double" Text="TOTALS" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 9pt"/>
+      <TextObject Name="Text46" Left="1124.55" Top="37.8" Width="47.25" Height="18.9" Border.Lines="Left, Right, Top" Text="IN-USD" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 9pt"/>
+      <TextObject Name="Text47" Left="1171.8" Top="37.8" Width="37.8" Height="18.9" Border.Lines="Left, Right, Top" Text="%" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 9pt"/>
+      <TextObject Name="Text48" Left="708.75" Top="37.8" Width="47.25" Height="18.9" Border.Lines="Right" Border.RightLine.Color="DarkGray" Text="USD" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 9pt"/>
+      <TextObject Name="Text49" Left="756" Top="37.8" Width="37.8" Height="18.9" Border.Lines="Right" Border.RightLine.Color="DarkGray" Text="%" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 9pt"/>
+      <TextObject Name="Text50" Left="793.8" Top="37.8" Width="37.8" Height="18.9" Border.Lines="Right, Top" Text="%" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 9pt"/>
+      <TextObject Name="Text51" Left="633.15" Top="37.8" Width="37.8" Height="18.9" Border.Lines="Right" Border.RightLine.Color="DarkGray" Text="%" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 9pt"/>
+      <TextObject Name="Text52" Left="670.95" Top="37.8" Width="37.8" Height="18.9" Border.Lines="Right, Top" Text="%" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 9pt"/>
+      <TextObject Name="Text53" Left="387.45" Top="18.9" Width="122.85" Height="18.9" Border.Lines="All" Border.RightLine.Width="2" Text="TOTAL" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 9pt"/>
+      <TextObject Name="Text54" Left="387.45" Top="37.8" Width="47.25" Height="18.9" Border.Lines="Right" Border.RightLine.Color="DarkGray" Text="IN-USD" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 9pt"/>
+      <TextObject Name="Text55" Left="434.7" Top="37.8" Width="37.8" Height="18.9" Border.Lines="Right" Border.RightLine.Color="DarkGray" Text="%" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 9pt"/>
+      <TextObject Name="Text56" Left="472.5" Top="37.8" Width="37.8" Height="18.9" Border.Lines="Right, Top" Border.RightLine.Width="2" Text="%" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 9pt"/>
+      <TextObject Name="Text57" Left="1001.7" Top="18.9" Width="122.85" Height="18.9" Border.Lines="All" Border.RightLine.Width="2" Text="TOTAL" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 9pt"/>
+      <TextObject Name="Text58" Left="1001.7" Top="37.8" Width="47.25" Height="18.9" Border.Lines="Right" Border.RightLine.Color="DarkGray" Text="IN-USD" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 9pt"/>
+      <TextObject Name="Text59" Left="1048.95" Top="37.8" Width="37.8" Height="18.9" Border.Lines="Right" Border.RightLine.Color="DarkGray" Text="%" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 9pt"/>
+      <TextObject Name="Text60" Left="1086.75" Top="37.8" Width="37.8" Height="18.9" Border.Lines="Right, Top" Border.RightLine.Width="2" Text="%" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 9pt"/>
+      <TextObject Name="Text61" Left="926.1" Top="37.8" Width="37.8" Height="18.9" Border.Lines="Right" Border.RightLine.Color="DarkGray" Text="%" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 9pt"/>
+      <TextObject Name="Text62" Left="963.9" Top="37.8" Width="37.8" Height="18.9" Border.Lines="Right, Top" Text="%" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 9pt"/>
+    </PageHeaderBand>
+    <ColumnHeaderBand Name="ColumnHeader1" Top="115.56" Width="1209.6" Height="28.35" Border.Lines="Left, Right">
+      <TextObject Name="Text77" Left="189" Width="37.8" Height="28.35" Border.Lines="Right" Border.RightLine.Color="DarkGray" Text="LOC.&#13;&#10;SALES" Padding="0, 1, 0, 1" HorzAlign="Right" Font="MS Gothic, 8pt"/>
+      <TextObject Name="Text78" Left="226.8" Width="37.8" Height="28.35" Border.Lines="Right" Text="TOTAL&#13;&#10;SALES" Padding="0, 1, 0, 1" HorzAlign="Right" Font="MS Gothic, 8pt"/>
+      <TextObject Name="Text79" Left="311.85" Width="37.8" Height="28.35" Border.Lines="Right" Border.RightLine.Color="DarkGray" Text="LOC.&#13;&#10;SALES" Padding="0, 1, 0, 1" HorzAlign="Right" Font="MS Gothic, 8pt"/>
+      <TextObject Name="Text80" Left="349.65" Width="37.8" Height="28.35" Border.Lines="Right" Text="TOTAL&#13;&#10;SALES" Padding="0, 1, 0, 1" HorzAlign="Right" Font="MS Gothic, 8pt"/>
+      <TextObject Name="Text81" Left="434.7" Width="37.8" Height="28.35" Border.Lines="Right" Border.RightLine.Color="DarkGray" Text="LOC.&#13;&#10;SALES" Padding="0, 1, 0, 1" HorzAlign="Right" Font="MS Gothic, 8pt"/>
+      <TextObject Name="Text82" Left="472.5" Width="37.8" Height="28.35" Border.Lines="Right" Border.RightLine.Width="2" Text="TOTAL&#13;&#10;SALES" Padding="0, 1, 0, 1" HorzAlign="Right" Font="MS Gothic, 8pt"/>
+      <TextObject Name="Text83" Left="633.15" Width="37.8" Height="28.35" Border.Lines="Right" Border.RightLine.Color="DarkGray" Text="EXP.&#13;&#10;SALES" Padding="0, 1, 0, 1" HorzAlign="Right" Font="MS Gothic, 8pt"/>
+      <TextObject Name="Text84" Left="670.95" Width="37.8" Height="28.35" Border.Lines="Right" Text="TOTAL&#13;&#10;SALES" Padding="0, 1, 0, 1" HorzAlign="Right" Font="MS Gothic, 8pt"/>
+      <TextObject Name="Text85" Left="756" Width="37.8" Height="28.35" Border.Lines="Right" Border.RightLine.Color="DarkGray" Text="EXP.&#13;&#10;SALES" Padding="0, 1, 0, 1" HorzAlign="Right" Font="MS Gothic, 8pt"/>
+      <TextObject Name="Text86" Left="793.8" Width="37.8" Height="28.35" Border.Lines="Right" Text="TOTAL&#13;&#10;SALES" Padding="0, 1, 0, 1" HorzAlign="Right" Font="MS Gothic, 8pt"/>
+      <TextObject Name="Text87" Left="926.1" Width="37.8" Height="28.35" Border.Lines="Right" Border.RightLine.Color="DarkGray" Text="EXP.&#13;&#10;SALES" Padding="0, 1, 0, 1" HorzAlign="Right" Font="MS Gothic, 8pt"/>
+      <TextObject Name="Text88" Left="963.9" Width="37.8" Height="28.35" Border.Lines="Right" Text="TOTAL&#13;&#10;SALES" Padding="0, 1, 0, 1" HorzAlign="Right" Font="MS Gothic, 8pt"/>
+      <TextObject Name="Text89" Left="1048.95" Width="37.8" Height="28.35" Border.Lines="Right" Border.RightLine.Color="DarkGray" Text="EXP.&#13;&#10;SALES" Padding="0, 1, 0, 1" HorzAlign="Right" Font="MS Gothic, 8pt"/>
+      <TextObject Name="Text90" Left="1086.75" Width="37.8" Height="28.35" Border.Lines="Right" Border.RightLine.Width="2" Text="TOTAL&#13;&#10;SALES" Padding="0, 1, 0, 1" HorzAlign="Right" Font="MS Gothic, 8pt"/>
+      <TextObject Name="Text92" Left="1171.8" Width="37.8" Height="28.35" Text="TOTAL&#13;&#10;SALES" Padding="0, 1, 0, 1" HorzAlign="Right" Font="MS Gothic, 8pt"/>
+      <TextObject Name="Text93" Left="103.95" Width="37.8" Height="28.35" Border.Lines="Right" Border.RightLine.Color="DarkGray" Text="'000" Padding="0, 1, 0, 1" HorzAlign="Right" Font="MS Gothic, 8pt"/>
+      <TextObject Name="Text94" Left="151.2" Width="37.8" Height="28.35" Border.Lines="Right" Border.RightLine.Color="DarkGray" Text="'000" Padding="0, 1, 0, 1" HorzAlign="Right" Font="MS Gothic, 8pt"/>
+      <TextObject Name="Text95" Left="274.05" Width="37.8" Height="28.35" Border.Lines="Right" Border.RightLine.Color="DarkGray" Text="'000" Padding="0, 1, 0, 1" HorzAlign="Right" Font="MS Gothic, 8pt"/>
+      <TextObject Name="Text96" Left="396.9" Width="37.8" Height="28.35" Border.Lines="Right" Border.RightLine.Color="DarkGray" Text="'000" Padding="0, 1, 0, 1" HorzAlign="Right" Font="MS Gothic, 8pt"/>
+      <TextObject Name="Text97" Left="548.1" Width="37.8" Height="28.35" Border.Lines="Right" Border.RightLine.Color="DarkGray" Text="'000" Padding="0, 1, 0, 1" HorzAlign="Right" Font="MS Gothic, 8pt"/>
+      <TextObject Name="Text98" Left="595.35" Width="37.8" Height="28.35" Border.Lines="Right" Border.RightLine.Color="DarkGray" Text="'000" Padding="0, 1, 0, 1" HorzAlign="Right" Font="MS Gothic, 8pt"/>
+      <TextObject Name="Text99" Left="718.2" Width="37.8" Height="28.35" Border.Lines="Right" Border.RightLine.Color="DarkGray" Text="'000" Padding="0, 1, 0, 1" HorzAlign="Right" Font="MS Gothic, 8pt"/>
+      <TextObject Name="Text100" Left="841.05" Width="37.8" Height="28.35" Border.Lines="Right" Border.RightLine.Color="DarkGray" Text="'000" Padding="0, 1, 0, 1" HorzAlign="Right" Font="MS Gothic, 8pt"/>
+      <TextObject Name="Text101" Left="888.3" Width="37.8" Height="28.35" Border.Lines="Right" Border.RightLine.Color="DarkGray" Text="'000" Padding="0, 1, 0, 1" HorzAlign="Right" Font="MS Gothic, 8pt"/>
+      <TextObject Name="Text102" Left="1011.15" Width="37.8" Height="28.35" Border.Lines="Right" Border.RightLine.Color="DarkGray" Text="'000" Padding="0, 1, 0, 1" HorzAlign="Right" Font="MS Gothic, 8pt"/>
+      <TextObject Name="Text103" Left="1134" Width="37.8" Height="28.35" Border.Lines="Right" Border.RightLine.Color="DarkGray" Text="'000" Padding="0, 1, 0, 1" HorzAlign="Right" Font="MS Gothic, 8pt"/>
+      <TextObject Name="Text118" Width="66.15" Height="28.35" Border.Lines="Right" Border.RightLine.Width="2" Padding="0, 1, 0, 1" HorzAlign="Right" Font="MS Gothic, 8pt"/>
+    </ColumnHeaderBand>
+    <GroupHeaderBand Name="GroupHeader1" Top="147.91" Width="1209.6" Height="18.9" Border.Lines="Left, Right" Condition="ToInt32(Substring([SACU.YYYYMM],0,4))">
+      <TextObject Name="Text25" Width="66.15" Height="18.9" Border.Lines="Right" Border.RightLine.Width="2" Text="[Substring([SACU.YYYYMM],0,4)]" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 9pt"/>
+      <TextObject Name="Text119" Left="472.5" Width="37.8" Height="18.9" Border.Lines="Right" Border.RightLine.Width="2" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 9pt"/>
+      <TextObject Name="Text120" Left="1086.75" Width="37.8" Height="18.9" Border.Lines="Right" Border.RightLine.Width="2" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 9pt"/>
+      <TextObject Name="Text121" Left="103.95" Width="37.8" Height="18.9" Border.Lines="Right" Border.RightLine.Color="DarkGray" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 9pt"/>
+      <TextObject Name="Text122" Left="151.2" Width="37.8" Height="18.9" Border.Lines="Right" Border.RightLine.Color="DarkGray" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 9pt"/>
+      <TextObject Name="Text123" Left="189" Width="37.8" Height="18.9" Border.Lines="Right" Border.RightLine.Color="DarkGray" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 9pt"/>
+      <TextObject Name="Text124" Left="226.8" Width="37.8" Height="18.9" Border.Lines="Right" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 9pt"/>
+      <TextObject Name="Text125" Left="274.05" Width="37.8" Height="18.9" Border.Lines="Right" Border.RightLine.Color="DarkGray" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 9pt"/>
+      <TextObject Name="Text126" Left="311.85" Width="37.8" Height="18.9" Border.Lines="Right" Border.RightLine.Color="DarkGray" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 9pt"/>
+      <TextObject Name="Text127" Left="349.65" Width="37.8" Height="18.9" Border.Lines="Right" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 9pt"/>
+      <TextObject Name="Text128" Left="396.9" Width="37.8" Height="18.9" Border.Lines="Right" Border.RightLine.Color="DarkGray" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 9pt"/>
+      <TextObject Name="Text129" Left="434.7" Width="37.8" Height="18.9" Border.Lines="Right" Border.RightLine.Color="DarkGray" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 9pt"/>
+      <TextObject Name="Text130" Left="548.1" Width="37.8" Height="18.9" Border.Lines="Right" Border.RightLine.Color="DarkGray" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 9pt"/>
+      <TextObject Name="Text131" Left="595.35" Width="37.8" Height="18.9" Border.Lines="Right" Border.RightLine.Color="DarkGray" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 9pt"/>
+      <TextObject Name="Text132" Left="633.15" Width="37.8" Height="18.9" Border.Lines="Right" Border.RightLine.Color="DarkGray" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 9pt"/>
+      <TextObject Name="Text133" Left="670.95" Width="37.8" Height="18.9" Border.Lines="Right" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 9pt"/>
+      <TextObject Name="Text134" Left="718.2" Width="37.8" Height="18.9" Border.Lines="Right" Border.RightLine.Color="DarkGray" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 9pt"/>
+      <TextObject Name="Text135" Left="756" Width="37.8" Height="18.9" Border.Lines="Right" Border.RightLine.Color="DarkGray" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 9pt"/>
+      <TextObject Name="Text136" Left="793.8" Width="37.8" Height="18.9" Border.Lines="Right" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 9pt"/>
+      <TextObject Name="Text137" Left="841.05" Width="37.8" Height="18.9" Border.Lines="Right" Border.RightLine.Color="DarkGray" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 9pt"/>
+      <TextObject Name="Text138" Left="888.3" Width="37.8" Height="18.9" Border.Lines="Right" Border.RightLine.Color="DarkGray" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 9pt"/>
+      <TextObject Name="Text139" Left="926.1" Width="37.8" Height="18.9" Border.Lines="Right" Border.RightLine.Color="DarkGray" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 9pt"/>
+      <TextObject Name="Text140" Left="963.9" Width="37.8" Height="18.9" Border.Lines="Right" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 9pt"/>
+      <TextObject Name="Text141" Left="1011.15" Width="37.8" Height="18.9" Border.Lines="Right" Border.RightLine.Color="DarkGray" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 9pt"/>
+      <TextObject Name="Text142" Left="1048.95" Width="37.8" Height="18.9" Border.Lines="Right" Border.RightLine.Color="DarkGray" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 9pt"/>
+      <TextObject Name="Text143" Left="1134" Width="37.8" Height="18.9" Border.Lines="Right" Border.RightLine.Color="DarkGray" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 9pt"/>
+      <GroupHeaderBand Name="GroupHeader2" Top="170.81" Width="1209.6" Condition="Switch(ToInt32(Substring([SACU.YYYYMM], 0, 4)) == [GetYear], Substring([SACU.YYYYMM],4,2), ToInt32(Substring([SACU.YYYYMM], 0, 4)) == [GetYear] - 1, IIf(ToInt32(Substring([SACU.YYYYMM],4,2)) &gt; [GetMonth], Substring([SACU.YYYYMM],4,2), ToInt32(Substring([SACU.YYYYMM],4,2)) &lt;= [GetMonth]), ToInt32(Substring([SACU.YYYYMM], 0, 4)) &lt; [GetYear] - 1, ToInt32(Substring([SACU.YYYYMM],4,2)) &lt;= [GetMonth])" SortOrder="None">
+        <DataBand Name="SACU_Data" Top="174.81" Width="1209.6" BeforePrintEvent="SACU_Data_BeforePrint" DataSource="SACU" Filter="(ToInt32(Substring([SACU.YYYYMM],4,2)) &lt;= [GetMonth] || ToInt32(Substring([SACU.YYYYMM],4,2)) &gt; [GetMonth]) &amp;&amp; ToInt32(Substring([SACU.YYYYMM],0,4)) &gt;= ([GetYear] - 3) &amp;&amp; ToBoolean(IIf(ToInt32(Substring([SACU.YYYYMM],0,4)) == [GetYear], IIf( ToInt32(Substring([SACU.YYYYMM],4,2)) &lt;= [GetMonth], true, false), true)) &amp;&amp; ToInt32(Substring([SACU.YYYYMM],0,4)) &lt;= [GetYear] &amp;&amp; ToInt32(Substring([SACU.YYYYMM],0,4)) &gt;= ([GetYear] - ([RangeYear] - 1))">
+          <Sort>
+            <Sort Expression="[SACU.YYYYMM]"/>
+          </Sort>
+        </DataBand>
+        <GroupFooterBand Name="GF_3" Top="178.81" Width="1209.6" Height="18.9" Border.Lines="Left, Right, Bottom" Border.BottomLine.Color="DarkGray" EvenStyle="EvenStyle" EvenStylePriority="UseAll" BeforePrintEvent="GF_3_BeforePrint">
+          <TextObject Name="Text26" Width="66.15" Height="18.9" Border.Lines="Right" Border.RightLine.Width="2" Text="[Switch(ToInt32(Substring([SACU.YYYYMM], 0, 4)) == [GetYear], [MonthName], ToInt32(Substring([SACU.YYYYMM], 0, 4)) == [GetYear] - 1, IIf(ToInt32(Substring([SACU.YYYYMM],4,2)) &gt; [GetMonth], [MonthName], [MonthShorten]), ToInt32(Substring([SACU.YYYYMM], 0, 4)) &lt; [GetYear] - 1, [MonthShorten])]" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 9pt"/>
+          <TextObject Name="Text27" Left="66.15" Width="75.6" Height="18.9" Border.Lines="Right" Border.RightLine.Color="DarkGray" Text="[LO_RP_INRP_3]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          <TextObject Name="Text17" Left="141.75" Width="47.25" Height="18.9" Border.Lines="Right" Border.RightLine.Color="DarkGray" Text="[LO_RP_INUSD_3]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          <TextObject Name="Text18" Left="264.6" Width="47.25" Height="18.9" Border.Lines="Right" Border.RightLine.Color="DarkGray" Text="[LO_USD_INUSD_3]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          <TextObject Name="Text19" Left="510.3" Width="75.6" Height="18.9" Border.Lines="Right" Border.RightLine.Color="DarkGray" Text="[EX_RP_INRP_3]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          <TextObject Name="Text20" Left="585.9" Width="47.25" Height="18.9" Border.Lines="Right" Border.RightLine.Color="DarkGray" Text="[EX_RP_INUSD_3]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          <TextObject Name="Text21" Left="708.75" Width="47.25" Height="18.9" Border.Lines="Right" Border.RightLine.Color="DarkGray" Text="[EX_USD_INUSD_3]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          <TextObject Name="Text22" Left="831.6" Width="47.25" Height="18.9" Border.Lines="Right" Border.RightLine.Color="DarkGray" Text="[EX_EUR_INEUR_3]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          <TextObject Name="Text23" Left="878.85" Width="47.25" Height="18.9" Border.Lines="Right" Border.RightLine.Color="DarkGray" Text="[EX_EUR_INUSD_3]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          <TextObject Name="Text41" Left="189" Width="37.8" Height="18.9" Border.Lines="Right" Border.RightLine.Color="DarkGray" Text="[[LO_RP_INUSD_3] / [Total_3.Local] * 100]%" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          <TextObject Name="Text42" Left="226.8" Width="37.8" Height="18.9" Border.Lines="Right" Text="[[LO_RP_INUSD_3] / [Total_3] * 100]%" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          <TextObject Name="Text43" Left="311.85" Width="37.8" Height="18.9" Border.Lines="Right" Border.RightLine.Color="DarkGray" Text="[[LO_USD_INUSD_3] / [Total_3.Local] * 100]%" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          <TextObject Name="Text44" Left="349.65" Width="37.8" Height="18.9" Border.Lines="Right" Text="[[LO_USD_INUSD_3] / [Total_3] * 100]%" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          <TextObject Name="Text63" Left="434.7" Width="37.8" Height="18.9" Border.Lines="Right" Border.RightLine.Color="DarkGray" Text="[([LO_RP_INUSD_3] / [Total_3.Local] * 100) + ([LO_USD_INUSD_3] / [Total_3.Local] * 100)]%" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          <TextObject Name="Text64" Left="472.5" Width="37.8" Height="18.9" Border.Lines="Left, Right" Border.LeftLine.Color="DarkGray" Border.RightLine.Width="2" Text="[[Total_3.Local] / [Total_3] * 100]%" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          <TextObject Name="Text65" Left="633.15" Width="37.8" Height="18.9" Border.Lines="Right" Border.RightLine.Color="DarkGray" Text="[[EX_RP_INUSD_3] / [Total_3.Export] * 100]%" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          <TextObject Name="Text66" Left="670.95" Width="37.8" Height="18.9" Border.Lines="Right" Text="[[EX_RP_INUSD_3] / [Total_3] * 100]%" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          <TextObject Name="Text67" Left="756" Width="37.8" Height="18.9" Border.Lines="Right" Border.RightLine.Color="DarkGray" Text="[[EX_USD_INUSD_3] / [Total_3.Export] * 100]%" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          <TextObject Name="Text68" Left="793.8" Width="37.8" Height="18.9" Border.Lines="Right" Text="[[EX_USD_INUSD_3] / [Total_3] * 100]%" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          <TextObject Name="Text69" Left="926.1" Width="37.8" Height="18.9" Border.Lines="Right" Border.RightLine.Color="DarkGray" Text="[[SACU.EX_EUR_INUSD] / [Total_3.Export] * 100]%" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          <TextObject Name="Text70" Left="963.9" Width="37.8" Height="18.9" Border.Lines="Right" Text="[[SACU.EX_EUR_INUSD] / [Total_3] * 100]%" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          <TextObject Name="Text71" Left="1048.95" Width="37.8" Height="18.9" Border.Lines="Right" Border.RightLine.Color="DarkGray" Text="[([EX_RP_INUSD_3] / [Total_3.Export] * 100) + ([EX_USD_INUSD_3] / [Total_3.Export] * 100) + ([EX_EUR_INUSD_3] / [Total_3.Export] * 100)]%" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          <TextObject Name="Text72" Left="1086.75" Width="37.8" Height="18.9" Border.Lines="Right" Border.RightLine.Width="2" Text="[[Total_3.Export] / [Total_3] * 100]%" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          <TextObject Name="Text73" Left="1171.8" Width="37.8" Height="18.9" Border.Lines="Right" Text="100%" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          <TextObject Name="Text74" Left="387.45" Width="47.25" Height="18.9" Border.Lines="Right" Border.RightLine.Color="DarkGray" Text="[Total_3.Local]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          <TextObject Name="Text75" Left="1001.7" Width="47.25" Height="18.9" Border.Lines="Right" Border.RightLine.Color="DarkGray" Text="[Total_3.Export]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          <TextObject Name="Text76" Left="1124.55" Width="47.25" Height="18.9" Border.Lines="Right" Border.RightLine.Color="DarkGray" Text="[Total_3]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+        </GroupFooterBand>
+      </GroupHeaderBand>
+      <GroupFooterBand Name="GF_2" Top="201.71" Width="1209.6" Height="37.8" Border.Lines="All" Border.BottomLine.Style="Double" BeforePrintEvent="GF_2_BeforePrint" AfterPrintEvent="GF_2_AfterPrint">
+        <TextObject Name="Text34" Width="66.15" Height="18.9" Border.Lines="Right" Border.RightLine.Width="2" Text="TOTALS" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 9pt"/>
+        <TextObject Name="TOTAL_LO_RP_INRP" Left="66.15" Width="75.6" Height="18.9" Border.Lines="Right" Border.RightLine.Color="DarkGray" Text="[LO_RP_INRP_2]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+        <TextObject Name="TOTAL_LO_RP_INUSD" Left="141.75" Width="47.25" Height="18.9" Border.Lines="Right" Border.RightLine.Color="DarkGray" Text="[LO_RP_INUSD_2]&#13;&#10;" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+        <TextObject Name="TOTAL_LO_USD_INUSD" Left="264.6" Width="47.25" Height="18.9" Border.Lines="Right" Border.RightLine.Color="DarkGray" Text="[LO_USD_INUSD_2]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+        <TextObject Name="TOTAL_EX_RP_INRP" Left="510.3" Width="75.6" Height="18.9" Border.Lines="Right" Border.RightLine.Color="DarkGray" Text="[EX_RP_INRP_2]&#13;&#10;" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+        <TextObject Name="TOTAL_EX_RP_INUSD" Left="585.9" Width="47.25" Height="18.9" Border.Lines="Right" Border.RightLine.Color="DarkGray" Text="[EX_RP_INUSD_2]&#13;&#10;" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+        <TextObject Name="TOTAL_EX_USD_INUSD" Left="708.75" Width="47.25" Height="18.9" Border.Lines="Right" Border.RightLine.Color="DarkGray" Text="[EX_USD_INUSD_2]&#13;&#10;" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+        <TextObject Name="TOTAL_EX_EUR_INEUR" Left="831.6" Width="47.25" Height="18.9" Border.Lines="Right" Border.RightLine.Color="DarkGray" Text="[EX_EUR_INEUR_2]&#13;&#10;" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+        <TextObject Name="TOTAL_EX_EUR_INUSD" Left="878.85" Width="47.25" Height="18.9" Border.Lines="Right" Border.RightLine.Color="DarkGray" Text="[EX_EUR_INUSD_2]&#13;&#10;" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+        <TextObject Name="Text35" Top="18.9" Width="66.15" Height="18.9" Border.Lines="Right" Border.RightLine.Width="2" Text="AVG/YEAR" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 9pt"/>
+        <TextObject Name="AVG_LO_RP_INRP" Left="66.15" Top="18.9" Width="75.6" Height="18.9" Border.Lines="Right" Border.RightLine.Color="DarkGray" Text="[[LO_RP_INRP_2] / [Total_Month]]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+        <TextObject Name="AVG_LO_RP_INUSD" Left="141.75" Top="18.9" Width="47.25" Height="18.9" Border.Lines="Right" Border.RightLine.Color="DarkGray" Text="[[LO_RP_INUSD_2] / [Total_Month]]&#13;&#10;" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+        <TextObject Name="AVG_LO_USD_INUSD" Left="264.6" Top="18.9" Width="47.25" Height="18.9" Border.Lines="Right" Border.RightLine.Color="DarkGray" Text="[[LO_USD_INUSD_2] / [Total_Month]]&#13;&#10;" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+        <TextObject Name="AVG_EX_RP_INRP" Left="510.3" Top="18.9" Width="75.6" Height="18.9" Border.Lines="Right" Border.RightLine.Color="DarkGray" Text="[[EX_RP_INRP_2] / [Total_Month]]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+        <TextObject Name="AVG_EX_RP_INUSD" Left="585.9" Top="18.9" Width="47.25" Height="18.9" Border.Lines="Right" Border.RightLine.Color="DarkGray" Text="[[EX_RP_INUSD_2] / [Total_Month]]&#13;&#10;" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+        <TextObject Name="AVG_EX_USD_INUSD" Left="708.75" Top="18.9" Width="47.25" Height="18.9" Border.Lines="Right" Border.RightLine.Color="DarkGray" Text="[[EX_USD_INUSD_2] / [Total_Month]]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+        <TextObject Name="AVG_EX_EUR_INEUR" Left="831.6" Top="18.9" Width="47.25" Height="18.9" Border.Lines="Right" Border.RightLine.Color="DarkGray" Text="[[EX_EUR_INEUR_2] / [Total_Month]]&#13;&#10;" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+        <TextObject Name="AVG_EX_EUR_INUSD" Left="878.85" Top="18.9" Width="47.25" Height="18.9" Border.Lines="Right" Border.RightLine.Color="DarkGray" Text="[[EX_EUR_INUSD_2] / [Total_Month]]&#13;&#10;" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+        <TextObject Name="TOTAL_EXPORT" Left="1001.7" Width="47.25" Height="18.9" Border.Lines="Right" Border.RightLine.Color="DarkGray" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+        <TextObject Name="TOTAL_ALL" Left="1124.55" Width="47.25" Height="18.9" Border.Lines="Right" Border.RightLine.Color="DarkGray" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+        <TextObject Name="TOTAL_LOCAL" Left="387.45" Width="47.25" Height="18.9" Border.Lines="Right" Border.RightLine.Color="DarkGray" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+        <TextObject Name="AVG_EXPORT" Left="1001.7" Top="18.9" Width="47.25" Height="18.9" Border.Lines="Right" Border.RightLine.Color="DarkGray" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+        <TextObject Name="AVG_ALL" Left="1124.55" Top="18.9" Width="47.25" Height="18.9" Border.Lines="Right" Border.RightLine.Color="DarkGray" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+        <TextObject Name="AVG_LOCAL" Left="387.45" Top="18.9" Width="47.25" Height="18.9" Border.Lines="Right" Border.RightLine.Color="DarkGray" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+        <TextObject Name="Text104" Left="189" Width="37.8" Height="37.8" Border.Lines="Right" Border.RightLine.Color="DarkGray" Text="[[LO_RP_INUSD_2] / [Total_2.Local] * 100]%" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Bottom" Font="MS Gothic, 8pt"/>
+        <TextObject Name="Text105" Left="226.8" Width="37.8" Height="37.8" Border.Lines="Right" Text="[[LO_RP_INUSD_2] / [Total_2] * 100]%" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Bottom" Font="MS Gothic, 8pt"/>
+        <TextObject Name="Text106" Left="311.85" Width="37.8" Height="37.8" Border.Lines="Right" Border.RightLine.Color="DarkGray" Text="[[LO_USD_INUSD_2] / [Total_2.Local] * 100]%" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Bottom" Font="MS Gothic, 8pt"/>
+        <TextObject Name="Text107" Left="349.65" Width="37.8" Height="37.8" Border.Lines="Right" Text="[[LO_USD_INUSD_2] / [Total_2] * 100]%" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Bottom" Font="MS Gothic, 8pt"/>
+        <TextObject Name="Text109" Left="472.5" Width="37.8" Height="37.8" Border.Lines="Left, Right" Border.LeftLine.Color="DarkGray" Border.RightLine.Width="2" Text="[[Total_2.Local] / [Total_2] * 100]%" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Bottom" Font="MS Gothic, 8pt"/>
+        <TextObject Name="Text110" Left="633.15" Width="37.8" Height="37.8" Border.Lines="Right" Border.RightLine.Color="DarkGray" Text="[[EX_RP_INUSD_2] / [Total_2.Export] * 100]%" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Bottom" Font="MS Gothic, 8pt"/>
+        <TextObject Name="Text111" Left="670.95" Width="37.8" Height="37.8" Border.Lines="Right" Text="[[EX_RP_INUSD_2] / [Total_2] * 100]%" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Bottom" Font="MS Gothic, 8pt"/>
+        <TextObject Name="Text112" Left="756" Width="37.8" Height="37.8" Border.Lines="Right" Border.RightLine.Color="DarkGray" Text="[[EX_USD_INUSD_2] / [Total_2.Export] * 100]%" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Bottom" Font="MS Gothic, 8pt"/>
+        <TextObject Name="Text113" Left="793.8" Width="37.8" Height="37.8" Border.Lines="Right" Text="[[EX_USD_INUSD_2] / [Total_2] * 100]%" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Bottom" Font="MS Gothic, 8pt"/>
+        <TextObject Name="Text114" Left="926.1" Width="37.8" Height="37.8" Border.Lines="Right" Border.RightLine.Color="DarkGray" Text="[[EX_EUR_INUSD_2] / [Total_2.Export] * 100]%" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Bottom" Font="MS Gothic, 8pt"/>
+        <TextObject Name="Text115" Left="963.9" Width="37.8" Height="37.8" Border.Lines="Right" Text="[[EX_EUR_INUSD_2] / [Total_2] * 100]%" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Bottom" Font="MS Gothic, 8pt"/>
+        <TextObject Name="Text117" Left="1086.75" Width="37.8" Height="37.8" Border.Lines="Left, Right" Border.LeftLine.Color="DarkGray" Border.RightLine.Width="2" Text="[[Total_2.Export] / [Total_2] * 100]%" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Bottom" Font="MS Gothic, 8pt"/>
+      </GroupFooterBand>
+    </GroupHeaderBand>
+    <PageFooterBand Name="PageFooter1" Top="243.51" Width="1209.6" Height="9.45"/>
+  </ReportPage>
+</Report>

@@ -1,0 +1,188 @@
+﻿
+@{
+    var fPhoto = Html.DevExtreme().FileUploader().Name("photo").ID("photo").MaxFileSize(5242880)
+        .Accept("image/*").UploadMode(FileUploadMode.UseForm).LabelText("")
+        .SelectButtonText("Browse...").ToTemplate();
+    //var tAlert = Html.DevExtreme().Popup().
+}
+
+<div class="page">
+    <h2>
+        <img src="~/images/group.svg" alt="" />
+        Master - User
+    </h2>
+        
+    @(Html.DevExtreme().DataGrid().ID("gridUser")
+        .Columns(c => {
+            c.Add().DataField("ID");
+            c.Add().DataField("Username").CellTemplate(@<div>
+                <img src="~/images/profiles/1.png" width="64" style="vertical-align: middle;"/> &nbsp; <%- value %>
+            </div>);
+            c.Add().DataField("Role");
+            c.Add().DataField("Email");
+            c.Add().DataField("Status");//.FalseText("Inactive").TrueText("Active");
+            c.Add().DataField("IdGroup").Visible(false);
+            c.Add().DataField("Access").Visible(false);
+            c.Add().DataField("Changed").Visible(false).DataType(GridColumnDataType.Boolean);
+        })
+        .ShowBorders(true)
+        .SearchPanel(sp => sp.Visible(true).Placeholder("Search User..."))
+        .ShowRowLines(true)
+        .DataSource(ds => ds.RemoteController()
+            .LoadMethod("POST").LoadUrl((string)ViewData["BaseUrl"] + "/Api/Users/DataList")
+            .DeleteMethod("POST").DeleteUrl((string)ViewData["BaseUrl"] + "Api/Users/Delete")
+            .InsertMethod("POST").InsertUrl((string)ViewData["BaseUrl"] + "Api/Users/New")
+            .UpdateMethod("POST").UpdateUrl((string)ViewData["BaseUrl"] + "Api/Users/Update")
+            .Key("ID").OnBeforeSend("prepSend")
+            )
+        .ShowColumnHeaders(true)
+        .RemoteOperations(rmt => rmt.Filtering(true).Paging(true).Summary(true).GroupPaging(true))
+        .Paging(p => p.PageSize(10))
+        .Pager(p => {
+            p.AllowedPageSizes(new[] { 10, 25, 50 });
+            p.ShowInfo(true);
+            p.ShowNavigationButtons(true);
+            p.ShowPageSizeSelector(true);
+            p.Visible(true);
+        }).CacheEnabled(false)
+        .Export(ex => ex.Enabled(true).FileName("User List"))
+        .Editing(e => e
+            .UseIcons(true).RefreshMode(GridEditRefreshMode.Full)
+            .AllowUpdating(true).AllowDeleting(true)
+            .AllowAdding(true).Mode(GridEditMode.Popup)
+            .Popup(p => p
+                .ShowTitle(true)
+                .Title("User Information")
+                .Shading(true).Position(PositionAlignment.Center).Width(640).OnShown("onEditInit")
+            ).Form(f => f.ShowColonAfterLabel(true).ColCount(1).Items(i => {
+                i.AddGroup().ColCount(2).Caption("Authentication").Items(gi => {
+                    gi.AddSimple().Editor(editor => editor
+                        .TextBox().MaxLength(30).Name("uid").ID("uid")
+                    ).ValidationRules(vr => vr.AddRequired()).DataField("uid")
+                    .Label(lbl => lbl.Text("Username"));
+                    gi.AddSimple().Editor(editor => editor
+                        .TextBox().Mode(TextBoxMode.Password).Name("pwdNew").MaxLength(30).ID("pwdNew")
+                    ).ValidationRules(vr => { vr.AddRequired(); }).DataField("pwdNew")
+                    .Label(lbl => lbl.Text("New Password"));
+                    gi.AddSimple().Editor(editor => editor
+                        .TextBox().Mode(TextBoxMode.Password).Name("pwdOld").MaxLength(30).ID("pwdOld")
+                    ).ValidationRules(vr => { vr.AddRequired(); }).DataField("pwdOld")
+                    .Label(lbl => lbl.Text("Old Password"));
+                });
+                i.AddGroup().ColCount(2).Caption("Detail").Items(gi => {
+                    gi.AddSimple().Editor(editor => editor
+                        .TextBox().Mode(TextBoxMode.Email).Name("email").MaxLength(255).ID("email"))
+                        .ValidationRules(vr => {
+                            vr.AddRequired().Message("Email field must not be empty");
+                            vr.AddEmail().Message("Email format isn't valid.");
+                        }).DataField("email").Label(lbl => lbl.Text("Email"));
+                    gi.AddSimple().Editor(editor => editor
+                        .CheckBox().Text("Active").Name("status").ID("status"))
+                        .CssClass("align-middle").Label(lbl => lbl.Text("Status")
+                            .Location(FormLabelLocation.Left))
+                        .DataField("status");
+                    gi.AddSimple().HelpText("Let it blank if you want to use Custom Access").Editor(editor => editor
+                        .SelectBox().DataSource(ds => ds.RemoteController()
+                            .LoadMethod("POST").LoadUrl(ViewData["BaseUrl"] + "/Api/Groups/List"))
+                        .Name("role").ShowClearButton(true).DisplayExpr("Name").ValueExpr("Value")
+                        .Placeholder("< Custom >").SearchEnabled(true).ShowDataBeforeSearch(true)
+                        .AcceptCustomValue(true).ID("role")).DataField("role")
+                        .Label(lbl => lbl.Text("Role"));
+                    gi.AddSimple().Editor(editor => editor
+                        .TagBox().DataSource(ds => ds.RemoteController()
+                            .LoadMethod("POST").LoadUrl(ViewData["BaseUrl"] + "/Api/Menus/List"))
+                        .DisplayExpr("Name").ValueExpr("Value").Name("access").ID("access")
+                        .SearchEnabled(true).AcceptCustomValue(true)
+                        .ApplyValueMode(EditorApplyValueMode.UseButtons).ShowSelectionControls(true)
+                        .ShowDropDownButton(true)
+                    ).Label(lbl => lbl.Text("Access")).DataField("customAccess");
+                    gi.AddSimple()
+                        .Template("<div>" + fPhoto + "</div>").CssClass("align-middle")
+                        .Label(lbl => lbl.Text("Photo")).DataField("id");
+                    gi.AddSimple().DataField("Changed").Visible(false).Name("Changed");
+                });
+            }).ID("editForm").OnFieldDataChanged("onChange").CustomizeItem("FormInit"))
+        ).OnEditingStart("onEditInit").OnInitNewRow("onNewInit").OnRowInserting("onNew")
+        .OnRowRemoving("onDelete")
+    )
+</div>
+<style>
+    .align-middle {
+        margin: auto 0;
+    }
+</style>
+<script>
+    var eData;
+
+    function FormInit(aa, bb, cc) {
+        console.log('form init');
+        console.log(aa);
+        console.log(bb);
+        console.log(cc);
+    }
+
+    function onChange(aa) {
+        console.log('change');
+        console.log(aa);
+    }
+
+    function onEdit(e) {
+        console.log('edit: '); console.log(e);
+    }
+    function onDelete(e) {
+        console.log('delete: '); console.log(e);
+        //e.cancel = true;
+    }
+    function onNew(e) {
+        console.log('new: '); console.log(e);
+        //e.cancel = true;
+        /*SendAPI('editForm', '/API/Users/New', true, function (data, stats) {
+            if (data.status == 'success') {
+                showAlert('', 'Successfully added new User!');
+            } else if (data.status == 'error') {
+                showAlert('Error', data.desc);
+            }
+        });*/
+    }
+
+    function prepSend(op, ax) {
+        console.log(op);
+        console.log(ax);
+        /*if (op.toLowerCase() == "insert")
+            ax.data.values = JSON.stringify($('#editForm').dxForm('option').formData);*/
+    }
+    function onNewInit(e) {
+        $('#editForm').dxForm('resetValues');
+        eData = null;
+    }
+    function onEditInit(e) {
+        if (e.data != null) {
+            eData = e.data;
+        }
+        else {
+            if (eData == null) return;
+            $('#access').dxTagBox("open"); $('#access').dxTagBox("close");
+            $('#uid').dxTextBox('option').text = eData.Username;
+            $('#email').dxTextBox('option').text = eData.Email;
+            $('#status').dxCheckBox("option").value = eData.Status;
+            $('#role').dxSelectBox("option").text = eData.Role;
+            var tagItem = $('#access').dxTagBox('option').items;
+            var arrAccess = eData.CustomAccess.split(',');
+            for (var iFor in arrAccess) {
+                iFor = parseInt(iFor);
+                //$('#access').dxTagBox('option').selectedItems.push(tagItem[arrAccess[iFor]]);
+                $('#access').dxTagBox('option').value.push(parseInt(arrAccess[iFor]));
+            }
+
+            $('#uid').dxTextBox("repaint");
+            $('#email').dxTextBox("repaint");
+            $('#status').dxCheckBox("repaint");
+            $('#role').dxSelectBox("repaint");
+            $('#access').dxTagBox("repaint");
+
+            $('#role').dxSelectBox("option").value = eData.IdGroup;
+            /*$('#uid').dxTextBox('option').value = eData.Username;
+            $('#email').dxTextBox('option').value = eData.Email;*/
+        }
+    }
+</script>

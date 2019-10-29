@@ -1,0 +1,49 @@
+﻿
+@{
+    ViewData["Title"] = "Dashboard";
+}
+<div class="page">
+    <h2>
+        <img src="~/images/business-statistics.svg" alt="Alternate Text" />
+        Dashboard
+    </h2>
+    <!--div class="breadcrumb"></div-->
+
+    @(Html.DevExtreme().TabPanel().ID("tab").ElementAttr("class", "tabDB")
+        .Items(item => {
+            if ((bool)ViewData["Access_Sales"] == true) {
+                item.Add().Title("Sales").Icon(ViewData["BaseUrl"] + "/images/cash-register.svg");
+            }
+            if ((bool)ViewData["Access_Payroll"] == true) {
+                item.Add().Title("Payrolls").Icon(ViewData["BaseUrl"] + "/images/change.svg");
+            }
+            if ((bool)ViewData["Access_Inventory"] == true) {
+                item.Add().Title("Inventories").Icon(ViewData["BaseUrl"] + "/images/warehouse-2.svg");
+            }
+            //item.Add().Title("Others").Icon(ViewData["BaseUrl"] + "/images/cash-register.svg");
+        })
+        .AnimationEnabled(true).Loop(true).SwipeEnabled(false)
+        .OnSelectionChanged("onChanged")
+    )
+</div>
+
+<script>
+    function onChanged(e) {
+        $('#tab .dx-multiview-item-container').find(".dx-item:not(.dx-item-selected)").html('');
+        $(e.element).find(".dx-item-selected")
+            .load('@ViewData["BaseUrl"]/Dashboard/' + e.addedItems[0].title, null, function () {
+                hideLoading();
+            });
+        //ret
+    }
+    $(document).ready(function () {
+        showLoading();
+        $('#tab').find(".dx-item-selected")
+            .load('@ViewData["BaseUrl"]/Dashboard/Sales', null, function () {
+                hideLoading();
+            });
+        if (window.innerWidth <= 600) {
+            $('#tab').dxTabPanel('option', 'swipeEnabled', false);
+        }
+    });
+</script>
