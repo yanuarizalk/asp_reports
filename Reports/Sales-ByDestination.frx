@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Report ScriptLanguage="CSharp" ReferencedAssemblies="System.dll&#13;&#10;System.Drawing.dll&#13;&#10;System.Windows.Forms.dll&#13;&#10;System.Data.dll&#13;&#10;System.Xml.dll&#13;&#10;System.Collections.NonGeneric.dll&#13;&#10;System.Drawing.Primitives.dll" UseFileCache="true" StartReportEvent="_StartReport" ReportInfo.Created="10/11/2019 15:35:16" ReportInfo.Modified="10/29/2019 11:24:55" ReportInfo.CreatorVersion="2019.3.5.0">
+<Report ScriptLanguage="CSharp" ReferencedAssemblies="System.dll&#13;&#10;System.Drawing.dll&#13;&#10;System.Windows.Forms.dll&#13;&#10;System.Data.dll&#13;&#10;System.Xml.dll&#13;&#10;System.Collections.NonGeneric.dll&#13;&#10;System.Drawing.Primitives.dll" UseFileCache="true" StartReportEvent="_StartReport" ReportInfo.Created="10/11/2019 15:35:16" ReportInfo.Modified="10/31/2019 11:18:39" ReportInfo.CreatorVersion="2019.3.5.0">
   <ScriptText>using System;
 using System.ComponentModel;
 using System.Windows.Forms;
@@ -28,22 +28,8 @@ namespace FastReport
 
     private void _StartReport(object sender, EventArgs e)
     {
-      /*TableDataSource a = new TableDataSource();
-      a.TableName = &quot;SALES_DESTINATIONX&quot;;
-      a.Name = &quot;Dest&quot;;
-      a.ForceLoadData = true;
-      a.Connection = Report.Dictionary.Connections[0];
-      Report.Dictionary.Connections[0].Tables.Add(a);
-      Report.Dictionary.Connections[0].Tables[0].Init();
-      Data1.DataSource = Report.Dictionary.Connections[0].Tables[0];*/
-      //MessageBox.Show(Report.Dictionary.Connections[0].Tables[0].Columns.Count.ToString());
       Report.Dictionary.Connections[0].Tables[0].Init();
       Report.Dictionary.Connections[0].Tables[0].RefreshTable();
-      //TableCell a = (TableCell)HTable.Columns[2].Name;
-      //MessageBox.Show(Report.GetParameterValue(&quot;GetMonth&quot;).ToString());
-      //MessageBox.Show(HTable[4,0].Text = &quot;aaa&quot;);
-      //MessageBox.Show(Report.Dictionary.Connections[0].Tables[0].Columns.Count.ToString());
-      //MessageBox.Show(&quot;aBc&quot;.PadLeft(4, '0'));
     }
     
     private void TableInit(TableObject HeaderTable, TableObject AreaTable, TableObject DistrictTable, TableObject DestTable) {
@@ -327,6 +313,9 @@ namespace FastReport
         PrintTable(ATable);
       else
         PrintTable(ETable);
+      //int yearCol = 13 - (int)Report.GetParameterValue(&quot;GetMonth&quot;) + 3;
+      //if (Decimal.Parse(ATable[1,0].Text) == 0 &amp;&amp; Decimal.Parse(ATable[START_COL,0].Text) == 0 &amp;&amp; Decimal.Parse(ATable[START_COL + yearCol,0].Text) == 0)
+        
     }
     private void Overall_BeforePrint(object sender, EventArgs e)
     {
@@ -334,10 +323,21 @@ namespace FastReport
         PrintTable(LTable);
       else if (sender == Data5)
         PrintTable(OATable);
+      
+      /*int yearCol = 13 - (int)Report.GetParameterValue(&quot;GetMonth&quot;) + 3;
+      if (Decimal.Parse(OATable[1,0].Text) == 0 &amp;&amp; Decimal.Parse(OATable[START_COL,0].Text) == 0 &amp;&amp; Decimal.Parse(OATable[START_COL + yearCol,0].Text) == 0)
+        Data5.Visible = false;*/
+      
     }
 
     private void Page_StartPage(object sender, EventArgs e)
     {
+      if (
+        Convert.ToInt32(Report.GetParameterValue(&quot;GetYear&quot;).ToString() + Report.GetParameterValue(&quot;GetMonth&quot;).ToString().PadLeft(2, '0') ) &lt; Convert.ToInt32(Report.GetColumnValue(&quot;Brief.MinDate&quot;)) ||
+        Convert.ToInt32(Report.GetParameterValue(&quot;GetYear&quot;).ToString() + Report.GetParameterValue(&quot;GetMonth&quot;).ToString().PadLeft(2, '0') ) &gt; Convert.ToInt32(Report.GetColumnValue(&quot;Brief.MaxDate&quot;))
+        )
+        PageHeader3.Visible = false;
+      // ===================================================================================================
       if (sender == Page2)
         TableInit(LHTable, LDTable, LFTable, LTable);
       else if (sender == Page3) {
@@ -347,6 +347,24 @@ namespace FastReport
       else
         TableInit(EHTable, EDTable, EFTable, ETable);
     }
+
+    private void Data404_BeforePrint(object sender, EventArgs e)
+    {
+      int yearCol = 13 - (int)Report.GetParameterValue(&quot;GetMonth&quot;) + 3;
+      
+      
+      
+      if (
+        Convert.ToInt32(Report.GetParameterValue(&quot;GetYear&quot;).ToString() + Report.GetParameterValue(&quot;GetMonth&quot;).ToString().PadLeft(2, '0') ) &lt; Convert.ToInt32(Report.GetColumnValue(&quot;Brief.MinDate&quot;)) ||
+        Convert.ToInt32(Report.GetParameterValue(&quot;GetYear&quot;).ToString() + Report.GetParameterValue(&quot;GetMonth&quot;).ToString().PadLeft(2, '0') ) &gt; Convert.ToInt32(Report.GetColumnValue(&quot;Brief.MaxDate&quot;))
+      ) {
+        Data404.Visible = true;
+        Data404.Height = Engine.FreeSpace;
+        TxtNoData.Height = Data404.Height;
+        Report.Abort();
+      }
+    }
+
   }
 }
 </ScriptText>
@@ -354,7 +372,7 @@ namespace FastReport
     <Style Name="EvenStyle" Fill.Color="Gainsboro" Font="Arial, 10pt" ApplyBorder="false" ApplyTextFill="false" ApplyFont="false"/>
   </Styles>
   <Dictionary>
-    <MsSqlDataConnection Name="Connection" ConnectionString="rijcmlqHwzMSgwTFaHpjtG3vsOj8TrCVffhCR2JFv7xvPWo98Q8hzUJp60SVHnXxIECwHKNp6oMNBpbLqcLrui6V1MI+xWP/56XPL5FBIgQjGknIMZ9/1Xy5wraKxi2qe2SGsp2UfAM9IAHsB67CMW/btEGhCTKDHMNfMzct0nOUax+60E/WnQ6z29ogYWizk67rd0tlqDwvS4OI5AnXEoHP3bLXQ==">
+    <MsSqlDataConnection Name="Connection" ConnectionString="rijcmlqHwzMSgwTFaHpjtG3vsOj8TrCVffhCR2JFv7xvPWo98Q8hzUJp60SVHnXxIECwHKNp6oMNBpbLqcLrui6V1MI+xWP/56XPL5FBIgQjGknIMZ9/1Xy5wraKxi2qe2SGsp2UfAM9IAHsB67CMW/btEGhCTKDHMNfMzct0nOUax+60E/WnQ6z29ogYWizk67rd0tO2pgWpwvBeCALlmCmpkn9A==">
       <TableDataSource Name="SALES_DESTINATIONX" Alias="SALES" DataType="System.Int32" Enabled="true" TableName="SALES_DESTINATIONX">
         <Column Name="DISTRICT" DataType="System.String"/>
         <Column Name="EXLO" DataType="System.String"/>
@@ -414,18 +432,21 @@ namespace FastReport
         <CommandParameter Name="YYMM" DataType="22" Expression="[GroupDate]"/>
         <CommandParameter Name="dName" DataType="22" Expression="[SALES.EXLO]"/>
       </TableDataSource>
+      <TableDataSource Name="PARAM" DataType="System.Int32" Enabled="true" TableName="PARAM">
+        <Column Name="PERIOD" DataType="System.DateTime"/>
+      </TableDataSource>
     </MsSqlDataConnection>
     <Parameter Name="Month" DataType="System.Int32" Expression="0"/>
-    <Parameter Name="GetMonth" DataType="System.Int32" Expression="IIf([Month] &gt; 0 &amp;&amp; [Month] &lt; 13,[Month],[Brief.LastMonth])"/>
+    <Parameter Name="GetMonth" DataType="System.Int32" Expression="IIf([Month] &gt;= 1 &amp;&amp; [Month] &lt;= 12,[Month],Month([PARAM.PERIOD]))"/>
     <Parameter Name="Year" DataType="System.Int32" Expression="0"/>
-    <Parameter Name="GetYear" DataType="System.Int32" Expression="IIf([Year] &gt;= [Brief.EarlyYear] &amp;&amp; [Year] &lt; [Brief.LastYear],[Year],[Brief.LastYear])"/>
+    <Parameter Name="GetYear" DataType="System.Int32" Expression="IIf([Year] &gt; 0 &amp;&amp; [Year] &lt;= Year([PARAM.PERIOD]),[Year],Year([PARAM.PERIOD]))"/>
     <Parameter Name="MonthName" DataType="System.String"/>
     <Parameter Name="GroupDate" DataType="System.String"/>
     <Parameter Name="AAAMount" DataType="System.Double"/>
     <Parameter Name="DistrictName" DataType="System.String" Expression="[SALES.DISTRICT_NM]"/>
   </Dictionary>
   <ReportPage Name="Page3" Landscape="true" PaperWidth="330" PaperHeight="215" FirstPageSource="261" OtherPagesSource="261" Watermark.Font="Arial, 60pt" StartPageEvent="Page_StartPage">
-    <ReportTitleBand Name="ReportTitle3" Width="1171.8" Height="52.25">
+    <ReportTitleBand Name="ReportTitle3" Width="1171.8" Height="52.25" BeforePrintEvent="ReportTitle3_BeforePrint">
       <TextObject Name="Text7" Top="9.45" Width="1171.8" Height="18.9" Text="SALES SUMMARY REPORT IN [GetYear]" HorzAlign="Center" Font="MS Gothic, 9pt"/>
       <TextObject Name="Text8" Top="22.51" Width="1171.8" Height="18.9" Text="(AMOUNT IN '000 USD)" HorzAlign="Center" Font="MS Gothic, 9pt, style=Bold, Underline"/>
     </ReportTitleBand>
@@ -531,10 +552,13 @@ namespace FastReport
         </TableRow>
       </TableObject>
     </PageHeaderBand>
-    <GroupHeaderBand Name="GroupHeader5" Top="116.95" Width="1171.8" Condition="[SALES.EXLO]" SortOrder="None">
-      <GroupHeaderBand Name="GroupHeader6" Top="120.95" Width="1171.8" Condition="[SALES.DISTRICT_NM]" SortOrder="None">
-        <DataBand Name="Data3" Top="124.95" Width="1171.8" EvenStyle="EvenStyle" BeforePrintEvent="Area_BeforePrint" DataSource="SALES_DESTINATIONX"/>
-        <GroupFooterBand Name="GroupFooter5" Top="128.95" Width="1171.8" Height="28.35" BeforePrintEvent="GroupDistrict_BeforePrint">
+    <DataBand Name="Data404" Top="116.95" Width="1171.8" Height="37.8" Visible="false" BeforePrintEvent="Data404_BeforePrint">
+      <TextObject Name="TxtNoData" Width="1171.8" Height="37.8" Text="THERE IS NO DATA FOR THIS PERIOD" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt"/>
+    </DataBand>
+    <GroupHeaderBand Name="GroupHeader5" Top="158.75" Width="1171.8" Condition="[SALES.EXLO]" SortOrder="None">
+      <GroupHeaderBand Name="GroupHeader6" Top="162.75" Width="1171.8" Condition="[SALES.DISTRICT_NM]" SortOrder="None">
+        <DataBand Name="Data3" Top="166.75" Width="1171.8" EvenStyle="EvenStyle" BeforePrintEvent="Area_BeforePrint" DataSource="SALES_DESTINATIONX"/>
+        <GroupFooterBand Name="GroupFooter5" Top="170.75" Width="1171.8" Height="28.35" BeforePrintEvent="GroupDistrict_BeforePrint">
           <TableObject Name="AFTable" Width="1152.9" Height="28.35" EvenStyle="EvenStyle">
             <TableColumn Name="Column231" Width="122.85"/>
             <TableColumn Name="Column232" Width="47.25"/>
@@ -587,7 +611,7 @@ namespace FastReport
           </TableObject>
         </GroupFooterBand>
       </GroupHeaderBand>
-      <GroupFooterBand Name="GroupFooter6" Top="161.3" Width="1171.8" Height="47.25" Border.Lines="Left, Right" BeforePrintEvent="GroupDestination_BeforePrint">
+      <GroupFooterBand Name="GroupFooter6" Top="203.1" Width="1171.8" Height="47.25" Border.Lines="Left, Right" BeforePrintEvent="GroupDestination_BeforePrint">
         <TableObject Name="ATable" Width="1152.9" Height="28.35">
           <TableColumn Name="Column254" Width="122.85"/>
           <TableColumn Name="Column255" Width="47.25"/>
@@ -640,7 +664,7 @@ namespace FastReport
         </TableObject>
       </GroupFooterBand>
     </GroupHeaderBand>
-    <DataBand Name="Data5" Top="212.55" Width="1171.8" Height="85.05" BeforePrintEvent="Overall_BeforePrint" DataSource="SALES_DESTINATIONX" MaxRows="1">
+    <DataBand Name="Data5" Top="254.35" Width="1171.8" Height="85.05" BeforePrintEvent="Overall_BeforePrint" DataSource="SALES_DESTINATIONX" MaxRows="1">
       <TextObject Name="Text9" Top="66.15" Width="122.85" Height="18.9" Text="ASIA/AUS/AFR *)" VertAlign="Bottom" Font="MS Gothic, 9pt"/>
       <TableObject Name="OATable" Width="1152.9" Height="28.35" BeforePrintEvent="Overall_BeforePrint">
         <TableColumn Name="Column323" Width="122.85"/>
@@ -693,10 +717,10 @@ namespace FastReport
         </TableRow>
       </TableObject>
     </DataBand>
-    <GroupHeaderBand Name="GroupHeader7" Top="301.6" Width="1171.8" Border.Lines="Bottom" Condition="[SALES.EXLO]" SortOrder="None">
-      <GroupHeaderBand Name="GroupHeader8" Top="305.6" Width="1171.8" Condition="[SALES.DISTRICT]">
-        <DataBand Name="Data4" Top="309.6" Width="1171.8" DataSource="SALES_DESTINATIONX" Filter="[SALES.DISTRICT] == &quot;3&quot; || [SALES.DISTRICT] == &quot;4&quot; || [SALES.DISTRICT] == &quot;5&quot;"/>
-        <GroupFooterBand Name="GroupFooter8" Top="313.6" Width="1171.8" Height="28.35" BeforePrintEvent="GroupDistrict_BeforePrint">
+    <GroupHeaderBand Name="GroupHeader7" Top="343.4" Width="1171.8" Border.Lines="Bottom" Condition="[SALES.EXLO]" SortOrder="None">
+      <GroupHeaderBand Name="GroupHeader8" Top="347.4" Width="1171.8" Condition="[SALES.DISTRICT]">
+        <DataBand Name="Data4" Top="351.4" Width="1171.8" DataSource="SALES_DESTINATIONX" Filter="[SALES.DISTRICT] == &quot;3&quot; || [SALES.DISTRICT] == &quot;4&quot; || [SALES.DISTRICT] == &quot;5&quot;"/>
+        <GroupFooterBand Name="GroupFooter8" Top="355.4" Width="1171.8" Height="28.35" BeforePrintEvent="GroupDistrict_BeforePrint">
           <TableObject Name="DFTable" Width="1152.9" Height="28.35" EvenStyle="EvenStyle">
             <TableColumn Name="Column277" Width="122.85"/>
             <TableColumn Name="Column278" Width="47.25"/>
@@ -749,7 +773,7 @@ namespace FastReport
           </TableObject>
         </GroupFooterBand>
       </GroupHeaderBand>
-      <GroupFooterBand Name="GroupFooter7" Top="345.95" Width="1171.8" Height="28.35" BeforePrintEvent="GroupDistrict_BeforePrint">
+      <GroupFooterBand Name="GroupFooter7" Top="387.75" Width="1171.8" Height="103.95" BeforePrintEvent="GroupDistrict_BeforePrint">
         <TableObject Name="DTable" Width="1152.9" Height="28.35">
           <TableColumn Name="Column300" Width="122.85"/>
           <TableColumn Name="Column301" Width="47.25"/>
@@ -802,7 +826,7 @@ namespace FastReport
         </TableObject>
       </GroupFooterBand>
     </GroupHeaderBand>
-    <PageFooterBand Name="PageFooter3" Top="378.3" Width="1171.8"/>
+    <PageFooterBand Name="PageFooter3" Top="495.7" Width="1171.8"/>
   </ReportPage>
   <ReportPage Name="Page1" Landscape="true" PaperWidth="330" PaperHeight="215" FirstPageSource="261" OtherPagesSource="261" Watermark.Font="Arial, 60pt" StartPageEvent="Page_StartPage">
     <ReportTitleBand Name="ReportTitle1" Width="1171.8" Height="52.25">

@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report ScriptLanguage="CSharp" StartReportEvent="_StartReport" ReportInfo.Created="10/31/2019 08:45:35" ReportInfo.Modified="10/31/2019 08:59:45" ReportInfo.CreatorVersion="2019.3.5.0">
+  <ScriptText>using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Windows.Forms;
+using System.Drawing;
+using System.Data;
+using FastReport;
+using FastReport.Data;
+using FastReport.Dialog;
+using FastReport.Barcode;
+using FastReport.Table;
+using FastReport.Utils;
+
+namespace FastReport
+{
+  public class ReportScript
+  {
+    
+
+    private void _StartReport(object sender, EventArgs e)
+    {
+      
+    }
+
+    private void Data404_BeforePrint(object sender, EventArgs e)
+    {
+      Data404.Height = Engine.FreeSpace;
+      TxtNoData.Height = Data404.Height;
+    }
+  }
+}
+</ScriptText>
+  <Dictionary/>
+  <ReportPage Name="Page1" Landscape="true" PaperWidth="330" PaperHeight="215" FirstPageSource="261" OtherPagesSource="261" Watermark.Font="Arial, 60pt">
+    <ReportTitleBand Name="ReportTitle1" Width="1171.8"/>
+    <PageHeaderBand Name="PageHeader1" Top="4" Width="1171.8"/>
+    <DataBand Name="Data404" Top="8" Width="1171.8" Height="37.8" BeforePrintEvent="Data404_BeforePrint">
+      <TextObject Name="TxtNoData" Width="1171.8" Height="37.8" Text="THERE IS NO DATA FOR THIS PERIOD" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt"/>
+    </DataBand>
+    <PageFooterBand Name="PageFooter1" Top="49.8" Width="1171.8"/>
+  </ReportPage>
+</Report>

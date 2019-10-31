@@ -42,14 +42,26 @@
                                 .SearchEnabled(true)
                                 .DataSource(ds => ds.Array().Data(new JS("years")))
                             ).Label(label => label.Text("Year")).DataField("year");
-                        item.AddSimple()
-                            .ValidationRules(vr => vr.AddRequired())
-                            .Editor(editor => editor.SelectBox()
-                                .ID("month").Placeholder("<Select month>")
-                                .SearchEnabled(true)
-                                .DisplayExpr("val").ValueExpr("id")
-                                .DataSource(ds => ds.Array().Key("id").Data(new JS("months")))
-                            ).Label(label => label.Text("Month")).DataField("month");
+                        switch ((ViewData["ReportApi"] + "-" + ViewData["ReportName"]).ToString().ToLower()) {
+                            case "sales-byproduction":
+                            case "sales-annualraws":
+                                item.AddEmpty();
+                                item.AddEmpty();
+                                item.AddEmpty();
+                                break;
+                            default: {
+                                item.AddSimple()
+                                .ValidationRules(vr => vr.AddRequired())
+                                .Editor(editor => editor.SelectBox()
+                                    .ID("month").Placeholder("<Select month>")
+                                    .SearchEnabled(true)
+                                    .DisplayExpr("val").ValueExpr("id")
+                                    .DataSource(ds => ds.Array().Key("id").Data(new JS("months")))
+                                ).Label(label => label.Text("Month")).DataField("month");
+                                break;
+                            }
+                        }
+                        
                         item.AddButton().ButtonOptions(option => option.Text("OK")
                             .ID("filter-submit").UseSubmitBehavior(true).OnClick("onFilterSubmit"));
                     }).OnEditorEnterKey("onFilterSubmit")
@@ -96,14 +108,13 @@
 
         function onFilterShow(ev) {
             //console.log(ev);
-            $('#month').dxSelectBox('getDataSource').reload().done(function () {
-                $('#year').dxSelectBox('getDataSource').reload().done(function () {
-                    $('#filter-form').dxForm('option').formData = {
-                        year: new Date().getFullYear(),
-                        month: new Date().getMonth() - 1
-                    };
-                    $('#filter-form').dxForm('repaint');
+            if ($('#month').length > 0)
+                $('#month').dxSelectBox('getDataSource').reload().done(function () {
+                    $('#filter-form').dxForm('option').formData.month = new Date().getMonth() - 1;
                 });
+            $('#year').dxSelectBox('getDataSource').reload().done(function () {
+                $('#filter-form').dxForm('option').formData.year = new Date().getFullYear();
+                $('#filter-form').dxForm('repaint');
             });
         }
         function onFilterSubmit(ev) {

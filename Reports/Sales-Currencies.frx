@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Report ScriptLanguage="CSharp" UseFileCache="true" SmoothGraphics="true" FinishReportEvent="_FinishReport" ReportInfo.Created="09/18/2019 10:20:46" ReportInfo.Modified="10/30/2019 16:49:29" ReportInfo.CreatorVersion="2019.3.5.0">
+<Report ScriptLanguage="CSharp" UseFileCache="true" SmoothGraphics="true" FinishReportEvent="_FinishReport" ReportInfo.Created="09/18/2019 10:20:46" ReportInfo.Modified="10/31/2019 08:06:57" ReportInfo.CreatorVersion="2019.3.5.0">
   <ScriptText>using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -64,7 +64,7 @@ namespace FastReport
     <Style Name="EvenStyle" Border.Lines="All" Border.Color="Gray" Fill.Color="Gainsboro" Font="Arial, 10pt" ApplyTextFill="false" ApplyFont="false"/>
   </Styles>
   <Dictionary>
-    <MsSqlDataConnection Name="Connection" ConnectionString="rijcmlqHwzMSgwTFaHpjtG3vsOj8TrCVffhCR2JFv7xvPWo98Q8hzUJp60SVHnXxIECwHKNp6oMNBpbLqcLrui6V1MI+xWP/56XPL5FBIgQjGknIMZ9/1Xy5wraKxi2qe2SGsp2UfAM9IAHsB67CMW/btEGhCTKDHMNfMzct0nOUax+60E/WnQ6z29ogYWizk67rd0t1c5QBC2fjDl3/3oVL4wr3w==">
+    <MsSqlDataConnection Name="Connection" ConnectionString="rijcmlqHwzMSgwTFaHpjtG3vsOj8TrCVffhCR2JFv7xvPWo98Q8hzUJp60SVHnXxIECwHKNp6oMNBpbLqcLrui6V1MI+xWP/56XPL5FBIgQjGknIMZ9/1Xy5wraKxi2qe2SGsp2UfAM9IAHsB67CMW/btEGhCTKDHMNfMzct0nOUax+60E/WnQ6z29ogYWizk67rd0t5WwwJ1bgyI9uFiPWkbKpYw==">
       <TableDataSource Name="SACU" DataType="System.Int32" Enabled="true" TableName="SACU">
         <Column Name="YYYYMM" DataType="System.String"/>
         <Column Name="LO_RP_INRP" DataType="System.Double"/>
@@ -75,13 +75,6 @@ namespace FastReport
         <Column Name="EX_USD_INUSD" DataType="System.Double"/>
         <Column Name="EX_EUR_INEUR" DataType="System.Double"/>
         <Column Name="EX_EUR_INUSD" DataType="System.Double"/>
-      </TableDataSource>
-      <TableDataSource Name="Table" Alias="Brief" DataType="System.Int32" Enabled="true" SelectCommand="SELECT Cast(Substring(MAX(S.YYYYMM), 5, 2) AS int) &quot;LastMonth&quot;, Cast(Substring(MAX(S.YYYYMM), 1, 4) AS int) &quot;LastYear&quot;, Cast(Substring(MIN(S.YYYYMM), 1, 4) AS int) &quot;EarlyYear&quot;, MIN(S.YYYYMM) &quot;MinDate&quot;, MAX(S.YYYYMM) &quot;MaxDate&quot;&#13;&#10;FROM &quot;SACU&quot; S&#13;&#10;">
-        <Column Name="LastMonth" DataType="System.Int32"/>
-        <Column Name="MinDate" DataType="System.String"/>
-        <Column Name="MaxDate" DataType="System.String"/>
-        <Column Name="LastYear" DataType="System.Int32"/>
-        <Column Name="EarlyYear" DataType="System.Int32"/>
       </TableDataSource>
       <TableDataSource Name="Table1" Alias="Overall" DataType="System.Int32" Enabled="true" SelectCommand="SELECT Substring(S.YYYYMM, 0, 4) &quot;Year&quot;, MIN(S.LO_RP_INRP) &quot;MIN_LO_RP_INRP&quot;, MAX(S.LO_RP_INRP) &quot;MAX_LO_RP_INRP&quot;, MIN(S.LO_RP_INUSD) &quot;MIN_LO_RP_INUSD&quot;, MAX(S.LO_RP_INUSD) &quot;MAX_LO_RP_INUSD&quot;, MIN(S.LO_USD_INUSD) &quot;MIN_LO_USD_INUSD&quot;, MAX(S.LO_USD_INUSD) &quot;MAX_LO_USD_INUSD&quot;, MIN(S.EX_RP_INRP) &quot;MIN_EX_RP_INRP&quot;, MAX(S.EX_RP_INRP) &quot;MAX_EX_RP_INRP&quot;, MIN(S.EX_RP_INUSD) &quot;MIN_EX_RP_INUSD&quot;, MAX(S.EX_RP_INUSD) &quot;MAX_EX_RP_INUSD&quot;, MIN(S.EX_USD_INUSD) &quot;MIN_EX_USD_INUSD&quot;, MAX(S.EX_USD_INUSD) &quot;MAX_EX_USD_INUSD&quot;, MIN(S.EX_EUR_INEUR) &quot;MIN_EX_EUR_INEUR&quot;, MAX(S.EX_EUR_INEUR) &quot;MAX_EX_EUR_INEUR&quot;, MIN(S.EX_EUR_INUSD) &quot;MIN_EX_EUR_INUSD&quot;, MAX(S.EX_EUR_INUSD) &quot;MAX_EX_EUR_INUSD&quot;&#13;&#10;FROM &quot;SACU&quot; S&#13;&#10;GROUP BY Substring(S.YYYYMM, 0, 4)&#13;&#10;">
         <Column Name="Year" DataType="System.String"/>
@@ -102,8 +95,10 @@ namespace FastReport
         <Column Name="MIN_EX_EUR_INUSD" DataType="System.Double"/>
         <Column Name="MAX_EX_EUR_INUSD" DataType="System.Double"/>
       </TableDataSource>
+      <TableDataSource Name="PARAM" DataType="System.Int32" Enabled="true" TableName="PARAM">
+        <Column Name="PERIOD" DataType="System.DateTime"/>
+      </TableDataSource>
     </MsSqlDataConnection>
-    <Parameter Name="MinDate" DataType="System.String" Expression="IIf(ToInt32(Substring([Brief.MinDate], 0, 4)) &gt;= Year([Date]) - 3, [Brief.MinDate], ToString(Year([Date]) - 3) + &quot;01&quot;)"/>
     <Parameter Name="MonthShorten" DataType="System.String" Expression="UpperCase(Substring(ToString(IIf(ToInt32(Substring([SACU.YYYYMM], 4, 2)) &lt; 12, MonthName(1), MonthName(ToInt32(IIf([GetMonth] &gt;= 12, 0, [GetMonth])) + 1))), 0, 3)) + &quot;-&quot; + UpperCase(Substring(ToString(IIf(ToInt32(Substring([SACU.YYYYMM], 4, 2)) &gt;= 12, MonthName(12), MonthName([GetMonth]))), 0, 3))"/>
     <Parameter Name="Total_3" DataType="FastReport.Variant" Expression="[Total_3.Local] + [Total_3.Export]">
       <Parameter Name="Local" DataType="FastReport.Variant" Expression="[LO_RP_INUSD_3] + [LO_USD_INUSD_3]"/>
@@ -114,10 +109,10 @@ namespace FastReport
       <Parameter Name="Export" DataType="FastReport.Variant" Expression="[EX_RP_INUSD_2] + [EX_USD_INUSD_2] + [EX_EUR_INUSD_2]"/>
     </Parameter>
     <Parameter Name="Month" DataType="System.Int32" Expression="0"/>
-    <Parameter Name="GetMonth" DataType="System.Int32" Expression="IIf([Month] &gt; 0 &amp;&amp; [Month] &lt; 13,[Month],[Brief.LastMonth])"/>
+    <Parameter Name="GetMonth" DataType="System.Int32" Expression="IIf([Month] &gt;= 1 &amp;&amp; [Month] &lt;= 12,[Month],Month([PARAM.PERIOD]))"/>
     <Parameter Name="MonthName" DataType="System.String" Expression="Substring(UpperCase(MonthName(ToInt32(Substring([SACU.YYYYMM],4,2)))),0,3)"/>
     <Parameter Name="Year" DataType="System.Int32" Expression="0"/>
-    <Parameter Name="GetYear" DataType="System.Int32" Expression="IIf([Year] &gt;= [Brief.EarlyYear] &amp;&amp; [Year] &lt; [Brief.LastYear],[Year],[Brief.LastYear])"/>
+    <Parameter Name="GetYear" DataType="System.Int32" Expression="IIf([Year] &gt; 0 &amp;&amp; [Year] &lt;= Year([PARAM.PERIOD]),[Year],Year([PARAM.PERIOD]))"/>
     <Parameter Name="RangeYear" DataType="System.Int32" Expression="3"/>
     <Total Name="LO_RP_INRP_3" Expression="[SACU.LO_RP_INRP]" Evaluator="SACU_Data" PrintOn="GF_3" ResetOnReprint="true"/>
     <Total Name="LO_RP_INUSD_3" Expression="[SACU.LO_RP_INUSD]" Evaluator="SACU_Data" PrintOn="GF_3" ResetOnReprint="true"/>

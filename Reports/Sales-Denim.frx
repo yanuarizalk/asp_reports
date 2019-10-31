@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Report ScriptLanguage="CSharp" ReferencedAssemblies="System.dll&#13;&#10;System.Drawing.dll&#13;&#10;System.Windows.Forms.dll&#13;&#10;System.Data.dll&#13;&#10;System.Xml.dll&#13;&#10;System.Collections.NonGeneric.dll" UseFileCache="true" StartReportEvent="_StartReport" ReportInfo.Created="10/17/2019 10:16:27" ReportInfo.Modified="10/29/2019 11:11:22" ReportInfo.CreatorVersion="2019.3.5.0">
+<Report ScriptLanguage="CSharp" ReferencedAssemblies="System.dll&#13;&#10;System.Drawing.dll&#13;&#10;System.Windows.Forms.dll&#13;&#10;System.Data.dll&#13;&#10;System.Xml.dll&#13;&#10;System.Collections.NonGeneric.dll" UseFileCache="true" StartReportEvent="_StartReport" ReportInfo.Created="10/17/2019 10:16:27" ReportInfo.Modified="10/31/2019 09:15:38" ReportInfo.CreatorVersion="2019.3.5.0">
   <ScriptText>using System;
 using System.ComponentModel;
 using System.Windows.Forms;
@@ -73,6 +73,15 @@ namespace FastReport
       }
       //MessageBox.Show(Report.Dictionary.Totals.Count.ToString());
     }
+
+    private void Data404_BeforePrint(object sender, EventArgs e)
+    {
+      if (Data1.RowNo &lt;= 0) {
+        Data404.Visible = true;
+        Data404.Height = Engine.FreeSpace;
+        TxtNoData.Height = Data404.Height;
+      }
+    }
   }
 }
 </ScriptText>
@@ -80,7 +89,7 @@ namespace FastReport
     <Style Name="EvenStyle" Fill.Color="Gainsboro" Font="Arial, 10pt" ApplyBorder="false" ApplyTextFill="false" ApplyFont="false"/>
   </Styles>
   <Dictionary>
-    <MsSqlDataConnection Name="Connection" ConnectionString="rijcmlqHwzMSgwTFaHpjtG3vsOj8TrCVffhCR2JFv7xvPWo98Q8hzUJp60SVHnXxIECwHKNp6oMNBpbLqcLrui6V1MI+xWP/56XPL5FBIgQjGknIMZ9/1Xy5wraKxi2qe2SGsp2UfAM9IAHsB67CMW/btEGhCTKDHMNfMzct0nOUax+60E/WnQ6z29ogYWizk67rd0tSo9d6Ia106UqaVlNoNPh+Q==">
+    <MsSqlDataConnection Name="Connection" ConnectionString="rijcmlqHwzMSgwTFaHpjtG3vsOj8TrCVffhCR2JFv7xvPWo98Q8hzUJp60SVHnXxIECwHKNp6oMNBpbLqcLrui6V1MI+xWP/56XPL5FBIgQjGknIMZ9/1Xy5wraKxi2qe2SGsp2UfAM9IAHsB67CMW/btEGhCTKDHMNfMzct0nOUax+60E/WnQ6z29ogYWizk67rd0t9SKpizc+Kng0qhNp9I3g6A==">
       <TableDataSource Name="DENIM_FINISHING" DataType="System.Int32" Enabled="true" TableName="DENIM_FINISHING">
         <Column Name="Y4M2" DataType="System.String"/>
         <Column Name="SUM_P" DataType="System.Double"/>
@@ -96,18 +105,14 @@ namespace FastReport
         <Column Name="SUM_SLUB" DataType="System.Double"/>
         <Column Name="SUM_STR" DataType="System.Double"/>
       </TableDataSource>
-      <TableDataSource Name="Table4" Alias="Brief" DataType="System.Int32" Enabled="true" SelectCommand="SELECT Cast(Substring(MAX(S.Y4M2), 5, 2) AS int) &quot;LastMonth&quot;, Cast(Substring(MAX(S.Y4M2), 1, 4) AS int) &quot;LastYear&quot;, Cast(Substring(MIN(S.Y4M2), 1, 4) AS int) &quot;EarlyYear&quot;, MIN(S.Y4M2) &quot;MinDate&quot;, MAX(S.Y4M2) &quot;MaxDate&quot;&#13;&#10;FROM &quot;DENIM_FINISHING&quot; S&#13;&#10;">
-        <Column Name="LastMonth" DataType="System.Int32"/>
-        <Column Name="LastYear" DataType="System.Int32"/>
-        <Column Name="EarlyYear" DataType="System.Int32"/>
-        <Column Name="MinDate" DataType="System.String"/>
-        <Column Name="MaxDate" DataType="System.String"/>
+      <TableDataSource Name="PARAM" DataType="System.Int32" Enabled="true" TableName="PARAM">
+        <Column Name="PERIOD" DataType="System.DateTime"/>
       </TableDataSource>
     </MsSqlDataConnection>
     <Parameter Name="Month" DataType="System.Int32" Expression="7"/>
     <Parameter Name="Year" DataType="System.Int32" Expression="0"/>
-    <Parameter Name="GetMonth" DataType="System.Int32" Expression="IIf([Month] &gt; 0 &amp;&amp; [Month] &lt; 13,[Month],[Brief.LastMonth])"/>
-    <Parameter Name="GetYear" DataType="System.Int32" Expression="IIf([Year] &gt;= [Brief.EarlyYear] &amp;&amp; [Year] &lt; [Brief.LastYear],[Year],[Brief.LastYear])"/>
+    <Parameter Name="GetMonth" DataType="System.Int32" Expression="IIf([Month] &gt;= 1 &amp;&amp; [Month] &lt;= 12,[Month],Month([PARAM.PERIOD]))"/>
+    <Parameter Name="GetYear" DataType="System.Int32" Expression="IIf([Year] &gt; 0 &amp;&amp; [Year] &lt;= Year([PARAM.PERIOD]),[Year],Year([PARAM.PERIOD]))"/>
     <Parameter Name="RangeYear" DataType="System.Int32" Expression="3"/>
     <Parameter Name="DateFrom" DataType="System.Int32"/>
     <Parameter Name="DateTo" DataType="System.Int32"/>
@@ -351,6 +356,9 @@ namespace FastReport
         </TableObject>
       </GroupFooterBand>
     </GroupHeaderBand>
-    <PageFooterBand Name="PageFooter1" Top="239.51" Width="1171.8" Height="18.9"/>
+    <DataBand Name="Data404" Top="239.51" Width="1171.8" Height="37.8" Visible="false" BeforePrintEvent="Data404_BeforePrint">
+      <TextObject Name="TxtNoData" Width="1171.8" Height="37.8" Text="THERE IS NO DATA FOR THIS PERIOD" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt"/>
+    </DataBand>
+    <PageFooterBand Name="PageFooter1" Top="281.31" Width="1171.8"/>
   </ReportPage>
 </Report>

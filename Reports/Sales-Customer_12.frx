@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Report ScriptLanguage="CSharp" ReferencedAssemblies="System.dll&#13;&#10;System.Drawing.dll&#13;&#10;System.Windows.Forms.dll&#13;&#10;System.Data.dll&#13;&#10;System.Xml.dll&#13;&#10;System.Collections.NonGeneric.dll&#13;&#10;System.Drawing.Primitives.dll" UseFileCache="true" StartReportEvent="_StartReport" ReportInfo.Created="10/18/2019 08:07:26" ReportInfo.Modified="10/30/2019 15:38:40" ReportInfo.CreatorVersion="2019.3.5.0">
+<Report ScriptLanguage="CSharp" ReferencedAssemblies="System.dll&#13;&#10;System.Drawing.dll&#13;&#10;System.Windows.Forms.dll&#13;&#10;System.Data.dll&#13;&#10;System.Xml.dll&#13;&#10;System.Collections.NonGeneric.dll&#13;&#10;System.Drawing.Primitives.dll" UseFileCache="true" StartReportEvent="_StartReport" ReportInfo.Created="10/18/2019 08:07:26" ReportInfo.Modified="10/31/2019 15:21:59" ReportInfo.CreatorVersion="2019.3.5.0">
   <ScriptText>using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -108,7 +108,7 @@ namespace FastReport
 }
 </ScriptText>
   <Dictionary>
-    <MsSqlDataConnection Name="Connection" ConnectionString="rijcmlqHwzMSgwTFaHpjtG3vsOj8TrCVffhCR2JFv7xvPWo98Q8hzUJp60SVHnXxIECwHKNp6oMNBpbLqcLrui6V1MI+xWP/56XPL5FBIgQjGknIMZ9/1Xy5wraKxi2qe2SGsp2UfAM9IAHsB67CMW/btEGhCTKDHMNfMzct0nOUax+60E/WnQ6z29ogYWizk67rd0tEzDxv8ZpoA2EF+d3WL6DJA==">
+    <MsSqlDataConnection Name="Connection" ConnectionString="rijcmlqHwzMSgwTFaHpjtG3vsOj8TrCVffhCR2JFv7xvPWo98Q8hzUJp60SVHnXxIECwHKNp6oMNBpbLqcLrui6V1MI+xWP/56XPL5FBIgQjGknIMZ9/1Xy5wraKxi2qe2SGsp2UfAM9IAHsB67CMW/btEGhCTKDHMNfMzct0nOUax+60E/WnQ6z29ogYWizk67rd0tOGV0J4cZXv+PcWsRdijaGA==">
       <TableDataSource Name="PARAM" DataType="System.Int32" Enabled="true" TableName="PARAM">
         <Column Name="PERIOD" DataType="System.DateTime"/>
       </TableDataSource>
