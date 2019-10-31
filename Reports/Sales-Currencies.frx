@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Report ScriptLanguage="CSharp" UseFileCache="true" SmoothGraphics="true" FinishReportEvent="_FinishReport" ReportInfo.Created="09/18/2019 10:20:46" ReportInfo.Modified="10/17/2019 16:21:38" ReportInfo.CreatorVersion="2019.3.5.0">
+<Report ScriptLanguage="CSharp" UseFileCache="true" SmoothGraphics="true" FinishReportEvent="_FinishReport" ReportInfo.Created="09/18/2019 10:20:46" ReportInfo.Modified="10/30/2019 16:49:29" ReportInfo.CreatorVersion="2019.3.5.0">
   <ScriptText>using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -46,6 +46,15 @@ namespace FastReport
       TotalExport += Convert.ToDouble(Report.GetParameter(&quot;Total_3.Export&quot;).Value);
       TotalAll += Convert.ToDouble(Report.GetParameter(&quot;Total_3&quot;).Value);
     }
+
+    private void Data404_BeforePrint(object sender, EventArgs e)
+    {
+      if (SACU_Data.RowNo &lt;= 0) {
+        Data404.Visible = true;
+        Data404.Height = Engine.FreeSpace;
+        TxtNoData.Height = Data404.Height;
+      }
+    }
   }
 }
 </ScriptText>
@@ -55,7 +64,7 @@ namespace FastReport
     <Style Name="EvenStyle" Border.Lines="All" Border.Color="Gray" Fill.Color="Gainsboro" Font="Arial, 10pt" ApplyTextFill="false" ApplyFont="false"/>
   </Styles>
   <Dictionary>
-    <MsSqlDataConnection Name="Connection" ConnectionString="rijcmlqHwzMSgwTFaHpjtG3vsOj8TrCVffhCR2JFv7xvPWo98Q8hzUJp60SVHnXxIECwHKNp6oMNBpbLqcLrui6V1MI+xWP/56XPL5FBIgQjGknIMZ9/1Xy5wraKxi2qe2SGsp2UfAM9IAHsB67CMW/btEGhCTKDHMNfMzct0nOUax+60E/WnQ6z29ogYWizk67rd0tDQ5v+7yS0r1y2oazOJIoxg==">
+    <MsSqlDataConnection Name="Connection" ConnectionString="rijcmlqHwzMSgwTFaHpjtG3vsOj8TrCVffhCR2JFv7xvPWo98Q8hzUJp60SVHnXxIECwHKNp6oMNBpbLqcLrui6V1MI+xWP/56XPL5FBIgQjGknIMZ9/1Xy5wraKxi2qe2SGsp2UfAM9IAHsB67CMW/btEGhCTKDHMNfMzct0nOUax+60E/WnQ6z29ogYWizk67rd0t1c5QBC2fjDl3/3oVL4wr3w==">
       <TableDataSource Name="SACU" DataType="System.Int32" Enabled="true" TableName="SACU">
         <Column Name="YYYYMM" DataType="System.String"/>
         <Column Name="LO_RP_INRP" DataType="System.Double"/>
@@ -130,8 +139,8 @@ namespace FastReport
   </Dictionary>
   <ReportPage Name="Page1" Landscape="true" PaperWidth="330" PaperHeight="215" LeftMargin="5" RightMargin="5" FirstPageSource="261" OtherPagesSource="261" Guides="141.75,708.75,831.6,1124.55,878.85,66.15,387.45,189,264.6,0,226.8,311.85,349.65,510.3,585.9,633.15,926.1,1171.8,1086.75,1048.95,1001.7,756,793.8,963.9" Watermark.Font="Arial, 60pt">
     <ReportTitleBand Name="ReportTitle1" Width="1209.6" Height="50.86">
-      <TextObject Name="Text1" Top="9.45" Width="1171.8" Height="18.9" Text="SALES SUMMARY IN [GetYear]" HorzAlign="Center" Font="MS Gothic, 9pt"/>
-      <TextObject Name="Text2" Top="22.51" Width="1171.8" Height="18.9" Text="(CLASSFIED BY SALES ORIGINAL CURRENCY)" HorzAlign="Center" Font="MS Gothic, 9pt, style=Bold, Underline"/>
+      <TextObject Name="Text1" Top="9.45" Width="1219.05" Height="18.9" Text="SALES SUMMARY IN [GetYear]" HorzAlign="Center" Font="MS Gothic, 9pt"/>
+      <TextObject Name="Text2" Top="22.51" Width="1219.05" Height="18.9" Text="(CLASSFIED BY SALES ORIGINAL CURRENCY)" HorzAlign="Center" Font="MS Gothic, 9pt, style=Bold, Underline"/>
     </ReportTitleBand>
     <PageHeaderBand Name="PageHeader1" Top="54.86" Width="1209.6" Height="56.7" Border.Lines="All" Border.TopLine.Style="Double" Border.BottomLine.Style="Double" Guides="18.9,37.8,0,56.7">
       <TextObject Name="Text3" Width="66.15" Height="56.7" Border.Lines="Right" Border.TopLine.Style="Double" Border.RightLine.Width="2" Text="MONTH" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 9pt"/>
@@ -303,6 +312,9 @@ namespace FastReport
         <TextObject Name="Text117" Left="1086.75" Width="37.8" Height="37.8" Border.Lines="Left, Right" Border.LeftLine.Color="DarkGray" Border.RightLine.Width="2" Text="[[Total_2.Export] / [Total_2] * 100]%" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Bottom" Font="MS Gothic, 8pt"/>
       </GroupFooterBand>
     </GroupHeaderBand>
-    <PageFooterBand Name="PageFooter1" Top="243.51" Width="1209.6" Height="9.45"/>
+    <DataBand Name="Data404" Top="243.51" Width="1209.6" Height="37.8" Visible="false" BeforePrintEvent="Data404_BeforePrint">
+      <TextObject Name="TxtNoData" Width="1209.6" Height="37.8" Text="THERE IS NO DATA FOR THIS PERIOD" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt"/>
+    </DataBand>
+    <PageFooterBand Name="PageFooter1" Top="285.31" Width="1209.6" Height="9.45"/>
   </ReportPage>
 </Report>

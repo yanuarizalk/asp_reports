@@ -29,8 +29,8 @@
             case "sales-annualraws":
             case "sales-denim":
             case "sales-denimyard":
-            case "sales-customer12":
-            case "sales-customer24": {
+            case "sales-customer_12":
+            case "sales-customer_24": {
                 @(Html.DevExtreme().Form()
                     .ID("filter-form").LabelLocation(FormLabelLocation.Left)
                     .ShowColonAfterLabel(true)
@@ -116,7 +116,7 @@
             for (iMonth = 0; iMonth <= 11; iMonth++) {
                 months.push({ id: iMonth, val: new Date(0, iMonth).toLocaleString('en', { month: 'long' }) });
             }
-            for (iYear = 2015; iYear <= new Date().getFullYear(); iYear++) {
+            for (iYear = new Date().getFullYear(); iYear >= 1973; iYear--) {
                 years.push(iYear);
             }
             $(document).on('click', '#filter-btn', function () {
