@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using ASP_Web_Reports.Libs;
 
 namespace ASP_Web_Reports.Controllers
 {
@@ -9,7 +10,8 @@ namespace ASP_Web_Reports.Controllers
             AuthCheckHandler();
             ViewData["BaseUrl"] = GetBaseUrl();
             ViewData["AccessMaster"] = CheckAccess(4);
-            ViewData["AccessSales"] = CheckAccess(ACCESS.SALES);
+            //ViewData["AccessSales"] = CheckAccess(ACCESS.SALES);
+            ViewData["UA"] = GetAccess();
             //HttpContext.Response.RegisterForDispose(db);
             //ViewData["Master"] = CheckAccess();
         }

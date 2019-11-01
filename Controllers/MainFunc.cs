@@ -38,7 +38,8 @@ namespace ASP_Web_Reports.Controllers {
             SALES_PRODUCTION = 18,
             SALES_CUSTOMER12 = 19,
             SALES_CUSTOMER24 = 20,
-            SALES_DENIM_YARD = 21
+            SALES_DENIM_YARD = 21,
+            SALES_DASHBOARD = 22
         };
 
         protected override void Dispose(bool disposing) {
@@ -107,6 +108,21 @@ namespace ASP_Web_Reports.Controllers {
         public string getRoute() {
             return HttpContext.Request.Path.Value.ToLower().Trim('/');
         }
+
+        public string[] GetAccess() {
+            if (!IsAuthenticated()) return new[] { "" };
+            var ctxUser = db.users.Find(GetID());
+            if (ctxUser.ID_Group == 0) {
+                return ctxUser.Access.Split(',');
+            } else {
+                var ctxGroup = db.groups.Find(ctxUser.ID_Group);
+                if (ctxGroup == null) {
+                    return ctxUser.Access.Split(',');
+                } else {
+                    return ctxGroup.Access_Default.Split(',');
+                }
+            }
+        }
         public bool CheckAccess(int idMenu = 0) {
             string sAccess = "0";
             if (!IsAuthenticated()) return false;
@@ -116,7 +132,8 @@ namespace ASP_Web_Reports.Controllers {
             } else {
                 var ctxGroup = db.groups.Find(ctxUser.ID_Group);
                 if (ctxGroup == null) {
-                    return false;
+                    //return false;
+                    sAccess = ctxUser.Access;
                 } else {
                     sAccess = ctxGroup.Access_Default;
                 }
@@ -124,14 +141,13 @@ namespace ASP_Web_Reports.Controllers {
             if (sAccess == "*") return true;
             bool cb = false;
             Menu ctxMenu;
-            //Console.WriteLine(getRoute());
             if (idMenu == 0) {
-                ctxMenu = db.menu.SingleOrDefault(res => (res.Route.ToLower() == getRoute().Substring(0, res.Route.Length)) && (res.Route != null));
+                ctxMenu = db.menu.SingleOrDefault(res => ( res.Route.ToLower() == getRoute().Substring(0, res.Route.Length) && !String.IsNullOrEmpty(res.Route) ));
             } else {
                 ctxMenu = db.menu.SingleOrDefault(res => res.ID == idMenu);
             }
-
-            if (ctxMenu == null) return true;
+            //Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(ctxMenu));
+            if (ctxMenu == null) return false;
             foreach (string sFor in sAccess.Split(",")) {
                 if (sFor == ctxMenu.ID.ToString()) {
                     cb = true;

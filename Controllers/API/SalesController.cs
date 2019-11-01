@@ -24,7 +24,7 @@ namespace ASP_Web_Reports.Controllers.API
         public async Task<string> Post([FromForm] string value, string subRoute) {
             switch (subRoute.ToLower()) {
                 case "chart": {
-                    if (!CheckAccess(ACCESS.SALES)) return ErrorAccess();
+                    if (!CheckAccess(ACCESS.SALES_DASHBOARD)) return ErrorAccess();
                     string[] checker = { "range", "min", "max" };
                     if (!CheckPayLoad(checker)) return ErrorInvalid();
                     if (!ModelState.IsValid) return ErrorBadReq();
@@ -72,7 +72,7 @@ namespace ASP_Web_Reports.Controllers.API
                     }
                 }
                 case "summary": {
-                    if (!CheckAccess(ACCESS.SALES)) return ErrorAccess();
+                    if (!CheckAccess(ACCESS.SALES_DASHBOARD)) return ErrorAccess();
                     if (!ModelState.IsValid) return ErrorBadReq();
                     var yearNow = DateTime.Now.Year;
                     var pastYear = new {
@@ -109,7 +109,7 @@ namespace ASP_Web_Reports.Controllers.API
                     return Send(result);
                 }
                 case "detail": {
-                    if (!CheckAccess(ACCESS.SALES)) return ErrorAccess();
+                    if (!CheckAccess(ACCESS.SALES_DASHBOARD)) return ErrorAccess();
                     string[] checker = { "month", "year", "showBy" };
                     if (!CheckPayLoad(checker)) return ErrorInvalid();
                     if (!ModelState.IsValid) return ErrorBadReq();
@@ -175,44 +175,41 @@ namespace ASP_Web_Reports.Controllers.API
         [HttpGet("Reports/{report}")]
         /*[ProducesResponseType(typeof(HtmlString))]*/
         public async Task<ContentResult> Get([FromRoute] string report) {
+            /*Console.WriteLine("-----" + Newtonsoft.Json.JsonConvert.SerializeObject(RequestParser(new object[][] {
+                new object[] {"month", false},
+                new object[] {"year", true}
+            }, REQ_TYPE.QUERY)));*/
             string ReportId = "";
-
-            //if (!CheckAccess(ACCESS.SALES)) return new ContentResult { Content = ErrorAccess(), ContentType = "application/json" };
-            //if (!ModelState.IsValid) return new ContentResult { Content = ErrorBadAccess(), ContentType = "application/json" };
-            int iMonth, iYear; string sReport;
-            switch (report.ToLower()) {
-                case "currencies":
-                    if (!CheckAccess(ACCESS.SALES_CURRENCY)) return new ContentResult { Content = ErrorAccess(), ContentType = "application/json" }; break;
-                case "raws":
-                    if (!CheckAccess(ACCESS.SALES_RAWS)) return new ContentResult { Content = ErrorAccess(), ContentType = "application/json" }; break;
-                case "usd_qty":
-                    if (!CheckAccess(ACCESS.SALES_USD_QTY)) return new ContentResult { Content = ErrorAccess(), ContentType = "application/json" }; break;
-                case "prodgroup":
-                    if (!CheckAccess(ACCESS.SALES_PROD_GROUP)) return new ContentResult { Content = ErrorAccess(), ContentType = "application/json" }; break;
-                case "annualraws":
-                    if (!CheckAccess(ACCESS.SALES_ANNUAL_SUMMARY)) return new ContentResult { Content = ErrorAccess(), ContentType = "application/json" }; break;
-                case "byproduction":
-                    if (!CheckAccess(ACCESS.SALES_PRODUCTION)) return new ContentResult { Content = ErrorAccess(), ContentType = "application/json" }; break;
-                case "bydestination":
-                    if (!CheckAccess(ACCESS.SALES_DESTINATION)) return new ContentResult { Content = ErrorAccess(), ContentType = "application/json" }; break;
-                case "denim":
-                    if (!CheckAccess(ACCESS.SALES_DENIM)) return new ContentResult { Content = ErrorAccess(), ContentType = "application/json" }; break;
-                case "customer_12":
-                    if (!CheckAccess(ACCESS.SALES_CUSTOMER12)) return new ContentResult { Content = ErrorAccess(), ContentType = "application/json" }; break;
-                case "customer_24":
-                    if (!CheckAccess(ACCESS.SALES_CUSTOMER24)) return new ContentResult { Content = ErrorAccess(), ContentType = "application/json" }; break;
-                case "denimyard":
-                    if (!CheckAccess(ACCESS.SALES_DENIM_YARD)) return new ContentResult { Content = ErrorAccess(), ContentType = "application/json" }; break;
-                default:
-                    return new ContentResult {
-                        Content = ErrorInvalid(), ContentType = "application/json"
-                    };
-            }
-            sReport = report.ToLower();
-            if (Request.Query.TryGetValue("month", out StringValues sMonth) && Request.Query.TryGetValue("year", out StringValues sYear)) {
-                if (!int.TryParse(sMonth, out iMonth) || !int.TryParse(sYear, out iYear)) {
-                    return new ContentResult { Content = ErrorInvalid(), ContentType = "application/json" };
+            object[][] Access_Sales = {
+                new object[] { "currencies", ACCESS.SALES_CURRENCY },
+                new object[] { "raws", ACCESS.SALES_RAWS },
+                new object[] { "usd_qty", ACCESS.SALES_USD_QTY },
+                new object[] { "prodgroup", ACCESS.SALES_PROD_GROUP},
+                new object[] { "annualraws", ACCESS.SALES_ANNUAL_SUMMARY },
+                new object[] { "byproduction", ACCESS.SALES_PRODUCTION},
+                new object[] { "bydestination", ACCESS.SALES_DESTINATION },
+                new object[] { "denim", ACCESS.SALES_DENIM },
+                new object[] { "customer_12", ACCESS.SALES_DENIM },
+                new object[] { "customer_24", ACCESS.SALES_DENIM },
+                new object[] { "denimyard", ACCESS.SALES_CURRENCY }
+            };
+            int iMonth, iYear; string sReport; bool isExist = false;
+            foreach(object[] sales in Access_Sales) {
+                if (report.ToLower() == sales[0].ToString().ToLower()) {
+                    if (!CheckAccess((int)sales[1]))
+                        return new ContentResult { Content = ErrorAccess(), ContentType = "application/json" };
+                    isExist = true; break;
                 }
+            }
+            if (isExist == false)
+                return new ContentResult { Content = ErrorInvalid(), ContentType = "application/json" };
+
+            sReport = report.ToLower();
+            if (Request.Query.TryGetValue("year", out StringValues sYear) ) {
+                Request.Query.TryGetValue("month", out StringValues sMonth);
+                if (!int.TryParse(sYear, out iYear)) 
+                    return new ContentResult { Content = ErrorInvalid(), ContentType = "application/json" };
+                int.TryParse(sMonth, out iMonth);
                 var parseDate = new DateTime().AddYears(iYear - 1).AddMonths(iMonth);
                 var maxDate = db.Params.FirstOrDefault().Period;
                 if (maxDate < parseDate)
@@ -226,59 +223,7 @@ namespace ASP_Web_Reports.Controllers.API
                 ReportId = showReport("Sales-" + sReport, new object[][] { new object[] { "Month", iMonth }, new object[] { "Year", iYear } });
             } else
                 ReportId = showReport("Sales-" + sReport);
-            /*switch (report.ToLower()) {
-                case "currency": {
-                    if (Request.Query.TryGetValue("month", out StringValues sMonth) && Request.Query.TryGetValue("year", out StringValues sYear)) {
-                        int iMonth, iYear;
-                        if (!int.TryParse(sMonth, out iMonth) || !int.TryParse(sYear, out iYear)) {
-                            return new ContentResult { Content = ErrorInvalid(), ContentType = "application/json" };
-                        }
-                        iMonth++;
-                        ReportId = showReport("SalesCurrency", new object[][] { new object[] { "Month", iMonth }, new object[] { "Year", iYear } });
-                    } else {
-                        ReportId = showReport("SalesCurrency");
-                    }
-                    break;
-                } case "summary-1": {
-                    if (Request.Query.TryGetValue("month", out StringValues sMonth) && Request.Query.TryGetValue("year", out StringValues sYear)) {
-                        int iMonth, iYear;
-                        if (!int.TryParse(sMonth, out iMonth) || !int.TryParse(sYear, out iYear)) {
-                            return new ContentResult { Content = ErrorInvalid(), ContentType = "application/json" };
-                        }
-                        iMonth++;
-                        ReportId = showReport("Sales1", new object[][] { new object[] { "Month", iMonth }, new object[] { "Year", iYear } });
-                    } else {
-                        ReportId = showReport("Sales1");
-                    }
-                    break;
-                } case "summary-2": {
-                    if (Request.Query.TryGetValue("month", out StringValues sMonth) && Request.Query.TryGetValue("year", out StringValues sYear)) {
-                        int iMonth, iYear;
-                        if (!int.TryParse(sMonth, out iMonth) || !int.TryParse(sYear, out iYear)) {
-                            return new ContentResult { Content = ErrorInvalid(), ContentType = "application/json" };
-                        }
-                        iMonth++;
-                        ReportId = showReport("Sales2", new object[][] { new object[] { "Month", iMonth }, new object[] { "Year", iYear } });
-                    } else {
-                        ReportId = showReport("Sales2");
-                    }
-                    break;
-                } case "summary-3": {
-                    if (Request.Query.TryGetValue("month", out StringValues sMonth) && Request.Query.TryGetValue("year", out StringValues sYear)) {
-                        int iMonth, iYear;
-                        if (!int.TryParse(sMonth, out iMonth) || !int.TryParse(sYear, out iYear)) {
-                            return new ContentResult { Content = ErrorInvalid(), ContentType = "application/json" };
-                        }
-                        iMonth++;
-                        ReportId = showReport("Sales3", new object[][] { new object[] { "Month", iMonth }, new object[] { "Year", iYear } });
-                    } else {
-                        ReportId = showReport("Sales3");
-                    }
-                    break;
-                } default: return new ContentResult {
-                    Content = ErrorInvalid(), ContentType = "application/json"
-                };
-            }*/
+            
             return new ContentResult {
                 Content = /*await ViewBag.WebReport.Render().Result.Value*/ViewBag.WebReport.RenderSync().Value + "<script>var ReportId = \"" + ReportId +"\";</script>", ContentType = "text/html"
             };

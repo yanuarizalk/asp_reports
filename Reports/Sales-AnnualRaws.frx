@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Report ScriptLanguage="CSharp" ReferencedAssemblies="System.dll&#13;&#10;System.Drawing.dll&#13;&#10;System.Windows.Forms.dll&#13;&#10;System.Data.dll&#13;&#10;System.Xml.dll&#13;&#10;System.Collections.NonGeneric.dll" UseFileCache="true" StartReportEvent="_StartReport" ReportInfo.Created="10/18/2019 08:07:26" ReportInfo.Modified="10/31/2019 15:11:45" ReportInfo.CreatorVersion="2019.3.5.0">
+<Report ScriptLanguage="CSharp" ReferencedAssemblies="System.dll&#13;&#10;System.Drawing.dll&#13;&#10;System.Windows.Forms.dll&#13;&#10;System.Data.dll&#13;&#10;System.Xml.dll&#13;&#10;System.Collections.NonGeneric.dll" UseFileCache="true" StartReportEvent="_StartReport" ReportInfo.Created="10/18/2019 08:07:26" ReportInfo.Modified="11/01/2019 13:49:44" ReportInfo.CreatorVersion="2019.3.5.0">
   <ScriptText>using System;
 using System.ComponentModel;
 using System.Windows.Forms;
@@ -96,7 +96,7 @@ namespace FastReport
 }
 </ScriptText>
   <Dictionary>
-    <MsSqlDataConnection Name="Connection" ConnectionString="rijcmlqHwzMSgwTFaHpjtG3vsOj8TrCVffhCR2JFv7xvPWo98Q8hzUJp60SVHnXxIECwHKNp6oMNBpbLqcLrui6V1MI+xWP/56XPL5FBIgQjGknIMZ9/1Xy5wraKxi2qe2SGsp2UfAM9IAHsB67CMW/btEGhCTKDHMNfMzct0nOUax+60E/WnQ6z29ogYWizk67rd0t4+D7hxaBzhXZjJF949+hZg==">
+    <MsSqlDataConnection Name="Connection" ConnectionString="rijcmlqHwzMSgwTFaHpjtG3vsOj8TrCVffhCR2JFv7xvPWo98Q8hzUJp60SVHnXxIECwHKNp6oMNBpbLqcLrui6V1MI+xWP/56XPL5FBIgQjGknIMZ9/1Xy5wraKxi2qe2SGsp2UfAM9IAHsB67CMW/btEGhCTKDHMNfMzct0nOUax+60E/WnQ6z29ogYWizk67rd0t8WtBe6Omcl63zf9PFzlY7w==">
       <TableDataSource Name="USD_QTY" DataType="System.Int32" Enabled="true" TableName="USD_QTY">
         <Column Name="EX_COLOUR_KG" DataType="System.Double"/>
         <Column Name="EX_COLOUR_USD" DataType="System.Double"/>

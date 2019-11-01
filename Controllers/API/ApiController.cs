@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
 //using System.Text.Json;
 
@@ -13,7 +15,29 @@ namespace ASP_Web_Reports.Controllers.API {
         public const string DT_TAKE = "take";
         public const string DT_SKIP = "skip";
         public const string DT_REQTOTAL = "requireTotalCount";
+        public enum REQ_TYPE : int {
+            QUERY = 1, FORM_DATA = 2
+        }
 
+
+        public Dictionary<string, string> RequestParser(object[][] oData, REQ_TYPE reqType) {
+            Dictionary<string, string> cb = new Dictionary<string, string>();
+            // data name, isRequired or not
+            foreach (object[] data in oData) {
+                if (reqType == REQ_TYPE.QUERY) {
+                    if (Request.Query.TryGetValue(data[0].ToString(), out StringValues val)) {
+                        cb.Add(data[0].ToString(), val.ToString());
+                    } else if ((bool)data[1] == false) cb.Add(data[0].ToString(), null);
+                    else return null;
+                } else if (reqType == REQ_TYPE.FORM_DATA) {
+                    if (Request.Form.TryGetValue(data[0].ToString(), out StringValues val)) {
+                        cb.Add(data[0].ToString(), val.ToString());
+                    } else if ((bool)data[1] == false) cb.Add(data[0].ToString(), null);
+                    else return null;
+                }
+            }
+            return cb;
+        }
 
         public bool CheckPayLoad(string[] keyPL) {
             bool bReturn = true;
