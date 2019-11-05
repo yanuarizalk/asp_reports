@@ -228,5 +228,19 @@ namespace ASP_Web_Reports.Controllers.API
                 Content = /*await ViewBag.WebReport.Render().Result.Value*/ViewBag.WebReport.RenderSync().Value + "<script>var ReportId = \"" + ReportId +"\";</script>", ContentType = "text/html"
             };
         }
+
+        [HttpGet("Form/{subRoute}")]
+        public async Task<IActionResult> Get([FromRoute] string subRoute, string a) {
+            switch (subRoute.ToLower()) {
+                case "file_browser": {
+                    ViewData["Title"] = "Sales Detail";
+                    ViewData["Browse"] = "files/Sales_Detail/";
+                    return View("File_Browser");
+                }
+                default: {
+                    return View("404");
+                }
+            }
+        }
     }
 }

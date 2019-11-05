@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Report ScriptLanguage="CSharp" ReferencedAssemblies="System.dll&#13;&#10;System.Drawing.dll&#13;&#10;System.Windows.Forms.dll&#13;&#10;System.Data.dll&#13;&#10;System.Xml.dll&#13;&#10;System.Collections.NonGeneric.dll&#13;&#10;System.Drawing.Primitives.dll" UseFileCache="true" StartReportEvent="_StartReport" ReportInfo.Created="10/18/2019 08:07:26" ReportInfo.Modified="10/31/2019 15:21:59" ReportInfo.CreatorVersion="2019.3.5.0">
+<Report ScriptLanguage="CSharp" ReferencedAssemblies="System.dll&#13;&#10;System.Drawing.dll&#13;&#10;System.Windows.Forms.dll&#13;&#10;System.Data.dll&#13;&#10;System.Xml.dll&#13;&#10;System.Collections.NonGeneric.dll&#13;&#10;System.Drawing.Primitives.dll" UseFileCache="true" StartReportEvent="_StartReport" ReportInfo.Created="10/18/2019 08:07:26" ReportInfo.Modified="11/04/2019 08:38:40" ReportInfo.CreatorVersion="2019.3.5.0">
   <ScriptText>using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -56,8 +56,10 @@ namespace FastReport
 
     private void PageHeader1_BeforePrint(object sender, EventArgs e)
     {
-      int iMonth = (int)Report.GetParameterValue(&quot;GetMonth&quot;);
-      int iYear = (int)Report.GetParameterValue(&quot;GetYear&quot;) - 2000;
+      /*int iMonth = (int)Report.GetParameterValue(&quot;GetMonth&quot;);
+      int iYear = (int)Report.GetParameterValue(&quot;GetYear&quot;) - 2000;*/
+      int iMonth = Convert.ToInt32(Report.GetColumnValue(&quot;SALE_CUST_12MO.YYYYMM&quot;).ToString().Substring(4,2));
+      int iYear = Convert.ToInt32(Report.GetColumnValue(&quot;SALE_CUST_12MO.YYYYMM&quot;).ToString().Substring(0,4)) - 2000;
       for (int iFor = 3; iFor &lt;= 14; iFor++) {
         if ((iFor == 3) || (iFor == 14))
           Report.SetParameterValue(iFor == 14 ? &quot;DateFrom&quot; : &quot;DateTo&quot;, DateTime.Parse(iMonth + &quot; 1&quot;).ToString(&quot;MMM&quot;).ToUpper().Substring(0, 3) + &quot;-&quot; + iYear.ToString());
@@ -108,7 +110,7 @@ namespace FastReport
 }
 </ScriptText>
   <Dictionary>
-    <MsSqlDataConnection Name="Connection" ConnectionString="rijcmlqHwzMSgwTFaHpjtG3vsOj8TrCVffhCR2JFv7xvPWo98Q8hzUJp60SVHnXxIECwHKNp6oMNBpbLqcLrui6V1MI+xWP/56XPL5FBIgQjGknIMZ9/1Xy5wraKxi2qe2SGsp2UfAM9IAHsB67CMW/btEGhCTKDHMNfMzct0nOUax+60E/WnQ6z29ogYWizk67rd0tOGV0J4cZXv+PcWsRdijaGA==">
+    <MsSqlDataConnection Name="Connection" ConnectionString="rijcmlqHwzMSgwTFaHpjtG3vsOj8TrCVffhCR2JFv7xvPWo98Q8hzUJp60SVHnXxIECwHKNp6oMNBpbLqcLrui6V1MI+xWP/56XPL5FBIgQjGknIMZ9/1Xy5wraKxi2qe2SGsp2UfAM9IAHsB67CMW/btEGhCTKDHMNfMzct0nOUax+60E/WnQ6z29ogYWizk67rd0tRxIHcR7mfl36AGzzqrgLig==">
       <TableDataSource Name="PARAM" DataType="System.Int32" Enabled="true" TableName="PARAM">
         <Column Name="PERIOD" DataType="System.DateTime"/>
       </TableDataSource>
@@ -129,10 +131,12 @@ namespace FastReport
         <Column Name="M11" DataType="System.Double"/>
         <Column Name="M12" DataType="System.Double"/>
       </TableDataSource>
-      <TableDataSource Name="Table1" Alias="Overall" DataType="System.Int32" Enabled="true" SelectCommand="EXEC('SELECT &#13;&#10;	sum(M01) + sum(M02) + sum(M03) + sum(M04) + sum(M05) + sum(M06) + sum(M07) + sum(M08) + sum(M09) + sum(M10) + sum(M11) + sum(M12) &quot;TOTAL_ALL&quot;, count(*) &quot;TOTAL_ROW&quot;&#13;&#10;FROM SALE_CUST_12MO&#13;&#10;where yyyymm = ' + @yyyymm);">
+      <TableDataSource Name="Table1" Alias="Overall" DataType="System.Int32" Enabled="true" SelectCommand="EXEC('SELECT &#13;&#10;	sum(M01) + sum(M02) + sum(M03) + sum(M04) + sum(M05) + sum(M06) + sum(M07) + sum(M08) + sum(M09) + sum(M10) + sum(M11) + sum(M12) &quot;TOTAL_ALL&quot;, count(*) &quot;TOTAL_ROW&quot;&#13;&#10;FROM SALE_CUST_12MO&#13;&#10;where yyyymm = ' + @yyyymm + ' or ( CAST(yyyymm AS int) &gt;= ' + @min_date + '  and CAST(yyyymm AS int) &lt;= ' + @max_date + ' ) ');">
         <Column Name="TOTAL_ALL" DataType="System.Double"/>
         <Column Name="TOTAL_ROW" DataType="System.Int32"/>
         <CommandParameter Name="yyyymm" DataType="8" Expression="ToInt32([GetYear] + PadLeft(ToString([GetMonth]), 2, '0'))"/>
+        <CommandParameter Name="min_date" DataType="8" Expression="ToInt32(Format(&quot;{0:yyyyMM}&quot;,AddMonths(DateSerial([GetYear],[GetMonth],1),-11)))"/>
+        <CommandParameter Name="max_date" DataType="8" Expression="ToInt32(Format(&quot;{0:yyyyMM}&quot;,AddMonths(DateSerial([GetYear],[GetMonth],1),11)))"/>
       </TableDataSource>
     </MsSqlDataConnection>
     <Relation Name="USD_QTY_SACU" ParentDataSource="null" ChildDataSource="null" ParentColumns="YYYYMM" ChildColumns="YYYYMM" Enabled="true"/>
@@ -234,7 +238,7 @@ namespace FastReport
       </TextObject>
     </PageHeaderBand>
     <GroupHeaderBand Name="GroupHeader1" Top="102.5" Width="1209.6" Condition="[SALE_CUST_12MO.YYYYMM]" SortOrder="None">
-      <DataBand Name="Data1" Top="106.5" Width="1209.6" Height="22.68" CanGrow="true" CanShrink="true" BeforePrintEvent="Data1_BeforePrint" Guides="0,0,0,0" DataSource="SALE_CUST_12MO" Filter="[SALE_CUST_12MO.YYYYMM] == [GetYear] + &quot;&quot; + PadLeft(ToString([GetMonth]),2,'0')">
+      <DataBand Name="Data1" Top="106.5" Width="1209.6" Height="22.68" CanGrow="true" CanShrink="true" BeforePrintEvent="Data1_BeforePrint" Guides="0,0,0,0" DataSource="SALE_CUST_12MO" Filter="[SALE_CUST_12MO.YYYYMM] == [GetYear] + &quot;&quot; + PadLeft(ToString([GetMonth]),2,'0') || (  ToInt32([SALE_CUST_12MO.YYYYMM]) &lt;= ToInt32(Format(&quot;{0:yyyyMM}&quot;,AddMonths(DateSerial([GetYear],[GetMonth],1),11))) &amp;&amp; ToInt32([SALE_CUST_12MO.YYYYMM]) &gt;= ToInt32(Format(&quot;{0:yyyyMM}&quot;,AddMonths(DateSerial([GetYear],[GetMonth],1),-11)))  )">
         <TableObject Name="TData" Width="1213.38" Height="22.68">
           <TableColumn Name="Column296" Width="28.35"/>
           <TableColumn Name="Column297" Width="47.25"/>

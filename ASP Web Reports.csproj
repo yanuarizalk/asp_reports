@@ -18,6 +18,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DocumentationFile>
     </DocumentationFile>
+    <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
   <!--ItemGroup>
     <Watch Include="**\*.cs" Exclude="Views\*;wwwroot\*;**\*.cshtml;obj\**\*;bin\**\*" />
@@ -46,6 +47,8 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="BuildBundlerMinifier" Version="2.9.406" />
+    <PackageReference Include="DevExpress.AspNetCore.Common" Version="19.1.5" />
+    <PackageReference Include="DevExpress.AspNetCore.Core" Version="19.1.5" />
     <PackageReference Include="FastReport.Core" Version="2019.3.4" />
     <PackageReference Include="FastReport.Data.MsSql" Version="2019.3.0" />
     <PackageReference Include="FastReport.Web" Version="2019.3.4" />
@@ -71,6 +74,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Update="Views\Shared\File_Browser.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
     <Content Update="Views\Shared\Restricted.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>

@@ -1,16 +1,17 @@
 ﻿@{
     object[][] MenuSales = {
-        new object[] { "Raws", "Raw Materials", 11 },
-        new object[] { "Annual_Summary", "Annual Summary", 12 },
-        new object[] { "Usd_Qty", "USD Amount & Quantity", 13 },
-        new object[] { "Denim", "Denim Finishing", 14 },
-        new object[] { "Prod_Group", "Production Group", 15 },
-        new object[] { "Currency", "Currency Summary", 16 },
-        new object[] { "Destination", "Summary by Destination", 17 },
-        new object[] { "Production", "Summary by Production", 18 },
-        new object[] { "Customer12", "Customer 12 Months", 19 },
-        new object[] { "Customer24", "Customer 24 Months", 20 },
-        new object[] { "DenimYard", "Denim Yardage", 21 }
+        new object[] { "Raws", "Sales Summary by Product Type", 11 },
+        new object[] { "Annual_Summary", "Yearly Sales Summary by Product Type", 12 },
+        new object[] { "Usd_Qty", "Sales Summary USD Amount & Quantity", 13 },
+        new object[] { "Denim", "Denim Sales Summary", 14 },
+        new object[] { "Prod_Group", "Sales Summary by Product Nature", 15 },
+        new object[] { "Currency", "Sales Summary Classfied by Sales Original Currency", 16 },
+        new object[] { "Destination", "Sales Summary by Destination", 17 },
+        new object[] { "Production", "Yearly Sales Summary", 18 },
+        new object[] { "Customer12", "Sales Summary by Customer in the last 12 Months", 19 },
+        new object[] { "Customer24", "Sales Summary by Customer in the last 24 Months", 20 },
+        new object[] { "DenimYard", "Sales Denim Yardage in the last 8 Months", 21 },
+        new object[] { "#dl", "Sales Detail in Excel Format", 22 }
     };
 }
 
@@ -32,64 +33,23 @@
         <a href="#0">Sales</a>
         @:<ol class="dropdown-menu">
                     }
-            <li><a href="~/Reports/Sales/@((string)menu[0])">@((string)menu[1])</a></li>
+            <li><a href="~/@(menu[0].ToString().Substring(0,1) == "#" ? Html.Raw("files/SALES_DETAIL_IN_" + DateTime.Now.Year + ".xlsx") : Html.Raw("Reports/Sales/" + (string)menu[0]))">@((string)menu[1])</a></li>
+                    }
                 }
             }
-        }
-        if (HasSalesAccess == true) {
+            if (HasSalesAccess == true) {
         @:</ol>
     @:</li>
         }
-        <!--<li class="dropdown">
-            <a href="#0">Sales</a>
-            <ol class="dropdown-menu">
-                <li><a href="~/Reports/Sales/Raws">Raw Materials</a></li>
-                <li><a href="~/Reports/Sales/Annual_Summary">Annual Summary</a></li>
-                <li><a href="~/Reports/Sales/Usd_Qty">USD Amount & Quantity</a></li>
-                <li><a href="~/Reports/Sales/Denim">Denim Finishing</a></li>
-                <li><a href="~/Reports/Sales/Prod_Group">Production Group</a></li>
-                <li><a href="~/Reports/Sales/Currency">Currency Summary</a></li>
-                <li><a href="~/Reports/Sales/Destination">Summary by Destination</a></li>
-                <li><a href="~/Reports/Sales/Production">Summary by Production</a></li>
-                <li><a href="~/Reports/Sales/Customer12">Customer 12 Months</a></li>
-                <li><a href="~/Reports/Sales/Customer24">Customer 24 Months</a></li>
-                <li><a href="~/Reports/Sales/DenimYard">Denim Yardage</a></li>
-            </ol>
-        </li>-->
     }
         @if (ViewData["AccessMaster"] != null)
             @if ((bool)ViewData["AccessMaster"]) {
                 <li class="dropdown">
                     <a href="#0">Master</a>
                     <ol class="dropdown-menu">
-                        <!--li class="dropside">
-                            <a href="#0">Department</a>
-                            <ol class="dropdown-menu" data-drop="side">
-                                <li><a asp-controller="Department" asp-action="Division">Division</a></li>
-                                <li><a asp-controller="Department" asp-action="Group">Group</a></li>
-                            </ol>
-                        </li-->
                         <li><a asp-controller="User" asp-action="Index">Users</a></li>
-                        <!--li><a asp-controller="Menu" asp-action="Index">Menu Trust</a></li-->
                     </ol>
                 </li>}
-            <!--li class="dropdown">
-                <a href="#0">Reports</a>
-                <ol class="dropdown-menu">
-                    <li class="dropside">
-                        <a href="#0">Sales</a>
-                        <ol class="dropdown-menu" data-drop="side">
-                            <li><a href="~/Reports/Sales/Currency">Currency</a></li>
-                            <li><a href="~/Reports/Sales/Summary-1">Summary 1</a></li>
-                            <li><a href="~/Reports/Sales/Summary-2">Summary 2</a></li>
-                            <li><a href="~/Reports/Sales/Summary-3">Summary 3</a></li>
-                        </ol>
-                    </li>
-                    <li>
-                        <a asp-controller="Worker" asp-action="Index">Worker List</a>
-                    </li>
-                </ol>
-            </li-->
             <li class="dropdown" href="#0">
                 <a href="#0" style="padding: 0"><img src="~/images/user-default.svg" width="24" style="padding: 9px"></a>
                 <ol class="dropdown-menu">

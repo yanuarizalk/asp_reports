@@ -9,16 +9,21 @@
     @(Html.DevExtreme().List()
         /*.Width("100%").Height("100%")*/
         .Items(item => {
-            item.Add().Option("img_src", "cash-register.svg")
-                .Option("text", "Sales").Option("url", "Sales");
-            item.Add().Option("img_src", "change.svg")
-                .Option("text", "Payroll").Option("url", "Payrolls");
-            item.Add().Option("img_src", "warehouse-2.svg")
-                .Option("text", "Inventory").Option("url", "Inventories");
-            /*item.Add().Option("img_src", "manufacturing.svg")
-                .Option("text", "Production").Option("url", "Productions");*/
-            item.Add().Option("img_src", "right-arrow.svg")
-                .Option("text", "Back").Option("url", "#hide_nav-db");
+            if (ViewData["UA"] != null) {
+                if ((bool)ViewData["Access_Sales"])
+                    item.Add().Option("img_src", "cash-register.svg")
+                        .Option("text", "Sales").Option("url", "Sales");
+                if ((bool)ViewData["Access_Payroll"])
+                    item.Add().Option("img_src", "change.svg")
+                        .Option("text", "Payroll").Option("url", "Payrolls");
+                if ((bool)ViewData["Access_Inventory"])
+                    item.Add().Option("img_src", "warehouse-2.svg")
+                        .Option("text", "Inventory").Option("url", "Inventories");
+                /*item.Add().Option("img_src", "manufacturing.svg")
+                    .Option("text", "Production").Option("url", "Productions");*/
+                item.Add().Option("img_src", "right-arrow.svg")
+                    .Option("text", "Back").Option("url", "#hide_nav-db");
+            }
         })
         .ItemTemplate(
             @<div class="db-menu" data-url="<%- url %>">

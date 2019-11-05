@@ -135,7 +135,7 @@ namespace ASP_Web_Reports.Controllers.API {
                 case "new": {
                     try {
                         checker = new string[] {
-                            "uid", "pwdNew", "email", "status", "role", "customAccess"
+                            "uid", "pwdNew", "email"/*, "status", "role"*/, "customAccess"
                         };
                         if (!CheckPayLoad(checker)) return ErrorInvalid();
                         if (!CheckAccess(ACCESS.USER_ADD)) return ErrorAccess();

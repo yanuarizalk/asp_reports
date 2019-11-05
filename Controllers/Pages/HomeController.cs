@@ -11,7 +11,7 @@ namespace ASP_Web_Reports.Controllers
             db = context;
         }*/
         public IActionResult Index() {
-            ViewData["Access_Sales"] = CheckAccess(1);
+            ViewData["Access_Sales"] = CheckAccess(ACCESS.SALES_DASHBOARD);
             ViewData["Access_Payroll"] = CheckAccess(2);
             ViewData["Access_Inventory"] = CheckAccess(3);
             return View("Dashboard");

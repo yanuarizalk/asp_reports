@@ -175,6 +175,7 @@ namespace ASP_Web_Reports.Controllers {
             webReport.Debug = false;
             webReport.Report.UseFileCache = true;
             webReport.Report.NeedRefresh = true;
+            
             //webReport.Report.SetParameterValue("conString", Configuration.GetConnectionString("WMBContext"));
             ViewBag.WebReport = webReport;
             //Response.RegisterForDispose(webReport.Report);

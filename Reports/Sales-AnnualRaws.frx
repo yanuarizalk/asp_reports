@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Report ScriptLanguage="CSharp" ReferencedAssemblies="System.dll&#13;&#10;System.Drawing.dll&#13;&#10;System.Windows.Forms.dll&#13;&#10;System.Data.dll&#13;&#10;System.Xml.dll&#13;&#10;System.Collections.NonGeneric.dll" UseFileCache="true" StartReportEvent="_StartReport" ReportInfo.Created="10/18/2019 08:07:26" ReportInfo.Modified="11/01/2019 13:49:44" ReportInfo.CreatorVersion="2019.3.5.0">
+<Report ScriptLanguage="CSharp" ReferencedAssemblies="System.dll&#13;&#10;System.Drawing.dll&#13;&#10;System.Windows.Forms.dll&#13;&#10;System.Data.dll&#13;&#10;System.Xml.dll&#13;&#10;System.Collections.NonGeneric.dll" UseFileCache="true" StartReportEvent="_StartReport" ReportInfo.Created="10/18/2019 08:07:26" ReportInfo.Modified="11/04/2019 10:13:23" ReportInfo.CreatorVersion="2019.3.5.0">
   <ScriptText>using System;
 using System.ComponentModel;
 using System.Windows.Forms;
@@ -96,7 +96,7 @@ namespace FastReport
 }
 </ScriptText>
   <Dictionary>
-    <MsSqlDataConnection Name="Connection" ConnectionString="rijcmlqHwzMSgwTFaHpjtG3vsOj8TrCVffhCR2JFv7xvPWo98Q8hzUJp60SVHnXxIECwHKNp6oMNBpbLqcLrui6V1MI+xWP/56XPL5FBIgQjGknIMZ9/1Xy5wraKxi2qe2SGsp2UfAM9IAHsB67CMW/btEGhCTKDHMNfMzct0nOUax+60E/WnQ6z29ogYWizk67rd0t8WtBe6Omcl63zf9PFzlY7w==">
+    <MsSqlDataConnection Name="Connection" ConnectionString="rijcmlqHwzMSgwTFaHpjtG3vsOj8TrCVffhCR2JFv7xvPWo98Q8hzUJp60SVHnXxIECwHKNp6oMNBpbLqcLrui6V1MI+xWP/56XPL5FBIgQjGknIMZ9/1Xy5wraKxi2qe2SGsp2UfAM9IAHsB67CMW/btEGhCTKDHMNfMzct0nOUax+60E/WnQ6z29ogYWizk67rd0tdFD9+d/qYn1rr14TakmAOQ==">
       <TableDataSource Name="USD_QTY" DataType="System.Int32" Enabled="true" TableName="USD_QTY">
         <Column Name="EX_COLOUR_KG" DataType="System.Double"/>
         <Column Name="EX_COLOUR_USD" DataType="System.Double"/>
@@ -414,7 +414,7 @@ namespace FastReport
             <TableCell Name="Cell682" Border.Lines="Left, Right, Bottom" Border.RightLine.Color="DarkGray" Fill.Color="Gainsboro" Text="[[LO_EUR] + [EX_EUR]]" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
             <TableCell Name="Cell683" Border.Lines="Right, Bottom" Fill.Color="Gainsboro" Text="[([LO_EUR] + [EX_EUR])/ [TotalCurrencies] * 100]%" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
             <TableCell Name="Cell684" Border.Lines="Left, Right, Bottom" Border.RightLine.Color="DarkGray" Fill.Color="Gainsboro" Text="[TotalCurrencies]" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
-            <TableCell Name="Cell685" Border.Lines="Right, Bottom" Fill.Color="Gainsboro" Text="[[TotalCurrencies] / [TotalCurrencies] * 100]%" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="1" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell685" Border.Lines="Left, Right, Bottom" Border.LeftLine.Color="DarkGray" Fill.Color="Gainsboro" Text="[[TotalCurrencies] / [TotalCurrencies] * 100]%" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="1" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
           </TableRow>
           <TableRow Name="Row37">
             <TableCell Name="Cell696" Border.Lines="Right" Border.RightLine.Color="DarkGray" Font="Arial, 10pt"/>
