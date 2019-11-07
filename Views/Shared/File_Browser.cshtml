@@ -4,36 +4,32 @@
 }
 
 <script>
+    function onPopResize(args) {
+        $('#fb-pop .browser').css("min-height", parseFloat($('#fb-pop .dx-popup-content').css('height')) - 50 + "px");
+    }
     $(document).ready(function () {
-        /*$('#fb-manager').dxFileManager({
-            fileProvider: new DevExpress.FileProviders.WebApi({
-                endpointUrl: "@@ViewData["BaseUrl"]/api/files/sales_detail"
-            }),
-            //currentPath: "Widescreen",
-            permissions: {
-                download: true
-            },
-            itemView: {
-                mode: 'thumbnails',
-                showFolders: false, showParentFolder: false
-            },
-            selectionMode: 'single'
-        });*/
+        $('#fb-cancel').on('click', function () {
+            $('#fb-pop').dxPopup('hide');
+        });
+        $(document).on("click", "#fb-manager > .item", function () {
+            window.open("@ViewData["BaseUrl"]/files/sales_detail/" + $(this).data("name") + ".xlsx")
+        });
         SendAPI("", "@ViewData["BaseUrl"]/api/files/sales_detail", false, function (data, status, xhr) {
             if (data.status == "error") {
                 $('#fb-pop').dxPopup('hide');
                 showAlert("Error", data.desc);
             } else if (data.status == "success") {
-                for (var files in data.files) {
-                    var div = "<div class='item'>" +
-                        "<img src='@ViewData["BaseUrl"]/images/" + data.files[files].Ico + "'/>" +
-                        "<div class='item-title'>"+ data.files[files].Filename +"</div>" +
+                for (var index in data.files) {
+                    var div = "<div class='item' data-name='" + data.files[index].Filename + "' title='" + (data.files[index].Type == 'FILE' ? "Click to download it in " + data.files[index].FileType + " Format" : "Click to see inside of it") + "'>" +
+                        "<img src='@ViewData["BaseUrl"]/images/" + data.files[index].Ico + "'/>" +
+                        "<div class='item-title'>"+ data.files[index].Filename +"</div>" +
                         "</div>"
                     $("#fb-manager").append($(div));
                 }
+                //onPopResize();
             }
         }, function (xhr, status, err) {
-
+            console.log(xhr, status, err);
         })
     });
 
@@ -44,11 +40,15 @@
     .Visible(false).CloseOnOutsideClick(false)
     .ShowCloseButton(true)
     .Content(
-@<div>
-    <div id="fb-manager" class="browser">
+@<div class="popup">
+    <div id="fb-manager" class="browser popup-content">
 
     </div>
+    <div class="popup-footer">
+        @(Html.DevExtreme().Button().Text("Cancel").ID("fb-cancel"))
+    </div>
 </div>)
+    //.OnContentReady("onPopResize")
 //.Width("500px").Height("350px")
 )
 

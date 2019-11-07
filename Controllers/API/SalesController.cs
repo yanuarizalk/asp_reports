@@ -233,7 +233,7 @@ namespace ASP_Web_Reports.Controllers.API
         public async Task<IActionResult> Get([FromRoute] string subRoute, string a) {
             switch (subRoute.ToLower()) {
                 case "file_browser": {
-                    ViewData["Title"] = "Sales Detail";
+                    ViewData["Title"] = "Sales Detail per Year";
                     ViewData["Browse"] = "files/Sales_Detail/";
                     return View("File_Browser");
                 }

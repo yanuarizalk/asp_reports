@@ -19,6 +19,12 @@
 .dx-treeview-select-all-item {
     padding: 15px 0 15px 35px !important;
 }
+.dx-popup-content {
+    /*overflow-y: auto;*/
+}
+    .dx-popup-content .browser {
+        /*min-height: 50vh;*/
+    }
 .dx-popup-title {
     padding: 30px 0;
 }

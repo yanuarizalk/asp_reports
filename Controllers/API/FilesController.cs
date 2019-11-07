@@ -16,7 +16,7 @@ namespace ASP_Web_Reports.Controllers.API
     {
         [HttpPost("{subRoute}")]
         public async Task<string> Post([FromForm] string value, string subRoute) {
-            string[] checker; object data = new { };
+            /*string[] checker;*/ object data = new { };
             List<object> datas = new List<object>();
             switch (subRoute.ToLower()) {
                 case "sales_detail": {
@@ -24,7 +24,7 @@ namespace ASP_Web_Reports.Controllers.API
                     var oFiles = Directory.EnumerateFiles(hosting.WebRootPath + @"\files\Sales_Detail", "*.xlsx").Select(
                         sFilename => new { 
                             Filename = Path.GetFileNameWithoutExtension(sFilename),
-                            Ico = "ext/excel.svg", Type = "FILE"
+                            Ico = "ext/excel.svg", Type = "FILE", FileType = "Excel"
                         }
                     );
                     return Send(new { status = "success", files = oFiles });
