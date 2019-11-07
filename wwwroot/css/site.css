@@ -543,6 +543,34 @@ div[class*="page-"] .page {
             /*padding: 3px;*/
         }
 
+.browser {
+    display: block;
+    width: 100%;
+}
+    .browser > .item {
+        display: inline-block;
+        width: 96px;
+        cursor: pointer;
+        margin: 20px;
+        background-color: var(--light-color);
+        border: 1px solid var(--semi-color);
+        border-radius: 5px;
+    }
+    .browser > .item:hover {
+        filter: brightness(0.7);
+    }
+    .browser > .item > img {
+        width: 72px;
+        margin: 12px;
+    }
+    .browser > .item > .item-title {
+        width: 100%;
+        display: block;
+        background-color: var(--semi-color);
+        color: var(--text-second-color);
+        text-align: center;
+        padding: 5px 0;
+    }
 
 
 

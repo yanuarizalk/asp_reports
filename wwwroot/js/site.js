@@ -25,18 +25,18 @@ function SendAPI(idForm = '', url, isSerialize = false, cbSuccess = function () 
     var submit = {}, procData, contentType;
     showLoading();
     //if (isSerialize == false) {
-        procData = false; contentType = false;
-        if (idForm != '')
-            submit = new FormData(document.getElementById(idForm));
-        else
-            submit = new FormData();
-        if (arrAddData !== null)
-            if (arrAddData.constructor === Array) {
-                arrAddData.forEach(function (val) {
-                    if (val[0] != null && val[1] != null)
-                        submit.set(val[0], val[1]);
-                });
-            }
+    procData = false; contentType = false;
+    if (!(idForm == '' || idForm == null))
+        submit = new FormData(document.getElementById(idForm));
+    else
+        submit = new FormData();
+    if (arrAddData !== null)
+        if (arrAddData.constructor === Array) {
+            arrAddData.forEach(function (val) {
+                if (val[0] != null && val[1] != null)
+                    submit.set(val[0], val[1]);
+            });
+        }
     /*} else {
         procData = true;
         //contentType = 'application/x-www-form-urlencoded; charset=UTF-8';

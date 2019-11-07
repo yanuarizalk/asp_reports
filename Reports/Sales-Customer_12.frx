@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Report ScriptLanguage="CSharp" ReferencedAssemblies="System.dll&#13;&#10;System.Drawing.dll&#13;&#10;System.Windows.Forms.dll&#13;&#10;System.Data.dll&#13;&#10;System.Xml.dll&#13;&#10;System.Collections.NonGeneric.dll&#13;&#10;System.Drawing.Primitives.dll" UseFileCache="true" StartReportEvent="_StartReport" ReportInfo.Created="10/18/2019 08:07:26" ReportInfo.Modified="11/04/2019 08:38:40" ReportInfo.CreatorVersion="2019.3.5.0">
+<Report ScriptLanguage="CSharp" ReferencedAssemblies="System.dll&#13;&#10;System.Drawing.dll&#13;&#10;System.Windows.Forms.dll&#13;&#10;System.Data.dll&#13;&#10;System.Xml.dll&#13;&#10;System.Collections.NonGeneric.dll&#13;&#10;System.Drawing.Primitives.dll" UseFileCache="true" StartReportEvent="_StartReport" ReportInfo.Created="10/18/2019 08:07:26" ReportInfo.Modified="11/06/2019 13:08:48" ReportInfo.CreatorVersion="2019.3.5.0">
   <ScriptText>using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -110,7 +110,7 @@ namespace FastReport
 }
 </ScriptText>
   <Dictionary>
-    <MsSqlDataConnection Name="Connection" ConnectionString="rijcmlqHwzMSgwTFaHpjtG3vsOj8TrCVffhCR2JFv7xvPWo98Q8hzUJp60SVHnXxIECwHKNp6oMNBpbLqcLrui6V1MI+xWP/56XPL5FBIgQjGknIMZ9/1Xy5wraKxi2qe2SGsp2UfAM9IAHsB67CMW/btEGhCTKDHMNfMzct0nOUax+60E/WnQ6z29ogYWizk67rd0tRxIHcR7mfl36AGzzqrgLig==">
+    <MsSqlDataConnection Name="Connection" ConnectionString="rijcmlqHwzMSgwTFaHpjtG3vsOj8TrCVffhCR2JFv7xvPWo98Q8hzUJp60SVHnXxIECwHKNp6oMNBpbLqcLrui6V1MI+xWP/56XPL5FBIgQjGknIMZ9/1Xy5wraKxi2qe2SGsp2UfAM9IAHsB67CMW/btEGhCTKDHMNfMzct0nOUax+60E/WnQ6z29ogYWizk67rd0tNCrdQrb84EMefBGLEzCZ2g==">
       <TableDataSource Name="PARAM" DataType="System.Int32" Enabled="true" TableName="PARAM">
         <Column Name="PERIOD" DataType="System.DateTime"/>
       </TableDataSource>
@@ -238,7 +238,7 @@ namespace FastReport
       </TextObject>
     </PageHeaderBand>
     <GroupHeaderBand Name="GroupHeader1" Top="102.5" Width="1209.6" Condition="[SALE_CUST_12MO.YYYYMM]" SortOrder="None">
-      <DataBand Name="Data1" Top="106.5" Width="1209.6" Height="22.68" CanGrow="true" CanShrink="true" BeforePrintEvent="Data1_BeforePrint" Guides="0,0,0,0" DataSource="SALE_CUST_12MO" Filter="[SALE_CUST_12MO.YYYYMM] == [GetYear] + &quot;&quot; + PadLeft(ToString([GetMonth]),2,'0') || (  ToInt32([SALE_CUST_12MO.YYYYMM]) &lt;= ToInt32(Format(&quot;{0:yyyyMM}&quot;,AddMonths(DateSerial([GetYear],[GetMonth],1),11))) &amp;&amp; ToInt32([SALE_CUST_12MO.YYYYMM]) &gt;= ToInt32(Format(&quot;{0:yyyyMM}&quot;,AddMonths(DateSerial([GetYear],[GetMonth],1),-11)))  )">
+      <DataBand Name="Data1" Top="106.5" Width="1209.6" Height="22.68" CanGrow="true" CanShrink="true" BeforePrintEvent="Data1_BeforePrint" Guides="0,0,0,0" DataSource="SALE_CUST_12MO" Filter="[SALE_CUST_12MO.YYYYMM] == [GetYear] + &quot;&quot; + PadLeft(ToString([GetMonth]),2,'0')">
         <TableObject Name="TData" Width="1213.38" Height="22.68">
           <TableColumn Name="Column296" Width="28.35"/>
           <TableColumn Name="Column297" Width="47.25"/>

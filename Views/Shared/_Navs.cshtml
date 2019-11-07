@@ -11,7 +11,7 @@
         new object[] { "Customer12", "Sales Summary by Customer in the last 12 Months", 19 },
         new object[] { "Customer24", "Sales Summary by Customer in the last 24 Months", 20 },
         new object[] { "DenimYard", "Sales Denim Yardage in the last 8 Months", 21 },
-        new object[] { "#dl", "Sales Detail in Excel Format", 22 }
+        new object[] { "#dl", "Sales Detail in Excel Format", 23 }
     };
 }
 
@@ -33,11 +33,16 @@
         <a href="#0">Sales</a>
         @:<ol class="dropdown-menu">
                     }
-            <li><a href="~/@(menu[0].ToString().Substring(0,1) == "#" ? Html.Raw("files/SALES_DETAIL_IN_" + DateTime.Now.Year + ".xlsx") : Html.Raw("Reports/Sales/" + (string)menu[0]))">@((string)menu[1])</a></li>
-                    }
+            @if (menu[0].ToString().Substring(0, 1) == "#") {
+            <li><a href="#" id="mnu-@((string)menu[0].ToString().Substring(1))">@((string)menu[1])</a></li>
+            } else {
+            <li><a href="~/Reports/Sales/@((string)menu[0])">@((string)menu[1])</a></li>
+            }
+                    break;
                 }
             }
-            if (HasSalesAccess == true) {
+        }
+        if (HasSalesAccess == true) {
         @:</ol>
     @:</li>
         }
@@ -83,6 +88,25 @@
                         if (status == "success") {
                             $('body').append(data);
                             $('#cp-pop').dxPopup('show');
+                        }
+                    },
+                    error: function (xhr, status, err) { hideLoading(); ApiFetchError(); }
+                });
+            });
+            $('#mnu-dl').on('click', function () {
+                if ($('#fb-pop').length > 0) {
+                    $('#fb-pop').dxPopup('show');
+                    return;
+                }
+                showLoading();
+                $.ajax({
+                    url: "@ViewData["BaseUrl"]/api/sales/form/file_browser",
+                    method: 'GET',
+                    success: function (data, status, xhr) {
+                        hideLoading();
+                        if (status == "success") {
+                            $('body').append(data);
+                            $('#fb-pop').dxPopup('show');
                         }
                     },
                     error: function (xhr, status, err) { hideLoading(); ApiFetchError(); }

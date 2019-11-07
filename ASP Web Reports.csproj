@@ -110,6 +110,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\Reports\" />
+    <Content Include="Reports\*" CopyToOutputDirectory="Always" />
   </ItemGroup>
   <ProjectExtensions>
     <VisualStudio>

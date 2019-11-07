@@ -39,7 +39,8 @@ namespace ASP_Web_Reports.Controllers {
             SALES_CUSTOMER12 = 19,
             SALES_CUSTOMER24 = 20,
             SALES_DENIM_YARD = 21,
-            SALES_DASHBOARD = 22
+            SALES_DASHBOARD = 22,
+            SALES_DETAIL = 23
         };
 
         protected override void Dispose(bool disposing) {
@@ -171,6 +172,7 @@ namespace ASP_Web_Reports.Controllers {
                 foreach (object[] param in Params) {
                     webReport.Report.SetParameterValue((string)param[0], param[1]);
                 }
+            //webReport.DesignerLocale = "en";
             //Console.WriteLine(webReport.ID);
             webReport.Debug = false;
             webReport.Report.UseFileCache = true;

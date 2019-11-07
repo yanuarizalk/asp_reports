@@ -4,104 +4,54 @@
 }
 
 <script>
-    function onCpSubmit(ev) {
-        if ($('#fb-form').dxForm('validate').isValid) {
-            showConfirm("Change Password Confirmation", "Are you sure, want to change your current password to new one?");
-        }
-    }
-    function onCpShown(ev) {
-        $('#fb-form').dxForm('resetValues');
-    }
-
-    function onShowPassword(ev) {
-        var tag = $(ev.element).dxButton('option').tag;
-        if ($('#' + tag).dxTextBox('option').mode == "text") {
-            $('#' + tag).dxTextBox('option').mode = "password";
-            $('#' + tag).dxTextBox('option').buttons[0].options.icon = "/images/eye-blink.svg";
-            //$(ev.element).dxButton('option').icon = "/images/eye-blink.svg";
-        } else {
-            $('#' + tag).dxTextBox('option').buttons[0].options.icon = "/images/eye.svg";
-            $('#' + tag).dxTextBox('option').mode = "text";
-        }
-        $('#' + tag).dxTextBox('repaint');
-    }
-    function onPwChanged(ev) {
-        var val = $('#new').dxTextBox('option').text;
-        //var val = ev.value;
-        if (val.length >= 8) {
-            $('#fb-length > img')[0].style.display = 'none';
-            $('#fb-length > img')[1].style.display = 'inline-block';
-        }
-        else {
-            $('#fb-length > img')[1].style.display = 'none';
-            $('#fb-length > img')[0].style.display = 'inline-block';
-        }
-        if (val.match(/\d/) && val.match(/\W/)) {
-            $('#fb-nonletter > img')[0].style.display = 'none';
-            $('#fb-nonletter > img')[1].style.display = 'inline-block';
-        }
-        else {
-            $('#fb-nonletter > img')[1].style.display = 'none';
-            $('#fb-nonletter > img')[0].style.display = 'inline-block';
-        }
-        if (val.match(/[A-Z]/) && val.match(/[a-z]/)) {
-            $('#fb-letter > img')[0].style.display = 'none';
-            $('#fb-letter > img')[1].style.display = 'inline-block';
-        }
-        else {
-            $('#fb-letter > img')[1].style.display = 'none';
-            $('#fb-letter > img')[0].style.display = 'inline-block';
-        }
-        
-    }
-
     $(document).ready(function () {
-        $(document).on('click', '#btn-yes', function () {
-            $.modal.close();
-            SendDxForm("fb-form", "@ViewData["BaseUrl"]/api/users/change_pw", false,
-                function (data, status, xhr) {
-                    if (data.status == "success") {
-                        $('#fb-pop').dxPopup('hide');
-                        showAlert("Change password succeed", "Your password have been changed!");
-                    } else if (data.status == "error") showAlert("Error", data.desc);
-                }, function (xhr, status, err) {
-                    ApiFetchError();
+        /*$('#fb-manager').dxFileManager({
+            fileProvider: new DevExpress.FileProviders.WebApi({
+                endpointUrl: "@@ViewData["BaseUrl"]/api/files/sales_detail"
+            }),
+            //currentPath: "Widescreen",
+            permissions: {
+                download: true
+            },
+            itemView: {
+                mode: 'thumbnails',
+                showFolders: false, showParentFolder: false
+            },
+            selectionMode: 'single'
+        });*/
+        SendAPI("", "@ViewData["BaseUrl"]/api/files/sales_detail", false, function (data, status, xhr) {
+            if (data.status == "error") {
+                $('#fb-pop').dxPopup('hide');
+                showAlert("Error", data.desc);
+            } else if (data.status == "success") {
+                for (var files in data.files) {
+                    var div = "<div class='item'>" +
+                        "<img src='@ViewData["BaseUrl"]/images/" + data.files[files].Ico + "'/>" +
+                        "<div class='item-title'>"+ data.files[files].Filename +"</div>" +
+                        "</div>"
+                    $("#fb-manager").append($(div));
                 }
-            );
-        });
-        $(document).on('click', '#btn-no', function () {
-            $.modal.close();
-        });
+            }
+        }, function (xhr, status, err) {
+
+        })
     });
 
 </script>
 
-@using (Html.DevExtreme().NamedTemplate("PasswordInfo")) {
-<div class="fb-info">
-    <p id="fb-length">
-        8 Character Length  <img src="~/images/x.svg" /><img src="~/images/check.svg" style="display: none" />
-    </p>
-    <p id="fb-letter">
-        UPPERCASE & lowercase letter <img src="~/images/x.svg" /><img src="~/images/check.svg" style="display: none" />
-    </p>
-    <p id="fb-nonletter">
-        Number & Symbol character <img src="~/images/x.svg" /><img src="~/images/check.svg" style="display: none" />
-    </p>
-</div>
-}
-
 @(Html.DevExtreme().Popup()
-    .ID("fb-pop").Title((string)ViewData["Title"]).Visible(false).CloseOnOutsideClick(false)
-    .Content(@<div>
-    @(Html.DevExtreme()
-    
-    )
+    .ID("fb-pop").Title((string)ViewData["Title"])
+    .Visible(false).CloseOnOutsideClick(false)
+    .ShowCloseButton(true)
+    .Content(
+@<div>
+    <div id="fb-manager" class="browser">
+
+    </div>
 </div>)
-.Width("500px").Height("350px").OnShown("onCpShown")
+//.Width("500px").Height("350px")
 )
 
 <style>
-    .fb-info p img {
-        width: 12px;
-    }
+    
 </style>
