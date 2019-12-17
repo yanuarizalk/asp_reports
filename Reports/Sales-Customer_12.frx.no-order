@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Report ScriptLanguage="CSharp" ReferencedAssemblies="System.dll&#13;&#10;System.Drawing.dll&#13;&#10;System.Windows.Forms.dll&#13;&#10;System.Data.dll&#13;&#10;System.Xml.dll&#13;&#10;System.Collections.NonGeneric.dll&#13;&#10;System.Drawing.Primitives.dll" UseFileCache="true" StartReportEvent="_StartReport" ReportInfo.Created="10/18/2019 08:07:26" ReportInfo.Modified="12/11/2019 11:49:39" ReportInfo.CreatorVersion="2019.3.5.0">
+<Report ScriptLanguage="CSharp" ReferencedAssemblies="System.dll&#13;&#10;System.Drawing.dll&#13;&#10;System.Windows.Forms.dll&#13;&#10;System.Data.dll&#13;&#10;System.Xml.dll&#13;&#10;System.Collections.NonGeneric.dll&#13;&#10;System.Drawing.Primitives.dll" UseFileCache="true" StartReportEvent="_StartReport" ReportInfo.Created="10/18/2019 08:07:26" ReportInfo.Modified="11/11/2019 11:06:59" ReportInfo.CreatorVersion="2019.3.5.0">
   <ScriptText>using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -63,7 +63,6 @@ namespace FastReport
       for (int iFor = 3; iFor &lt;= 14; iFor++) {
         if ((iFor == 3) || (iFor == 14))
           Report.SetParameterValue(iFor == 14 ? &quot;DateFrom&quot; : &quot;DateTo&quot;, DateTime.Parse(iMonth + &quot; 1&quot;).ToString(&quot;MMM&quot;).ToUpper().Substring(0, 3) + &quot;-&quot; + iYear.ToString());
-        //MessageBox.Show(iMonth.ToString());
         THeader[iFor, 0].Text = DateTime.Parse(iMonth + &quot; 1&quot;).ToString(&quot;MMM&quot;).ToUpper().Substring(0, 3) + &quot;-&quot; + iYear.ToString();
         iMonth--;
         if (iMonth &lt;= 0) { iMonth = 12; iYear--; }
@@ -78,13 +77,13 @@ namespace FastReport
       else
         TData.FillColor = Color.Transparent;
       //if ((int)Report.GetVariableValue(&quot;Row#&quot;) == (int)Report.GetColumnValue(&quot;Overall.TOTAL_ROW&quot;)) {
-      /*if (Report.GetColumnValue(&quot;SALE_CUST_12MO.CUST_CD&quot;).ToString().ToUpper() == &quot;X-XXXX&quot;) {
+      if (Report.GetColumnValue(&quot;SALE_CUST_12MO.CUST_CD&quot;).ToString().ToUpper() == &quot;X-XXXX&quot;) {
         TData[1, 0].ColSpan = 2;
         TData[1, 0].Text = TData[2, 0].Text;
       } else { 
         TData[1,0].ColSpan = 1;
         TData[1, 0].Text = &quot;[SALE_CUST_12MO.CUST_CD]&quot;;
-      }*/
+      }
       
       /*if ((Data1.Height * 2 &gt;= Engine.FreeSpace) &amp;&amp; (Data1.Height &lt; Engine.FreeSpace))
         TData.Border.Lines = BorderLines.Bottom;
@@ -115,11 +114,11 @@ namespace FastReport
 }
 </ScriptText>
   <Dictionary>
-    <MsSqlDataConnection Name="Connection" ConnectionString="rijcmlqHwzMSgwTFaHpjtG3vsOj8TrCVffhCR2JFv7xvPWo98Q8hzUJp60SVHnXxIECwHKNp6oMNBpbLqcLrui6V1MI+xWP/56XPL5FBIgQjGknIMZ9/1Xy5wraKxi2qe2SGsp2UfAM9IAHsB67CMW/btEGhCTKDHMNfMzct0nOUax+60E/WnQ6z29ogYWizk67rd0tYcwPdD+nld0++pwSET1YFg==">
+    <MsSqlDataConnection Name="Connection" ConnectionString="rijcmlqHwzMSgwTFaHpjtG3vsOj8TrCVffhCR2JFv7xvPWo98Q8hzUJp60SVHnXxIECwHKNp6oMNBpbLqcLrui6V1MI+xWP/56XPL5FBIgQjGknIMZ9/1Xy5wraKxi2qe2SGsp2UfAM9IAHsB67CMW/btEGhCTKDHMNfMzct0nOUax+60E/WnQ6z29ogYWizk67rd0tcOdYFJMCVqBo2OkmmliOFw==">
       <TableDataSource Name="PARAM" DataType="System.Int32" Enabled="true" TableName="PARAM">
         <Column Name="PERIOD" DataType="System.DateTime"/>
       </TableDataSource>
-      <TableDataSource Name="SALE_CUST_12MO" DataType="System.Int32" Enabled="true" SelectCommand="SELECT * &#13;&#10;FROM (&#13;&#10;	SELECT TOP 1000 *&#13;&#10;		FROM SALE_CUST_12MO&#13;&#10;		where NOT (CUST_CD = 'X-XXXX' OR CUST_CD = 'Z-ZZZZ') AND YYYYMM = @YYYYMM&#13;&#10;		ORDER BY (&#13;&#10;			COALESCE(M01, 0) + COALESCE(M02, 0) + COALESCE(M03, 0) + COALESCE(M04, 0) +&#13;&#10;			COALESCE(M05, 0) + COALESCE(M06, 0) + COALESCE(M07, 0) + COALESCE(M08, 0) +&#13;&#10;			COALESCE(M09, 0) + COALESCE(M10, 0) + COALESCE(M11, 0) + COALESCE(M12, 0)&#13;&#10;		) DESC&#13;&#10;) a&#13;&#10;UNION ALL&#13;&#10;SELECT * &#13;&#10;FROM (&#13;&#10;	SELECT TOP 1000 *&#13;&#10;	FROM SALE_CUST_12MO&#13;&#10;	where CUST_CD = 'X-XXXX' OR CUST_CD = 'Z-ZZZZ' AND YYYYMM = @YYYYMM&#13;&#10;	ORDER BY CUST_CD&#13;&#10;) b">
+      <TableDataSource Name="SALE_CUST_12MO" DataType="System.Int32" Enabled="true" TableName="SALE_CUST_12MO">
         <Column Name="YYYYMM" DataType="System.String"/>
         <Column Name="CUST_CD" DataType="System.String"/>
         <Column Name="CUST_NM" DataType="System.String"/>
@@ -135,7 +134,6 @@ namespace FastReport
         <Column Name="M10" DataType="System.Double"/>
         <Column Name="M11" DataType="System.Double"/>
         <Column Name="M12" DataType="System.Double"/>
-        <CommandParameter Name="YYYYMM" DataType="22" Expression="[GetYear] + PadLeft(ToString([GetMonth]),2,'0')"/>
       </TableDataSource>
       <TableDataSource Name="Table1" Alias="Overall" DataType="System.Int32" Enabled="true" SelectCommand="EXEC('SELECT &#13;&#10;	sum(M01) + sum(M02) + sum(M03) + sum(M04) + sum(M05) + sum(M06) + sum(M07) + sum(M08) + sum(M09) + sum(M10) + sum(M11) + sum(M12) &quot;TOTAL_ALL&quot;, count(*) &quot;TOTAL_ROW&quot;&#13;&#10;FROM SALE_CUST_12MO&#13;&#10;where yyyymm = ' + @yyyymm + ' or ( CAST(yyyymm AS int) &gt;= ' + @min_date + '  and CAST(yyyymm AS int) &lt;= ' + @max_date + ' ) ');">
         <Column Name="TOTAL_ALL" DataType="System.Double"/>
@@ -147,7 +145,7 @@ namespace FastReport
     </MsSqlDataConnection>
     <Relation Name="USD_QTY_SACU" ParentDataSource="null" ChildDataSource="null" ParentColumns="YYYYMM" ChildColumns="YYYYMM" Enabled="true"/>
     <Relation Name="SACU_USD_QTY" ParentDataSource="null" ChildDataSource="null" ParentColumns="YYYYMM" ChildColumns="YYYYMM" Enabled="true"/>
-    <Parameter Name="Month" DataType="System.Int32" Expression="0"/>
+    <Parameter Name="Month" DataType="System.Int32" Expression="9"/>
     <Parameter Name="Year" DataType="System.Int32" Expression="0"/>
     <Parameter Name="GetMonth" DataType="System.Int32" Expression="IIf([Month] &gt;= 1 &amp;&amp; [Month] &lt;= 12,[Month],Month([PARAM.PERIOD]))"/>
     <Parameter Name="GetYear" DataType="System.Int32" Expression="IIf([Year] &gt; 0 &amp;&amp; [Year] &lt;= Year([PARAM.PERIOD]),[Year],Year([PARAM.PERIOD]))"/>
@@ -160,29 +158,29 @@ namespace FastReport
     </Parameter>
     <Total Name="TotalMonth" TotalType="Count" Evaluator="Data1" PrintOn="GroupFooter1" ResetOnReprint="true"/>
   </Dictionary>
-  <ReportPage Name="Page1" Landscape="true" PaperWidth="330" PaperHeight="215" LeftMargin="15" RightMargin="15" FirstPageSource="4" OtherPagesSource="4" Watermark.Font="Arial, 60pt">
-    <ReportTitleBand Name="ReportTitle1" Width="1134"/>
-    <PageHeaderBand Name="PageHeader1" Top="2" Width="1134" Height="94.5" BeforePrintEvent="PageHeader1_BeforePrint">
-      <TableObject Name="THeader" Top="56.7" Width="1134" Height="37.8">
+  <ReportPage Name="Page1" Landscape="true" PaperWidth="330" PaperHeight="215" LeftMargin="5" RightMargin="5" FirstPageSource="261" OtherPagesSource="261" Watermark.Font="Arial, 60pt">
+    <ReportTitleBand Name="ReportTitle1" Width="1209.6"/>
+    <PageHeaderBand Name="PageHeader1" Top="2" Width="1209.6" Height="94.5" BeforePrintEvent="PageHeader1_BeforePrint">
+      <TableObject Name="THeader" Top="56.7" Width="1213.38" Height="37.8">
         <TableColumn Name="Column243" Width="28.35"/>
         <TableColumn Name="Column244" Width="47.25"/>
-        <TableColumn Name="Column245" Width="170.1"/>
-        <TableColumn Name="Column246" Width="47.25"/>
-        <TableColumn Name="Column247" Width="47.25"/>
-        <TableColumn Name="Column248" Width="47.25"/>
-        <TableColumn Name="Column249" Width="47.25"/>
-        <TableColumn Name="Column250" Width="47.25"/>
-        <TableColumn Name="Column251" Width="47.25"/>
-        <TableColumn Name="Column252" Width="47.25"/>
-        <TableColumn Name="Column253" Width="47.25"/>
-        <TableColumn Name="Column254" Width="47.25"/>
-        <TableColumn Name="Column255" Width="47.25"/>
-        <TableColumn Name="Column256" Width="47.25"/>
-        <TableColumn Name="Column257" Width="47.25"/>
+        <TableColumn Name="Column245" Width="151.2"/>
+        <TableColumn Name="Column246" Width="56.7"/>
+        <TableColumn Name="Column247" Width="56.7"/>
+        <TableColumn Name="Column248" Width="56.7"/>
+        <TableColumn Name="Column249" Width="56.7"/>
+        <TableColumn Name="Column250" Width="56.7"/>
+        <TableColumn Name="Column251" Width="56.7"/>
+        <TableColumn Name="Column252" Width="56.7"/>
+        <TableColumn Name="Column253" Width="56.7"/>
+        <TableColumn Name="Column254" Width="56.7"/>
+        <TableColumn Name="Column255" Width="56.7"/>
+        <TableColumn Name="Column256" Width="56.7"/>
+        <TableColumn Name="Column257" Width="56.7"/>
         <TableColumn Name="Column258" Width="56.7"/>
-        <TableColumn Name="Column259" Width="47.25"/>
-        <TableColumn Name="Column260" Width="47.25"/>
-        <TableColumn Name="Column295" Width="170.1"/>
+        <TableColumn Name="Column259" Width="41.58"/>
+        <TableColumn Name="Column260" Width="56.7"/>
+        <TableColumn Name="Column295" Width="151.2"/>
         <TableRow Name="Row26">
           <TableCell Name="Cell493" Border.Lines="All" Border.TopLine.Style="Double" Border.BottomLine.Style="Double" Text="NO." HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt"/>
           <TableCell Name="Cell494" Border.Lines="Right, Top, Bottom" Border.TopLine.Style="Double" Border.BottomLine.Style="Double" Text="CODE" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt"/>
@@ -226,16 +224,16 @@ namespace FastReport
           <TableCell Name="Cell761" Border.Lines="Left, Right" Font="MS Gothic, 8pt"/>
         </TableRow>
       </TableObject>
-      <TextObject Name="Text115" Left="973.35" Width="160.65" Height="18.9" Text="DATE: [Day([Date])]-[UpperCase(Substring(MonthName(Month([Date])), 0, 3))]-[Year([Date])]" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt">
+      <TextObject Name="Text115" Left="1048.95" Width="160.65" Height="18.9" Text="DATE: [Day([Date])]-[UpperCase(Substring(MonthName(Month([Date])), 0, 3))]-[Year([Date])]" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt">
         <Formats>
           <GeneralFormat/>
           <GeneralFormat/>
           <GeneralFormat/>
         </Formats>
       </TextObject>
-      <TextObject Name="Text7" Top="9.45" Width="1134" Height="18.9" CanGrow="true" Text="SALES SUMMARY IN THE LAST 12 MONTHS&#13;&#10;(IN TOTAL SALES SEQUENCE - AMOUNT IN '000 USD)" HorzAlign="Center" Font="MS Gothic, 8pt"/>
-      <TextObject Name="Text8" Top="31.96" Width="1134" Height="18.9" Text="PERIOD: [DateFrom] UP TO [DateTo]" ProcessAt="PageFinished" HorzAlign="Center" Font="MS Gothic, 8pt, style=Bold, Underline"/>
-      <TextObject Name="Text140" Left="973.35" Top="37.8" Width="160.65" Height="18.9" Text="PAGE [Page#] OF [TotalPages#]" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt">
+      <TextObject Name="Text7" Top="9.45" Width="1209.6" Height="18.9" CanGrow="true" Text="SALES SUMMARY IN THE LAST 12 MONTHS&#13;&#10;(IN TOTAL SALES SEQUENCE - AMOUNT IN '000 USD)" HorzAlign="Center" Font="MS Gothic, 8pt"/>
+      <TextObject Name="Text8" Top="31.96" Width="1209.6" Height="18.9" Text="PERIOD: [DateFrom] UP TO [DateTo]" ProcessAt="PageFinished" HorzAlign="Center" Font="MS Gothic, 8pt, style=Bold, Underline"/>
+      <TextObject Name="Text140" Left="1048.95" Top="37.8" Width="160.65" Height="18.9" Text="PAGE [Page#] OF [TotalPages#]" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt">
         <Formats>
           <GeneralFormat/>
           <GeneralFormat/>
@@ -243,28 +241,28 @@ namespace FastReport
         </Formats>
       </TextObject>
     </PageHeaderBand>
-    <GroupHeaderBand Name="GroupHeader1" Top="98.5" Width="1134" Condition="[SALE_CUST_12MO.YYYYMM]" SortOrder="None">
-      <DataBand Name="Data1" Top="100.5" Width="1134" Height="22.68" CanGrow="true" CanShrink="true" BeforePrintEvent="Data1_BeforePrint" Guides="0,0,0,0" DataSource="SALE_CUST_12MO" Filter="[SALE_CUST_12MO.YYYYMM] == [GetYear] + &quot;&quot; + PadLeft(ToString([GetMonth]),2,'0')">
-        <TableObject Name="TData" Width="1134" Height="22.68">
+    <GroupHeaderBand Name="GroupHeader1" Top="98.5" Width="1209.6" Condition="[SALE_CUST_12MO.YYYYMM]" SortOrder="None">
+      <DataBand Name="Data1" Top="100.5" Width="1209.6" Height="22.68" CanGrow="true" CanShrink="true" BeforePrintEvent="Data1_BeforePrint" Guides="0,0,0,0" DataSource="SALE_CUST_12MO" Filter="[SALE_CUST_12MO.YYYYMM] == [GetYear] + &quot;&quot; + PadLeft(ToString([GetMonth]),2,'0')">
+        <TableObject Name="TData" Width="1213.38" Height="22.68">
           <TableColumn Name="Column296" Width="28.35"/>
           <TableColumn Name="Column297" Width="47.25"/>
-          <TableColumn Name="Column298" Width="170.1"/>
-          <TableColumn Name="Column299" Width="47.25"/>
-          <TableColumn Name="Column300" Width="47.25"/>
-          <TableColumn Name="Column301" Width="47.25"/>
-          <TableColumn Name="Column302" Width="47.25"/>
-          <TableColumn Name="Column303" Width="47.25"/>
-          <TableColumn Name="Column304" Width="47.25"/>
-          <TableColumn Name="Column305" Width="47.25"/>
-          <TableColumn Name="Column306" Width="47.25"/>
-          <TableColumn Name="Column307" Width="47.25"/>
-          <TableColumn Name="Column308" Width="47.25"/>
-          <TableColumn Name="Column309" Width="47.25"/>
-          <TableColumn Name="Column310" Width="47.25"/>
+          <TableColumn Name="Column298" Width="151.2"/>
+          <TableColumn Name="Column299" Width="56.7"/>
+          <TableColumn Name="Column300" Width="56.7"/>
+          <TableColumn Name="Column301" Width="56.7"/>
+          <TableColumn Name="Column302" Width="56.7"/>
+          <TableColumn Name="Column303" Width="56.7"/>
+          <TableColumn Name="Column304" Width="56.7"/>
+          <TableColumn Name="Column305" Width="56.7"/>
+          <TableColumn Name="Column306" Width="56.7"/>
+          <TableColumn Name="Column307" Width="56.7"/>
+          <TableColumn Name="Column308" Width="56.7"/>
+          <TableColumn Name="Column309" Width="56.7"/>
+          <TableColumn Name="Column310" Width="56.7"/>
           <TableColumn Name="Column311" Width="56.7"/>
-          <TableColumn Name="Column312" Width="47.25"/>
-          <TableColumn Name="Column313" Width="47.25"/>
-          <TableColumn Name="Column314" Width="170.1"/>
+          <TableColumn Name="Column312" Width="41.58"/>
+          <TableColumn Name="Column313" Width="56.7"/>
+          <TableColumn Name="Column314" Width="151.2"/>
           <TableRow Name="Row27" MinHeight="22.68" MaxHeight="75.6" Height="22.68" AutoSize="true">
             <TableCell Name="Cell705" Border.Lines="Left, Right" Border.TopLine.Style="Double" Border.BottomLine.Style="Double" Text="[Row#]" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt"/>
             <TableCell Name="Cell706" Border.Lines="Right" Border.TopLine.Style="Double" Border.BottomLine.Style="Double" Text="[SALE_CUST_12MO.CUST_CD]" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt"/>
@@ -288,27 +286,27 @@ namespace FastReport
           </TableRow>
         </TableObject>
       </DataBand>
-      <GroupFooterBand Name="GroupFooter1" Top="125.18" Width="1134" Height="28.35" BeforePrintEvent="Group_BeforePrint">
-        <TableObject Name="TGFooter" Width="1134" Height="22.68">
+      <GroupFooterBand Name="GroupFooter1" Top="125.18" Width="1209.6" Height="28.35" BeforePrintEvent="Group_BeforePrint">
+        <TableObject Name="TGFooter" Width="1213.38" Height="22.68">
           <TableColumn Name="Column315" Width="28.35"/>
           <TableColumn Name="Column316" Width="47.25"/>
-          <TableColumn Name="Column317" Width="170.1"/>
-          <TableColumn Name="Column318" Width="47.25"/>
-          <TableColumn Name="Column319" Width="47.25"/>
-          <TableColumn Name="Column320" Width="47.25"/>
-          <TableColumn Name="Column321" Width="47.25"/>
-          <TableColumn Name="Column322" Width="47.25"/>
-          <TableColumn Name="Column323" Width="47.25"/>
-          <TableColumn Name="Column324" Width="47.25"/>
-          <TableColumn Name="Column325" Width="47.25"/>
-          <TableColumn Name="Column326" Width="47.25"/>
-          <TableColumn Name="Column327" Width="47.25"/>
-          <TableColumn Name="Column328" Width="47.25"/>
-          <TableColumn Name="Column329" Width="47.25"/>
+          <TableColumn Name="Column317" Width="151.2"/>
+          <TableColumn Name="Column318" Width="56.7"/>
+          <TableColumn Name="Column319" Width="56.7"/>
+          <TableColumn Name="Column320" Width="56.7"/>
+          <TableColumn Name="Column321" Width="56.7"/>
+          <TableColumn Name="Column322" Width="56.7"/>
+          <TableColumn Name="Column323" Width="56.7"/>
+          <TableColumn Name="Column324" Width="56.7"/>
+          <TableColumn Name="Column325" Width="56.7"/>
+          <TableColumn Name="Column326" Width="56.7"/>
+          <TableColumn Name="Column327" Width="56.7"/>
+          <TableColumn Name="Column328" Width="56.7"/>
+          <TableColumn Name="Column329" Width="56.7"/>
           <TableColumn Name="Column330" Width="56.7"/>
-          <TableColumn Name="Column331" Width="47.25"/>
-          <TableColumn Name="Column332" Width="47.25"/>
-          <TableColumn Name="Column333" Width="170.1"/>
+          <TableColumn Name="Column331" Width="41.58"/>
+          <TableColumn Name="Column332" Width="56.7"/>
+          <TableColumn Name="Column333" Width="151.2"/>
           <TableRow Name="Row28" MinHeight="22.68" MaxHeight="75.6" Height="22.68" AutoSize="true">
             <TableCell Name="Cell724" Border.Lines="All" Border.BottomLine.Style="Double" Text="TOTALS" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt" ColSpan="3"/>
             <TableCell Name="Cell725" Border.Lines="All" Border.BottomLine.Style="Double" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt"/>
@@ -333,9 +331,9 @@ namespace FastReport
         </TableObject>
       </GroupFooterBand>
     </GroupHeaderBand>
-    <DataBand Name="Data404" Top="155.53" Width="1134" Height="37.8" Visible="false" BeforePrintEvent="Data404_BeforePrint">
-      <TextObject Name="TxtNoData" Width="1134" Height="37.8" Text="THERE IS NO DATA FOR THIS PERIOD" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt"/>
+    <DataBand Name="Data404" Top="155.53" Width="1209.6" Height="37.8" Visible="false" BeforePrintEvent="Data404_BeforePrint">
+      <TextObject Name="TxtNoData" Width="1209.6" Height="37.8" Text="THERE IS NO DATA FOR THIS PERIOD" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt"/>
     </DataBand>
-    <PageFooterBand Name="PageFooter1" Top="195.33" Width="1134"/>
+    <PageFooterBand Name="PageFooter1" Top="195.33" Width="1209.6"/>
   </ReportPage>
 </Report>

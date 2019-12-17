@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Report ScriptLanguage="CSharp" ReferencedAssemblies="System.dll&#13;&#10;System.Drawing.dll&#13;&#10;System.Windows.Forms.dll&#13;&#10;System.Data.dll&#13;&#10;System.Xml.dll&#13;&#10;System.Collections.NonGeneric.dll&#13;&#10;System.Drawing.Primitives.dll" UseFileCache="true" StartReportEvent="_StartReport" ReportInfo.Created="10/11/2019 15:35:16" ReportInfo.Modified="10/31/2019 11:18:39" ReportInfo.CreatorVersion="2019.3.5.0">
+<Report ScriptLanguage="CSharp" ReferencedAssemblies="System.dll&#13;&#10;System.Drawing.dll&#13;&#10;System.Windows.Forms.dll&#13;&#10;System.Data.dll&#13;&#10;System.Xml.dll&#13;&#10;System.Collections.NonGeneric.dll&#13;&#10;System.Drawing.Primitives.dll" UseFileCache="true" StartReportEvent="_StartReport" ReportInfo.Created="10/11/2019 15:35:16" ReportInfo.Modified="12/05/2019 16:17:52" ReportInfo.CreatorVersion="2019.3.5.0">
   <ScriptText>using System;
 using System.ComponentModel;
 using System.Windows.Forms;
@@ -372,7 +372,7 @@ namespace FastReport
     <Style Name="EvenStyle" Fill.Color="Gainsboro" Font="Arial, 10pt" ApplyBorder="false" ApplyTextFill="false" ApplyFont="false"/>
   </Styles>
   <Dictionary>
-    <MsSqlDataConnection Name="Connection" ConnectionString="rijcmlqHwzMSgwTFaHpjtG3vsOj8TrCVffhCR2JFv7xvPWo98Q8hzUJp60SVHnXxIECwHKNp6oMNBpbLqcLrui6V1MI+xWP/56XPL5FBIgQjGknIMZ9/1Xy5wraKxi2qe2SGsp2UfAM9IAHsB67CMW/btEGhCTKDHMNfMzct0nOUax+60E/WnQ6z29ogYWizk67rd0tO2pgWpwvBeCALlmCmpkn9A==">
+    <MsSqlDataConnection Name="Connection" ConnectionString="rijcmlqHwzMSgwTFaHpjtG3vsOj8TrCVffhCR2JFv7xvPWo98Q8hzUJp60SVHnXxIECwHKNp6oMNBpbLqcLrui6V1MI+xWP/56XPL5FBIgQjGknIMZ9/1Xy5wraKxi2qe2SGsp2UfAM9IAHsB67CMW/btEGhCTKDHMNfMzct0nOUax+60E/WnQ6z29ogYWizk67rd0tzoyJ09j+ly40usFz/7AAtw==">
       <TableDataSource Name="SALES_DESTINATIONX" Alias="SALES" DataType="System.Int32" Enabled="true" TableName="SALES_DESTINATIONX">
         <Column Name="DISTRICT" DataType="System.String"/>
         <Column Name="EXLO" DataType="System.String"/>
@@ -446,12 +446,9 @@ namespace FastReport
     <Parameter Name="DistrictName" DataType="System.String" Expression="[SALES.DISTRICT_NM]"/>
   </Dictionary>
   <ReportPage Name="Page3" Landscape="true" PaperWidth="330" PaperHeight="215" FirstPageSource="261" OtherPagesSource="261" Watermark.Font="Arial, 60pt" StartPageEvent="Page_StartPage">
-    <ReportTitleBand Name="ReportTitle3" Width="1171.8" Height="52.25" BeforePrintEvent="ReportTitle3_BeforePrint">
-      <TextObject Name="Text7" Top="9.45" Width="1171.8" Height="18.9" Text="SALES SUMMARY REPORT IN [GetYear]" HorzAlign="Center" Font="MS Gothic, 9pt"/>
-      <TextObject Name="Text8" Top="22.51" Width="1171.8" Height="18.9" Text="(AMOUNT IN '000 USD)" HorzAlign="Center" Font="MS Gothic, 9pt, style=Bold, Underline"/>
-    </ReportTitleBand>
-    <PageHeaderBand Name="PageHeader3" Top="56.25" Width="1171.8" Height="56.7">
-      <TableObject Name="AHTable" Width="1152.9" Height="56.7">
+    <ReportTitleBand Name="ReportTitle3" Width="1171.8" BeforePrintEvent="ReportTitle3_BeforePrint"/>
+    <PageHeaderBand Name="PageHeader3" Top="2" Width="1171.8" Height="108.95">
+      <TableObject Name="AHTable" Top="52.25" Width="1152.9" Height="56.7">
         <TableColumn Name="Column185" Width="122.85"/>
         <TableColumn Name="Column186" Width="47.25"/>
         <TableColumn Name="Column187" Width="37.8"/>
@@ -551,14 +548,23 @@ namespace FastReport
           <TableCell Name="Cell437" Border.Lines="Left, Right" Border.LeftLine.Color="DarkGray" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
         </TableRow>
       </TableObject>
+      <TextObject Name="Text7" Width="1171.8" Height="18.9" Text="SALES SUMMARY REPORT IN [GetYear]" HorzAlign="Center" Font="MS Gothic, 9pt"/>
+      <TextObject Name="Text8" Top="13.06" Width="1171.8" Height="18.9" Text="(AMOUNT IN '000 USD)" HorzAlign="Center" Font="MS Gothic, 9pt, style=Bold, Underline"/>
+      <TextObject Name="Text140" Left="1011.15" Top="32.35" Width="160.65" Height="18.9" Text="PAGE [Page#] OF [TotalPages#]" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt">
+        <Formats>
+          <GeneralFormat/>
+          <GeneralFormat/>
+          <GeneralFormat/>
+        </Formats>
+      </TextObject>
     </PageHeaderBand>
-    <DataBand Name="Data404" Top="116.95" Width="1171.8" Height="37.8" Visible="false" BeforePrintEvent="Data404_BeforePrint">
+    <DataBand Name="Data404" Top="112.95" Width="1171.8" Height="37.8" Visible="false" BeforePrintEvent="Data404_BeforePrint">
       <TextObject Name="TxtNoData" Width="1171.8" Height="37.8" Text="THERE IS NO DATA FOR THIS PERIOD" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt"/>
     </DataBand>
-    <GroupHeaderBand Name="GroupHeader5" Top="158.75" Width="1171.8" Condition="[SALES.EXLO]" SortOrder="None">
-      <GroupHeaderBand Name="GroupHeader6" Top="162.75" Width="1171.8" Condition="[SALES.DISTRICT_NM]" SortOrder="None">
-        <DataBand Name="Data3" Top="166.75" Width="1171.8" EvenStyle="EvenStyle" BeforePrintEvent="Area_BeforePrint" DataSource="SALES_DESTINATIONX"/>
-        <GroupFooterBand Name="GroupFooter5" Top="170.75" Width="1171.8" Height="28.35" BeforePrintEvent="GroupDistrict_BeforePrint">
+    <GroupHeaderBand Name="GroupHeader5" Top="152.75" Width="1171.8" Condition="[SALES.EXLO]" SortOrder="None">
+      <GroupHeaderBand Name="GroupHeader6" Top="154.75" Width="1171.8" Condition="[SALES.DISTRICT_NM]" SortOrder="None">
+        <DataBand Name="Data3" Top="156.75" Width="1171.8" EvenStyle="EvenStyle" BeforePrintEvent="Area_BeforePrint" DataSource="SALES_DESTINATIONX"/>
+        <GroupFooterBand Name="GroupFooter5" Top="158.75" Width="1171.8" Height="28.35" BeforePrintEvent="GroupDistrict_BeforePrint">
           <TableObject Name="AFTable" Width="1152.9" Height="28.35" EvenStyle="EvenStyle">
             <TableColumn Name="Column231" Width="122.85"/>
             <TableColumn Name="Column232" Width="47.25"/>
@@ -611,7 +617,7 @@ namespace FastReport
           </TableObject>
         </GroupFooterBand>
       </GroupHeaderBand>
-      <GroupFooterBand Name="GroupFooter6" Top="203.1" Width="1171.8" Height="47.25" Border.Lines="Left, Right" BeforePrintEvent="GroupDestination_BeforePrint">
+      <GroupFooterBand Name="GroupFooter6" Top="189.1" Width="1171.8" Height="47.25" Border.Lines="Left, Right" BeforePrintEvent="GroupDestination_BeforePrint">
         <TableObject Name="ATable" Width="1152.9" Height="28.35">
           <TableColumn Name="Column254" Width="122.85"/>
           <TableColumn Name="Column255" Width="47.25"/>
@@ -664,7 +670,7 @@ namespace FastReport
         </TableObject>
       </GroupFooterBand>
     </GroupHeaderBand>
-    <DataBand Name="Data5" Top="254.35" Width="1171.8" Height="85.05" BeforePrintEvent="Overall_BeforePrint" DataSource="SALES_DESTINATIONX" MaxRows="1">
+    <DataBand Name="Data5" Top="238.35" Width="1171.8" Height="85.05" BeforePrintEvent="Overall_BeforePrint" DataSource="SALES_DESTINATIONX" MaxRows="1">
       <TextObject Name="Text9" Top="66.15" Width="122.85" Height="18.9" Text="ASIA/AUS/AFR *)" VertAlign="Bottom" Font="MS Gothic, 9pt"/>
       <TableObject Name="OATable" Width="1152.9" Height="28.35" BeforePrintEvent="Overall_BeforePrint">
         <TableColumn Name="Column323" Width="122.85"/>
@@ -717,10 +723,10 @@ namespace FastReport
         </TableRow>
       </TableObject>
     </DataBand>
-    <GroupHeaderBand Name="GroupHeader7" Top="343.4" Width="1171.8" Border.Lines="Bottom" Condition="[SALES.EXLO]" SortOrder="None">
-      <GroupHeaderBand Name="GroupHeader8" Top="347.4" Width="1171.8" Condition="[SALES.DISTRICT]">
-        <DataBand Name="Data4" Top="351.4" Width="1171.8" DataSource="SALES_DESTINATIONX" Filter="[SALES.DISTRICT] == &quot;3&quot; || [SALES.DISTRICT] == &quot;4&quot; || [SALES.DISTRICT] == &quot;5&quot;"/>
-        <GroupFooterBand Name="GroupFooter8" Top="355.4" Width="1171.8" Height="28.35" BeforePrintEvent="GroupDistrict_BeforePrint">
+    <GroupHeaderBand Name="GroupHeader7" Top="325.4" Width="1171.8" Border.Lines="Bottom" Condition="[SALES.EXLO]" SortOrder="None">
+      <GroupHeaderBand Name="GroupHeader8" Top="327.4" Width="1171.8" Condition="[SALES.DISTRICT]">
+        <DataBand Name="Data4" Top="329.4" Width="1171.8" DataSource="SALES_DESTINATIONX" Filter="[SALES.DISTRICT] == &quot;3&quot; || [SALES.DISTRICT] == &quot;4&quot; || [SALES.DISTRICT] == &quot;5&quot;"/>
+        <GroupFooterBand Name="GroupFooter8" Top="331.4" Width="1171.8" Height="28.35" BeforePrintEvent="GroupDistrict_BeforePrint">
           <TableObject Name="DFTable" Width="1152.9" Height="28.35" EvenStyle="EvenStyle">
             <TableColumn Name="Column277" Width="122.85"/>
             <TableColumn Name="Column278" Width="47.25"/>
@@ -773,7 +779,7 @@ namespace FastReport
           </TableObject>
         </GroupFooterBand>
       </GroupHeaderBand>
-      <GroupFooterBand Name="GroupFooter7" Top="387.75" Width="1171.8" Height="103.95" BeforePrintEvent="GroupDistrict_BeforePrint">
+      <GroupFooterBand Name="GroupFooter7" Top="361.75" Width="1171.8" Height="37.8" BeforePrintEvent="GroupDistrict_BeforePrint">
         <TableObject Name="DTable" Width="1152.9" Height="28.35">
           <TableColumn Name="Column300" Width="122.85"/>
           <TableColumn Name="Column301" Width="47.25"/>
@@ -826,16 +832,16 @@ namespace FastReport
         </TableObject>
       </GroupFooterBand>
     </GroupHeaderBand>
-    <PageFooterBand Name="PageFooter3" Top="495.7" Width="1171.8"/>
+    <ColumnFooterBand Name="ColumnFooter1" Top="401.55" Width="1171.8" Height="75.6">
+      <TextObject Name="Text236" Left="9.45" Top="9.9" Width="66.15" Height="18.9" Text="REMARKS :&#13;&#10;" AutoWidth="true" Font="MS Gothic, 8pt"/>
+      <TextObject Name="Text237" Left="75.6" Top="9.9" Width="444.15" Height="66.15" Text="** TOTAL AMOUNT = TOTAL SALES DELIVERY - TOTAL SALES RETURN&#13;&#10;** EXCLUDING SALES DISCOUNT &amp; LEDGER JOURNAL ADJUSTMENT&#13;&#10;** CONVERSION RATE OF NON-USD CURRENCIES BASED ON TAX RATE&#13;&#10;** DESTINATION BASED ON FINAL COUNTRY THE GOODS ARE SHIPPED" Font="MS Gothic, 8pt"/>
+    </ColumnFooterBand>
+    <PageFooterBand Name="PageFooter3" Top="479.15" Width="1171.8"/>
   </ReportPage>
   <ReportPage Name="Page1" Landscape="true" PaperWidth="330" PaperHeight="215" FirstPageSource="261" OtherPagesSource="261" Watermark.Font="Arial, 60pt" StartPageEvent="Page_StartPage">
-    <ReportTitleBand Name="ReportTitle1" Width="1171.8" Height="52.25">
-      <TextObject Name="Text1" Top="9.45" Width="1171.8" Height="18.9" Text="SALES SUMMARY REPORT IN [GetYear]" HorzAlign="Center" Font="MS Gothic, 9pt"/>
-      <TextObject Name="Text2" Top="22.51" Width="1171.8" Height="18.9" Text="(AMOUNT IN '000 USD)" HorzAlign="Center" Font="MS Gothic, 9pt, style=Bold, Underline"/>
-      <TextObject Name="Text5" Top="33.35" Width="94.5" Height="18.9" Text="EXPORT SALES" VertAlign="Center" Font="MS Gothic, 9pt"/>
-    </ReportTitleBand>
-    <PageHeaderBand Name="PageHeader1" Top="56.25" Width="1171.8" Height="56.7">
-      <TableObject Name="EHTable" Width="1152.9" Height="56.7">
+    <ReportTitleBand Name="ReportTitle1" Width="1171.8"/>
+    <PageHeaderBand Name="PageHeader1" Top="2" Width="1171.8" Height="108.95">
+      <TableObject Name="EHTable" Top="52.25" Width="1152.9" Height="56.7">
         <TableColumn Name="Column346" Width="122.85"/>
         <TableColumn Name="Column347" Width="47.25"/>
         <TableColumn Name="Column348" Width="37.8"/>
@@ -935,10 +941,20 @@ namespace FastReport
           <TableCell Name="Cell506" Border.Lines="Left, Right" Border.LeftLine.Color="DarkGray" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
         </TableRow>
       </TableObject>
+      <TextObject Name="Text2" Top="22.51" Width="1171.8" Height="18.9" Text="(AMOUNT IN '000 USD)" HorzAlign="Center" Font="MS Gothic, 9pt, style=Bold, Underline"/>
+      <TextObject Name="Text5" Top="33.35" Width="94.5" Height="18.9" Text="EXPORT SALES" VertAlign="Center" Font="MS Gothic, 9pt"/>
+      <TextObject Name="Text141" Left="1011.15" Top="32.35" Width="160.65" Height="18.9" Text="PAGE [Page#] OF [TotalPages#]" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt">
+        <Formats>
+          <GeneralFormat/>
+          <GeneralFormat/>
+          <GeneralFormat/>
+        </Formats>
+      </TextObject>
+      <TextObject Name="Text1" Width="1171.8" Height="18.9" Text="SALES SUMMARY REPORT IN [GetYear]" HorzAlign="Center" Font="MS Gothic, 9pt"/>
     </PageHeaderBand>
-    <GroupHeaderBand Name="GroupHeader2" Top="116.95" Width="1171.8" Condition="[SALES.EXLO]" SortOrder="None">
-      <GroupHeaderBand Name="GroupHeader1" Top="120.95" Width="1171.8" Condition="[SALES.DISTRICT_NM]" SortOrder="None">
-        <DataBand Name="Data1" Top="124.95" Width="1171.8" Height="18.9" BeforePrintEvent="Area_BeforePrint" DataSource="SALES_DESTINATIONX" Filter="[SALES.EXLO] == &quot;E&quot;" KeepTogether="true">
+    <GroupHeaderBand Name="GroupHeader2" Top="112.95" Width="1171.8" Condition="[SALES.EXLO]" SortOrder="None">
+      <GroupHeaderBand Name="GroupHeader1" Top="114.95" Width="1171.8" Condition="[SALES.DISTRICT_NM]" SortOrder="None">
+        <DataBand Name="Data1" Top="116.95" Width="1171.8" Height="18.9" BeforePrintEvent="Area_BeforePrint" DataSource="SALES_DESTINATIONX" Filter="[SALES.EXLO] == &quot;E&quot;" KeepTogether="true">
           <TableObject Name="EDTable" Width="1152.9" Height="18.9" EvenStyle="EvenStyle">
             <TableColumn Name="Column24" Width="122.85"/>
             <TableColumn Name="Column25" Width="47.25"/>
@@ -990,7 +1006,7 @@ namespace FastReport
             </TableRow>
           </TableObject>
         </DataBand>
-        <GroupFooterBand Name="GroupFooter1" Top="147.85" Width="1171.8" Height="18.9" BeforePrintEvent="GroupDistrict_BeforePrint">
+        <GroupFooterBand Name="GroupFooter1" Top="137.85" Width="1171.8" Height="18.9" BeforePrintEvent="GroupDistrict_BeforePrint">
           <TableObject Name="EFTable" Width="1152.9" Height="18.9">
             <TableColumn Name="Column47" Width="122.85"/>
             <TableColumn Name="Column48" Width="47.25"/>
@@ -1043,7 +1059,7 @@ namespace FastReport
           </TableObject>
         </GroupFooterBand>
       </GroupHeaderBand>
-      <GroupFooterBand Name="GroupFooter2" Top="170.75" Width="1171.8" Height="28.35" BeforePrintEvent="GroupDestination_BeforePrint">
+      <GroupFooterBand Name="GroupFooter2" Top="158.75" Width="1171.8" Height="28.35" BeforePrintEvent="GroupDestination_BeforePrint">
         <TableObject Name="ETable" Top="9.45" Width="1152.9" Height="18.9">
           <TableColumn Name="Column70" Width="122.85"/>
           <TableColumn Name="Column71" Width="47.25"/>
@@ -1096,16 +1112,12 @@ namespace FastReport
         </TableObject>
       </GroupFooterBand>
     </GroupHeaderBand>
-    <PageFooterBand Name="PageFooter1" Top="203.1" Width="1171.8" Height="9.45"/>
+    <PageFooterBand Name="PageFooter1" Top="189.1" Width="1171.8"/>
   </ReportPage>
   <ReportPage Name="Page2" Landscape="true" PaperWidth="330" PaperHeight="215" FirstPageSource="261" OtherPagesSource="261" Watermark.Font="Arial, 60pt" StartPageEvent="Page_StartPage">
-    <ReportTitleBand Name="ReportTitle2" Width="1171.8" Height="52.25">
-      <TextObject Name="Text3" Top="9.45" Width="1171.8" Height="18.9" Text="SALES SUMMARY REPORT IN [GetYear]" HorzAlign="Center" Font="MS Gothic, 9pt"/>
-      <TextObject Name="Text4" Top="22.51" Width="1171.8" Height="18.9" Text="(AMOUNT IN '000 USD)" HorzAlign="Center" Font="MS Gothic, 9pt, style=Bold, Underline"/>
-      <TextObject Name="Text6" Top="33.35" Width="94.5" Height="18.9" Text="LOCAL SALES" VertAlign="Center" Font="MS Gothic, 9pt"/>
-    </ReportTitleBand>
-    <PageHeaderBand Name="PageHeader2" Top="56.25" Width="1171.8" Height="56.7">
-      <TableObject Name="LHTable" Width="1152.9" Height="56.7">
+    <ReportTitleBand Name="ReportTitle2" Width="1171.8"/>
+    <PageHeaderBand Name="PageHeader2" Top="2" Width="1171.8" Height="108.95">
+      <TableObject Name="LHTable" Top="52.25" Width="1152.9" Height="56.7">
         <TableColumn Name="Column369" Width="122.85"/>
         <TableColumn Name="Column370" Width="47.25"/>
         <TableColumn Name="Column371" Width="37.8"/>
@@ -1205,10 +1217,20 @@ namespace FastReport
           <TableCell Name="Cell575" Border.Lines="Left, Right" Border.LeftLine.Color="DarkGray" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
         </TableRow>
       </TableObject>
+      <TextObject Name="Text3" Width="1171.8" Height="18.9" Text="SALES SUMMARY REPORT IN [GetYear]" HorzAlign="Center" Font="MS Gothic, 9pt"/>
+      <TextObject Name="Text4" Top="22.51" Width="1171.8" Height="18.9" Text="(AMOUNT IN '000 USD)" HorzAlign="Center" Font="MS Gothic, 9pt, style=Bold, Underline"/>
+      <TextObject Name="Text6" Top="33.35" Width="94.5" Height="18.9" Text="LOCAL SALES" VertAlign="Center" Font="MS Gothic, 9pt"/>
+      <TextObject Name="Text142" Left="1011.15" Top="32.35" Width="160.65" Height="18.9" Text="PAGE [Page#] OF [TotalPages#]" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt">
+        <Formats>
+          <GeneralFormat/>
+          <GeneralFormat/>
+          <GeneralFormat/>
+        </Formats>
+      </TextObject>
     </PageHeaderBand>
-    <GroupHeaderBand Name="GroupHeader3" Top="116.95" Width="1171.8" Condition="[SALES.EXLO]" SortOrder="None">
-      <GroupHeaderBand Name="GroupHeader4" Top="120.95" Width="1171.8" Condition="[SALES.DISTRICT_NM]" SortOrder="None">
-        <DataBand Name="Data2" Top="124.95" Width="1171.8" Height="18.9" BeforePrintEvent="Area_BeforePrint" DataSource="SALES_DESTINATIONX" Filter="[SALES.EXLO] == &quot;L&quot;">
+    <GroupHeaderBand Name="GroupHeader3" Top="112.95" Width="1171.8" Condition="[SALES.EXLO]" SortOrder="None">
+      <GroupHeaderBand Name="GroupHeader4" Top="114.95" Width="1171.8" Condition="[SALES.DISTRICT_NM]" SortOrder="None">
+        <DataBand Name="Data2" Top="116.95" Width="1171.8" Height="18.9" BeforePrintEvent="Area_BeforePrint" DataSource="SALES_DESTINATIONX" Filter="[SALES.EXLO] == &quot;L&quot;">
           <TableObject Name="LDTable" Width="1152.9" Height="18.9" EvenStyle="EvenStyle">
             <TableColumn Name="Column116" Width="122.85"/>
             <TableColumn Name="Column117" Width="47.25"/>
@@ -1260,7 +1282,7 @@ namespace FastReport
             </TableRow>
           </TableObject>
         </DataBand>
-        <GroupFooterBand Name="GroupFooter3" Top="147.85" Width="1171.8" Height="18.9" BeforePrintEvent="GroupDistrict_BeforePrint">
+        <GroupFooterBand Name="GroupFooter3" Top="137.85" Width="1171.8" Height="18.9" BeforePrintEvent="GroupDistrict_BeforePrint">
           <TableObject Name="LFTable" Width="1152.9" Height="18.9">
             <TableColumn Name="Column139" Width="122.85"/>
             <TableColumn Name="Column140" Width="47.25"/>
@@ -1313,7 +1335,7 @@ namespace FastReport
           </TableObject>
         </GroupFooterBand>
       </GroupHeaderBand>
-      <GroupFooterBand Name="GroupFooter4" Top="170.75" Width="1171.8" Height="28.35" BeforePrintEvent="Overall_BeforePrint">
+      <GroupFooterBand Name="GroupFooter4" Top="158.75" Width="1171.8" Height="28.35" BeforePrintEvent="Overall_BeforePrint">
         <TableObject Name="LTable" Top="9.45" Width="1152.9" Height="18.9">
           <TableColumn Name="Column162" Width="122.85"/>
           <TableColumn Name="Column163" Width="47.25"/>
@@ -1366,6 +1388,10 @@ namespace FastReport
         </TableObject>
       </GroupFooterBand>
     </GroupHeaderBand>
-    <PageFooterBand Name="PageFooter2" Top="203.1" Width="1171.8"/>
+    <ColumnFooterBand Name="ColumnFooter2" Top="189.1" Width="1171.8" Height="85.05">
+      <TextObject Name="Text238" Left="9.45" Top="9.45" Width="66.15" Height="18.9" Text="REMARKS :&#13;&#10;" AutoWidth="true" Font="MS Gothic, 8pt"/>
+      <TextObject Name="Text239" Left="75.6" Top="9.45" Width="444.15" Height="75.6" Text="** TOTAL AMOUNT = TOTAL SALES DELIVERY - TOTAL SALES RETURN&#13;&#10;** EXCLUDING SALES DISCOUNT &amp; LEDGER JOURNAL ADJUSTMENT&#13;&#10;** CONVERSION RATE OF NON-USD CURRENCIES BASED ON TAX RATE&#13;&#10;** DESTINATION BASED ON FINAL COUNTRY THE GOODS ARE SHIPPED" Font="MS Gothic, 8pt"/>
+    </ColumnFooterBand>
+    <PageFooterBand Name="PageFooter2" Top="276.15" Width="1171.8"/>
   </ReportPage>
 </Report>

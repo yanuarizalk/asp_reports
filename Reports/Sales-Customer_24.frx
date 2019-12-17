@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Report ScriptLanguage="CSharp" ReferencedAssemblies="System.dll&#13;&#10;System.Drawing.dll&#13;&#10;System.Windows.Forms.dll&#13;&#10;System.Data.dll&#13;&#10;System.Xml.dll&#13;&#10;System.Collections.NonGeneric.dll&#13;&#10;System.Drawing.Primitives.dll" UseFileCache="true" StartReportEvent="_StartReport" ReportInfo.Created="10/18/2019 08:07:26" ReportInfo.Modified="11/04/2019 08:39:10" ReportInfo.CreatorVersion="2019.3.5.0">
+<Report ScriptLanguage="CSharp" ReferencedAssemblies="System.dll&#13;&#10;System.Drawing.dll&#13;&#10;System.Windows.Forms.dll&#13;&#10;System.Data.dll&#13;&#10;System.Xml.dll&#13;&#10;System.Collections.NonGeneric.dll&#13;&#10;System.Drawing.Primitives.dll" UseFileCache="true" StartReportEvent="_StartReport" ReportInfo.Created="10/18/2019 08:07:26" ReportInfo.Modified="11/11/2019 11:44:47" ReportInfo.CreatorVersion="2019.3.5.0">
   <ScriptText>using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -24,7 +24,7 @@ namespace FastReport
     //double[] TPerYear = new double[2];
     
     private double NanResolver(double num) {
-      if (Double.IsNaN(num))
+      if (Double.IsNaN(num) || Double.IsInfinity(num))
         return 0;
       else
         return num;
@@ -142,8 +142,9 @@ namespace FastReport
           for (int iMonthTo = 1; iMonthTo &lt;= (iCol &gt; START_COL + yearCol ? (int)Report.GetParameterValue(&quot;GetMonth&quot;) : 12); iMonthTo++)
             dTotal += (double)Report.GetColumnValue(&quot;SALES.&quot; + (iCol &gt; START_COL + yearCol ? &quot;B&quot; : &quot;A&quot;) + iMonthTo.ToString().PadLeft(2, '0'));
           //MessageBox.Show(Report.GetColumnValue(&quot;Overall.Total_&quot; + (iCol &gt; START_COL + yearCol ? &quot;B&quot; : &quot;A&quot;)).ToString());
+          //MessageBox.Show(Report.GetColumnValue(&quot;Overall.Total_&quot; + (iCol &gt; START_COL + yearCol ? &quot;B&quot; : &quot;A&quot;)).ToString());
           dTotal = dTotal / (double)Report.GetColumnValue(&quot;Overall.Total_&quot; + (iCol &gt; START_COL + yearCol ? &quot;B&quot; : &quot;A&quot;)) * 100;
-          TData[iCol,0].Text = String.Format(&quot;{0:N1}&quot;, dTotal) + &quot;%&quot;;
+          TData[iCol,0].Text = String.Format(&quot;{0:N1}&quot;, NanResolver(dTotal)) + &quot;%&quot;;
         }
         //Total
         else if ((iCol == START_COL + yearCol - 3) || (iCol == 22 - 3)) {
@@ -162,11 +163,17 @@ namespace FastReport
       
       if ((((int)Report.GetVariableValue(&quot;Row#&quot;) + 2) / 3 % 2) == 0)
         Data1.FillColor = Color.Gainsboro;
-      if ((int)Report.GetVariableValue(&quot;Row#&quot;) == (int)Report.GetColumnValue(&quot;Overall.TOTAL_ROW&quot;)) {
+      //if ((int)Report.GetVariableValue(&quot;Row#&quot;) == (int)Report.GetColumnValue(&quot;Overall.TOTAL_ROW&quot;)) {
+      /*if (Report.GetColumnValue(&quot;SALES.CUST_CD&quot;).ToString().ToUpper() == &quot;X-XXXX&quot;) {
         TData[1, 0].ColSpan = 2;
         TData[1, 0].Text = TData[2, 0].Text;
         TData[1, 0].Border.RightLine.Color = Color.Black;
-      }
+      } else { 
+        TData[1,0].ColSpan = 1;
+        TData[1, 0].Text = &quot;[SALES.CUST_CD]&quot;;
+        TData[1, 0].Border.RightLine.Color = Color.DarkGray;
+      }*/
+      
       /*if ((Data1.Height * 2 &gt;= Engine.FreeSpace) &amp;&amp; (Data1.Height &lt; Engine.FreeSpace))
         TData.Border.Lines = BorderLines.Bottom;
       else TData.Border.Lines = BorderLines.None;*/
@@ -207,7 +214,7 @@ namespace FastReport
             dTotal += (double)Report.GetTotalValue(&quot;TOTAL_&quot; + (iCol &gt; START_COL + yearCol ? &quot;B&quot; : &quot;A&quot;) + iMonthTo.ToString().PadLeft(2, '0'));
           //MessageBox.Show(Report.GetColumnValue(&quot;Overall.Total_&quot; + (iCol &gt; START_COL + yearCol ? &quot;B&quot; : &quot;A&quot;)).ToString());
           dTotal = dTotal / (double)Report.GetColumnValue(&quot;Overall.Total_&quot; + (iCol &gt; START_COL + yearCol ? &quot;B&quot; : &quot;A&quot;)) * 100;
-          TGFooter[iCol,0].Text = String.Format(&quot;{0:N1}&quot;, dTotal) + &quot;%&quot;;
+          TGFooter[iCol,0].Text = String.Format(&quot;{0:N1}&quot;, NanResolver(dTotal)) + &quot;%&quot;;
         }
           //Total
         else if ((iCol == START_COL + yearCol - 3) || (iCol == 22 - 3)) {
@@ -238,16 +245,16 @@ namespace FastReport
 }
 </ScriptText>
   <Dictionary>
-    <MsSqlDataConnection Name="Connection" ConnectionString="rijcmlqHwzMSgwTFaHpjtG3vsOj8TrCVffhCR2JFv7xvPWo98Q8hzUJp60SVHnXxIECwHKNp6oMNBpbLqcLrui6V1MI+xWP/56XPL5FBIgQjGknIMZ9/1Xy5wraKxi2qe2SGsp2UfAM9IAHsB67CMW/btEGhCTKDHMNfMzct0nOUax+60E/WnQ6z29ogYWizk67rd0tK45d3q3eg84vGP3dlNQ2mw==">
+    <MsSqlDataConnection Name="Connection" ConnectionString="rijcmlqHwzMSgwTFaHpjtG3vsOj8TrCVffhCR2JFv7xvPWo98Q8hzUJp60SVHnXxIECwHKNp6oMNBpbLqcLrui6V1MI+xWP/56XPL5FBIgQjGknIMZ9/1Xy5wraKxi2qe2SGsp2UfAM9IAHsB67CMW/btEGhCTKDHMNfMzct0nOUax+60E/WnQ6z29ogYWizk67rd0tTc6FweLyVPbGK8fiGEln9A==">
       <TableDataSource Name="PARAM" DataType="System.Int32" Enabled="true" TableName="PARAM">
         <Column Name="PERIOD" DataType="System.DateTime"/>
       </TableDataSource>
-      <TableDataSource Name="Table1" Alias="Overall" DataType="System.Int32" Enabled="true" SelectCommand="EXEC('SELECT &#13;&#10;	sum(A01) + sum(A02) + sum(A03) + sum(A04) + sum(A05) + sum(A06) + sum(A07) + sum(A08) + sum(A09) + sum(A10) + sum(A11) + sum(A12) &quot;TOTAL_A&quot;, sum(B01) + sum(B02) + sum(B03) + sum(B04) + sum(B05) + sum(B06) + sum(B07) + sum(B08) + sum(B09) + sum(B10) + sum(B11) + sum(B12) &quot;TOTAL_B&quot;, count(*) &quot;TOTAL_ROW&quot;&#13;&#10;FROM SALE_CUST_24MO&#13;&#10;where yyyymm = ' + @yyyymm);">
+      <TableDataSource Name="Table1" Alias="Overall" DataType="System.Int32" Enabled="true" SelectCommand="EXEC('SELECT &#13;&#10;	coalesce(sum(A01),0) + coalesce(sum(A02),0) + coalesce(sum(A03),0) + coalesce(sum(A04),0) + coalesce(sum(A05),0) + coalesce(sum(A06),0) + coalesce(sum(A07),0) + coalesce(sum(A08),0) + coalesce(sum(A09),0) + coalesce(sum(A10),0) + coalesce(sum(A11),0) + coalesce(sum(A12),0) &quot;TOTAL_A&quot;, coalesce(sum(B01),0) + coalesce(sum(B02),0) + coalesce(sum(B03),0) + coalesce(sum(B04),0) + coalesce(sum(B05),0) + coalesce(sum(B06),0) + coalesce(sum(B07),0) + coalesce(sum(B08),0) + coalesce(sum(B09),0) + coalesce(sum(B10),0) + coalesce(sum(B11),0) + coalesce(sum(B12),0) &quot;TOTAL_B&quot;, count(*) &quot;TOTAL_ROW&quot;&#13;&#10;FROM SALE_CUST_24MO&#13;&#10;where yyyymm = ' + @yyyymm);">
         <Column Name="TOTAL_ALL" DataType="System.Double"/>
         <Column Name="TOTAL_ROW" DataType="System.Int32"/>
         <CommandParameter Name="yyyymm" DataType="8" Expression="ToInt32([GetYear] + PadLeft(ToString([GetMonth]), 2, '0'))"/>
       </TableDataSource>
-      <TableDataSource Name="SALE_CUST_24MO" Alias="SALES" DataType="System.Int32" Enabled="true" TableName="SALE_CUST_24MO">
+      <TableDataSource Name="SALE_CUST_24MO" Alias="SALES" DataType="System.Int32" Enabled="true" SelectCommand="SELECT * &#13;&#10;FROM (&#13;&#10;	SELECT TOP 1000 *&#13;&#10;		FROM SALE_CUST_24MO&#13;&#10;		where NOT (CUST_CD = 'X-XXXX' OR CUST_CD = 'Z-ZZZZ')&#13;&#10;		ORDER BY (&#13;&#10;			COALESCE(B01, 0) + COALESCE(B02, 0) + COALESCE(B03, 0) + COALESCE(B04, 0) +&#13;&#10;			COALESCE(B05, 0) + COALESCE(B06, 0) + COALESCE(B07, 0) + COALESCE(B08, 0) +&#13;&#10;			COALESCE(B09, 0) + COALESCE(B10, 0) + COALESCE(B11, 0) + COALESCE(B12, 0)&#13;&#10;		) DESC&#13;&#10;) a&#13;&#10;UNION ALL&#13;&#10;SELECT * &#13;&#10;FROM (&#13;&#10;	SELECT TOP 1000 *&#13;&#10;	FROM SALE_CUST_24MO&#13;&#10;	where CUST_CD = 'X-XXXX' OR CUST_CD = 'Z-ZZZZ'&#13;&#10;	ORDER BY CUST_CD&#13;&#10;) b&#13;&#10;">
         <Column Name="YYYYMM" DataType="System.String"/>
         <Column Name="CUST_CD" DataType="System.String"/>
         <Column Name="CUST_NM" DataType="System.String"/>
@@ -295,7 +302,7 @@ namespace FastReport
   </Dictionary>
   <ReportPage Name="Page1" Landscape="true" PaperWidth="330" PaperHeight="215" FirstPageSource="261" OtherPagesSource="261" Watermark.Font="Arial, 60pt">
     <ReportTitleBand Name="ReportTitle1" Width="1171.8"/>
-    <PageHeaderBand Name="PageHeader1" Top="4" Width="1171.8" Height="103.95" BeforePrintEvent="PageHeader1_BeforePrint">
+    <PageHeaderBand Name="PageHeader1" Top="2" Width="1171.8" Height="103.95" BeforePrintEvent="PageHeader1_BeforePrint">
       <TableObject Name="THeader" Top="47.25" Width="1152.9" Height="56.7">
         <TableColumn Name="Column243" Width="28.35"/>
         <TableColumn Name="Column244" Width="47.25"/>
@@ -409,8 +416,8 @@ namespace FastReport
         </Formats>
       </TextObject>
     </PageHeaderBand>
-    <GroupHeaderBand Name="GroupHeader1" Top="111.95" Width="1171.8" Condition="[SALES.YYYYMM]" SortOrder="None">
-      <DataBand Name="Data1" Top="115.95" Width="1171.8" Height="22.68" CanGrow="true" CanShrink="true" BeforePrintEvent="Data1_BeforePrint" Guides="0,0,0,0" DataSource="SALE_CUST_24MO" Filter="[SALES.YYYYMM] == [GetYear] + &quot;&quot; + PadLeft(ToString([GetMonth]),2,'0')">
+    <GroupHeaderBand Name="GroupHeader1" Top="107.95" Width="1171.8" Condition="[SALES.YYYYMM]" SortOrder="None">
+      <DataBand Name="Data1" Top="109.95" Width="1171.8" Height="22.68" CanGrow="true" CanShrink="true" BeforePrintEvent="Data1_BeforePrint" Guides="0,0,0,0" DataSource="SALE_CUST_24MO" Filter="[SALES.YYYYMM] == [GetYear] + &quot;&quot; + PadLeft(ToString([GetMonth]),2,'0')">
         <TableObject Name="TData" Width="1152.9" Height="22.68">
           <TableColumn Name="Column296" Width="28.35"/>
           <TableColumn Name="Column297" Width="47.25"/>
@@ -460,7 +467,7 @@ namespace FastReport
           </TableRow>
         </TableObject>
       </DataBand>
-      <GroupFooterBand Name="GroupFooter1" Top="142.63" Width="1171.8" Height="28.35" BeforePrintEvent="Group_BeforePrint">
+      <GroupFooterBand Name="GroupFooter1" Top="134.63" Width="1171.8" Height="28.35" BeforePrintEvent="Group_BeforePrint">
         <TableObject Name="TGFooter" Width="1152.9" Height="22.68">
           <TableColumn Name="Column315" Width="28.35"/>
           <TableColumn Name="Column316" Width="47.25"/>
@@ -511,9 +518,9 @@ namespace FastReport
         </TableObject>
       </GroupFooterBand>
     </GroupHeaderBand>
-    <DataBand Name="Data404" Top="174.98" Width="1171.8" Height="37.8" Visible="false" BeforePrintEvent="Data404_BeforePrint">
+    <DataBand Name="Data404" Top="164.98" Width="1171.8" Height="37.8" Visible="false" BeforePrintEvent="Data404_BeforePrint">
       <TextObject Name="TxtNoData" Width="1219.05" Height="37.8" Text="THERE IS NO DATA FOR THIS PERIOD" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt"/>
     </DataBand>
-    <PageFooterBand Name="PageFooter1" Top="216.78" Width="1171.8"/>
+    <PageFooterBand Name="PageFooter1" Top="204.78" Width="1171.8"/>
   </ReportPage>
 </Report>

@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Report ScriptLanguage="CSharp" ReferencedAssemblies="System.dll&#13;&#10;System.Drawing.dll&#13;&#10;System.Windows.Forms.dll&#13;&#10;System.Data.dll&#13;&#10;System.Xml.dll&#13;&#10;System.Collections.NonGeneric.dll" UseFileCache="true" StartReportEvent="_StartReport" ReportInfo.Created="10/17/2019 10:16:27" ReportInfo.Modified="10/31/2019 09:15:38" ReportInfo.CreatorVersion="2019.3.5.0">
+<Report ScriptLanguage="CSharp" ReferencedAssemblies="System.dll&#13;&#10;System.Drawing.dll&#13;&#10;System.Windows.Forms.dll&#13;&#10;System.Data.dll&#13;&#10;System.Xml.dll&#13;&#10;System.Collections.NonGeneric.dll" UseFileCache="true" StartReportEvent="_StartReport" ReportInfo.Created="10/17/2019 10:16:27" ReportInfo.Modified="12/11/2019 14:09:42" ReportInfo.CreatorVersion="2019.3.5.0">
   <ScriptText>using System;
 using System.ComponentModel;
 using System.Windows.Forms;
@@ -89,7 +89,7 @@ namespace FastReport
     <Style Name="EvenStyle" Fill.Color="Gainsboro" Font="Arial, 10pt" ApplyBorder="false" ApplyTextFill="false" ApplyFont="false"/>
   </Styles>
   <Dictionary>
-    <MsSqlDataConnection Name="Connection" ConnectionString="rijcmlqHwzMSgwTFaHpjtG3vsOj8TrCVffhCR2JFv7xvPWo98Q8hzUJp60SVHnXxIECwHKNp6oMNBpbLqcLrui6V1MI+xWP/56XPL5FBIgQjGknIMZ9/1Xy5wraKxi2qe2SGsp2UfAM9IAHsB67CMW/btEGhCTKDHMNfMzct0nOUax+60E/WnQ6z29ogYWizk67rd0t9SKpizc+Kng0qhNp9I3g6A==">
+    <MsSqlDataConnection Name="Connection" ConnectionString="rijcmlqHwzMSgwTFaHpjtG3vsOj8TrCVffhCR2JFv7xvPWo98Q8hzUJp60SVHnXxIECwHKNp6oMNBpbLqcLrui6V1MI+xWP/56XPL5FBIgQjGknIMZ9/1Xy5wraKxi2qe2SGsp2UfAM9IAHsB67CMW/btEGhCTKDHMNfMzct0nOUax+60E/WnQ6z29ogYWizk67rd0tTudN+gTz0FjW0XZmIdlzww==">
       <TableDataSource Name="DENIM_FINISHING" DataType="System.Int32" Enabled="true" TableName="DENIM_FINISHING">
         <Column Name="Y4M2" DataType="System.String"/>
         <Column Name="SUM_P" DataType="System.Double"/>
@@ -109,7 +109,7 @@ namespace FastReport
         <Column Name="PERIOD" DataType="System.DateTime"/>
       </TableDataSource>
     </MsSqlDataConnection>
-    <Parameter Name="Month" DataType="System.Int32" Expression="7"/>
+    <Parameter Name="Month" DataType="System.Int32" Expression="0"/>
     <Parameter Name="Year" DataType="System.Int32" Expression="0"/>
     <Parameter Name="GetMonth" DataType="System.Int32" Expression="IIf([Month] &gt;= 1 &amp;&amp; [Month] &lt;= 12,[Month],Month([PARAM.PERIOD]))"/>
     <Parameter Name="GetYear" DataType="System.Int32" Expression="IIf([Year] &gt; 0 &amp;&amp; [Year] &lt;= Year([PARAM.PERIOD]),[Year],Year([PARAM.PERIOD]))"/>
@@ -125,7 +125,7 @@ namespace FastReport
       <TextObject Name="Text1" Top="9.45" Width="1171.8" Height="18.9" Text="DENIM SALES SUMMARY IN [GetYear]" HorzAlign="Center" Font="MS Gothic, 8pt"/>
       <TextObject Name="Text2" Top="22.51" Width="1171.8" Height="18.9" Text="(AMOUNT IN '000 USD)" HorzAlign="Center" Font="MS Gothic, 8pt, style=Bold, Underline"/>
     </ReportTitleBand>
-    <PageHeaderBand Name="PageHeader1" Top="54.86" Width="1171.8" Height="66.15">
+    <PageHeaderBand Name="PageHeader1" Top="52.86" Width="1171.8" Height="66.15">
       <TableObject Name="Table1" Width="812.7" Height="66.15">
         <TableColumn Name="Column1"/>
         <TableColumn Name="Column2"/>
@@ -207,7 +207,7 @@ namespace FastReport
         </TableRow>
       </TableObject>
     </PageHeaderBand>
-    <GroupHeaderBand Name="GroupHeader1" Top="125.01" Width="1171.8" Height="37.8" Condition="Substring([DENIM_FINISHING.Y4M2],0,4)" SortOrder="None">
+    <GroupHeaderBand Name="GroupHeader1" Top="121.01" Width="1171.8" Height="37.8" Condition="Substring([DENIM_FINISHING.Y4M2],0,4)" SortOrder="None">
       <TableObject Name="GHTable" Width="812.7" Height="37.8">
         <TableColumn Name="Column17"/>
         <TableColumn Name="Column18"/>
@@ -248,9 +248,9 @@ namespace FastReport
           <TableCell Name="Cell101" Border.Lines="Right" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
         </TableRow>
       </TableObject>
-      <GroupHeaderBand Name="GroupHeader2" Top="166.81" Width="1171.8" Condition="Switch(ToInt32(Substring([DENIM_FINISHING.Y4M2], 0, 4)) == [GetYear], Substring([DENIM_FINISHING.Y4M2],4,2), ToInt32(Substring([DENIM_FINISHING.Y4M2], 0, 4)) == [GetYear] - 1, IIf(ToInt32(Substring([DENIM_FINISHING.Y4M2],4,2)) &gt; [GetMonth], Substring([DENIM_FINISHING.Y4M2],4,2), ToInt32(Substring([DENIM_FINISHING.Y4M2],4,2)) &lt;= [GetMonth]), ToInt32(Substring([DENIM_FINISHING.Y4M2], 0, 4)) &lt; [GetYear] - 1, ToInt32(Substring([DENIM_FINISHING.Y4M2],4,2)) &lt;= [GetMonth])" SortOrder="None">
-        <DataBand Name="Data1" Top="170.81" Width="1171.8" DataSource="DENIM_FINISHING" Filter="ToInt32(Substring([DENIM_FINISHING.Y4M2],0,4)) &gt;= ([GetYear] - [RangeYear]) &amp;&amp; ToBoolean( IIf(ToInt32(Substring([DENIM_FINISHING.Y4M2],0,4)) == [GetYear], IIf(ToInt32(Substring([DENIM_FINISHING.Y4M2],4,2)) &lt;= [GetMonth], true, false), true)	) &amp;&amp; ToInt32(Substring([DENIM_FINISHING.Y4M2],0,4)) &lt;= [GetYear]"/>
-        <GroupFooterBand Name="GroupFooter2" Top="174.81" Width="1171.8" Height="18.9" BeforePrintEvent="PerMonth_BeforePrint" AfterPrintEvent="GroupFooter2_AfterPrint">
+      <GroupHeaderBand Name="GroupHeader2" Top="160.81" Width="1171.8" Condition="Switch(ToInt32(Substring([DENIM_FINISHING.Y4M2], 0, 4)) == [GetYear], Substring([DENIM_FINISHING.Y4M2],4,2), ToInt32(Substring([DENIM_FINISHING.Y4M2], 0, 4)) == [GetYear] - 1, IIf(ToInt32(Substring([DENIM_FINISHING.Y4M2],4,2)) &gt; [GetMonth], Substring([DENIM_FINISHING.Y4M2],4,2), ToInt32(Substring([DENIM_FINISHING.Y4M2],4,2)) &lt;= [GetMonth]), ToInt32(Substring([DENIM_FINISHING.Y4M2], 0, 4)) &lt; [GetYear] - 1, ToInt32(Substring([DENIM_FINISHING.Y4M2],4,2)) &lt;= [GetMonth])" SortOrder="None">
+        <DataBand Name="Data1" Top="162.81" Width="1171.8" DataSource="DENIM_FINISHING" Filter="ToInt32(Substring([DENIM_FINISHING.Y4M2],0,4)) &gt;= ([GetYear] - [RangeYear]) &amp;&amp; ToBoolean( IIf(ToInt32(Substring([DENIM_FINISHING.Y4M2],0,4)) == [GetYear], IIf(ToInt32(Substring([DENIM_FINISHING.Y4M2],4,2)) &lt;= [GetMonth], true, false), true)	) &amp;&amp; ToInt32(Substring([DENIM_FINISHING.Y4M2],0,4)) &lt;= [GetYear]"/>
+        <GroupFooterBand Name="GroupFooter2" Top="164.81" Width="1171.8" Height="18.9" BeforePrintEvent="PerMonth_BeforePrint" AfterPrintEvent="GroupFooter2_AfterPrint">
           <TableObject Name="PerMonthTable" Width="812.7" Height="18.9" EvenStyle="EvenStyle">
             <TableColumn Name="Column41"/>
             <TableColumn Name="Column42"/>
@@ -286,14 +286,14 @@ namespace FastReport
             <TableColumn Name="Column60"/>
             <TableRow Name="Row12">
               <TableCell Name="Cell102" Border.Lines="Left, Right" Border.RightLine.Color="DarkGray" Text="[[SLUB_2] / 1000]" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
-              <TableCell Name="Cell103" Border.Lines="Right" Text="[[SLUB_2] / ([SLUB_2] + [STR_2]) * 100]%" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+              <TableCell Name="Cell103" Border.Lines="Right" Text="[[SLUB_2] / ([P_2] + [F_2] + [NZ_2] + [PZ_2] + [SP_2] + [NF_2] + [ZF_2] + [Y_2] + [YZ_2] + [N_2]) * 100]%" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
               <TableCell Name="Cell104" Border.Lines="Right" Border.RightLine.Color="DarkGray" Text="[[STR_2] / 1000]" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
-              <TableCell Name="Cell105" Border.Lines="Right" Text="[[STR_2] / ([SLUB_2] + [STR_2]) * 100]%" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+              <TableCell Name="Cell105" Border.Lines="Right" Text="[[STR_2] / ([P_2] + [F_2] + [NZ_2] + [PZ_2] + [SP_2] + [NF_2] + [ZF_2] + [Y_2] + [YZ_2] + [N_2]) * 100]%" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
             </TableRow>
           </TableObject>
         </GroupFooterBand>
       </GroupHeaderBand>
-      <GroupFooterBand Name="GroupFooter1" Top="197.71" Width="1171.8" Height="37.8" BeforePrintEvent="PerYear_BeforePrint">
+      <GroupFooterBand Name="GroupFooter1" Top="185.71" Width="1171.8" Height="37.8" BeforePrintEvent="PerYear_BeforePrint">
         <TableObject Name="PerYearTable" Width="812.7" Height="37.8">
           <TableColumn Name="Column29"/>
           <TableColumn Name="Column30"/>
@@ -322,7 +322,7 @@ namespace FastReport
             <TableCell Name="Cell73" Border.Lines="Right, Top" Border.BottomLine.Style="Double" Text="[ ([P_1] + [F_1] + [NZ_1] + [PZ_1] + [SP_1] + [NF_1] + [ZF_1] + [Y_1] + [YZ_1] + [N_1]) / 1000 ]" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
           </TableRow>
           <TableRow Name="Row10">
-            <TableCell Name="Cell86" Border.Lines="Left, Right, Bottom" Border.BottomLine.Style="Double" Text="AVG/YEAR" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell86" Border.Lines="Left, Right, Bottom" Border.BottomLine.Style="Double" Text="AVG/MTH" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt"/>
             <TableCell Name="Cell87" Border.Lines="Right, Bottom" Border.RightLine.Color="DarkGray" Border.BottomLine.Style="Double" Text="[([P_1] / [Total_Month]) / 1000]" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
             <TableCell Name="Cell88" Border.Lines="Right, Bottom" Border.RightLine.Color="DarkGray" Border.BottomLine.Style="Double" Text="[([F_1] / [Total_Month]) / 1000]" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
             <TableCell Name="Cell89" Border.Lines="Right, Bottom" Border.RightLine.Color="DarkGray" Border.BottomLine.Style="Double" Text="[([NZ_1] / [Total_Month]) / 1000]" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
@@ -343,9 +343,9 @@ namespace FastReport
           <TableColumn Name="Column64"/>
           <TableRow Name="Row13">
             <TableCell Name="Cell106" Border.Lines="Left, Right, Top" Border.RightLine.Color="DarkGray" Border.BottomLine.Style="Double" Text="[[SLUB_1] / 1000]" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
-            <TableCell Name="Cell107" Border.Lines="Right, Top" Border.BottomLine.Style="Double" Text="[[SLUB_1] / ([SLUB_1] + [STR_1]) * 100]%" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell107" Border.Lines="Right, Top" Border.BottomLine.Style="Double" Text="[[SLUB_1] / ([P_1] + [F_1] + [NZ_1] + [PZ_1] + [SP_1] + [NF_1] + [ZF_1] + [Y_1] + [YZ_1] + [N_1]) * 100]%" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
             <TableCell Name="Cell108" Border.Lines="Right, Top" Border.RightLine.Color="DarkGray" Border.BottomLine.Style="Double" Text="[[STR_1] / 1000]" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
-            <TableCell Name="Cell109" Border.Lines="Right, Top" Border.BottomLine.Style="Double" Text="[[STR_1] / ([SLUB_1] + [STR_1]) * 100]%" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell109" Border.Lines="Right, Top" Border.BottomLine.Style="Double" Text="[[STR_1] / ([P_1] + [F_1] + [NZ_1] + [PZ_1] + [SP_1] + [NF_1] + [ZF_1] + [Y_1] + [YZ_1] + [N_1]) * 100]%" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
           </TableRow>
           <TableRow Name="Row14">
             <TableCell Name="Cell118" Border.Lines="Left, Right, Bottom" Border.RightLine.Color="DarkGray" Border.BottomLine.Style="Double" Text="[([SLUB_1] / [Total_Month]) / 1000]" AllowExpressions="false" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
@@ -356,9 +356,13 @@ namespace FastReport
         </TableObject>
       </GroupFooterBand>
     </GroupHeaderBand>
-    <DataBand Name="Data404" Top="239.51" Width="1171.8" Height="37.8" Visible="false" BeforePrintEvent="Data404_BeforePrint">
+    <DataBand Name="Data404" Top="225.51" Width="1171.8" Height="37.8" Visible="false" BeforePrintEvent="Data404_BeforePrint">
       <TextObject Name="TxtNoData" Width="1171.8" Height="37.8" Text="THERE IS NO DATA FOR THIS PERIOD" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt"/>
     </DataBand>
-    <PageFooterBand Name="PageFooter1" Top="281.31" Width="1171.8"/>
+    <ColumnFooterBand Name="ColumnFooter1" Top="265.31" Width="1171.8" Height="56.7">
+      <TextObject Name="Text236" Top="9.45" Width="66.15" Height="18.9" Text="REMARKS :&#13;&#10;" AutoWidth="true" Font="MS Gothic, 8pt"/>
+      <TextObject Name="Text237" Left="66.15" Top="9.45" Width="444.15" Height="47.25" Text="** AMOUNT = SALES DELIVERY - SALES RETURN&#13;&#10;** EXCLUDING SALES DISCOUNT &amp; LEDGER JOURNAL ADJUSTMENT&#13;&#10;** CONVERSION RATE OF NON-USD CURRENCIES BASED ON TAX RATE" Font="MS Gothic, 8pt"/>
+    </ColumnFooterBand>
+    <PageFooterBand Name="PageFooter1" Top="324.01" Width="1171.8"/>
   </ReportPage>
 </Report>

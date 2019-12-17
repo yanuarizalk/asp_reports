@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Report ScriptLanguage="CSharp" ReferencedAssemblies="System.dll&#13;&#10;System.Drawing.dll&#13;&#10;System.Windows.Forms.dll&#13;&#10;System.Data.dll&#13;&#10;System.Xml.dll&#13;&#10;System.Collections.NonGeneric.dll&#13;&#10;System.Drawing.Primitives.dll" UseFileCache="true" StartReportEvent="_StartReport" ReportInfo.Created="10/18/2019 08:07:26" ReportInfo.Modified="11/06/2019 13:09:14" ReportInfo.CreatorVersion="2019.3.5.0">
+<Report ScriptLanguage="CSharp" ReferencedAssemblies="System.dll&#13;&#10;System.Drawing.dll&#13;&#10;System.Windows.Forms.dll&#13;&#10;System.Data.dll&#13;&#10;System.Xml.dll&#13;&#10;System.Collections.NonGeneric.dll&#13;&#10;System.Drawing.Primitives.dll" UseFileCache="true" StartReportEvent="_StartReport" ReportInfo.Created="10/18/2019 08:07:26" ReportInfo.Modified="12/11/2019 13:54:35" ReportInfo.CreatorVersion="2019.3.5.0">
   <ScriptText>using System;
 using System.ComponentModel;
 using System.Windows.Forms;
@@ -77,11 +77,11 @@ namespace FastReport
 }
 </ScriptText>
   <Dictionary>
-    <MsSqlDataConnection Name="Connection" ConnectionString="rijcmlqHwzMSgwTFaHpjtG3vsOj8TrCVffhCR2JFv7xvPWo98Q8hzUJp60SVHnXxIECwHKNp6oMNBpbLqcLrui6V1MI+xWP/56XPL5FBIgQjGknIMZ9/1Xy5wraKxi2qe2SGsp2UfAM9IAHsB67CMW/btEGhCTKDHMNfMzct0nOUax+60E/WnQ6z29ogYWizk67rd0tMiEHlXvN5E3zqgHy2r3N2w==">
+    <MsSqlDataConnection Name="Connection" ConnectionString="rijcmlqHwzMSgwTFaHpjtG3vsOj8TrCVffhCR2JFv7xvPWo98Q8hzUJp60SVHnXxIECwHKNp6oMNBpbLqcLrui6V1MI+xWP/56XPL5FBIgQjGknIMZ9/1Xy5wraKxi2qe2SGsp2UfAM9IAHsB67CMW/btEGhCTKDHMNfMzct0nOUax+60E/WnQ6z29ogYWizk67rd0tQx9W7jLUxHxW+V0Bk44JJg==">
       <TableDataSource Name="PARAM" DataType="System.Int32" Enabled="true" TableName="PARAM">
         <Column Name="PERIOD" DataType="System.DateTime"/>
       </TableDataSource>
-      <TableDataSource Name="DENIM_YD8MO" Alias="SALES" DataType="System.Int32" Enabled="true" TableName="DENIM_YD8MO">
+      <TableDataSource Name="Table" Alias="SALES" DataType="System.Int32" Enabled="true" SelectCommand="SELECT * &#13;&#10;FROM DENIM_YD8MO&#13;&#10;WHERE YYYYMM = @YYYYMM">
         <Column Name="YYYYMM" DataType="System.String"/>
         <Column Name="SEQ" DataType="System.Double"/>
         <Column Name="UM" DataType="System.String"/>
@@ -103,6 +103,7 @@ namespace FastReport
         <Column Name="M7" DataType="System.Double"/>
         <Column Name="PROD_CD9" DataType="System.String"/>
         <Column Name="M8" DataType="System.Double"/>
+        <CommandParameter Name="YYYYMM" DataType="22" Expression="[GetYear] + PadLeft(ToString([GetMonth]),2,'0')"/>
       </TableDataSource>
     </MsSqlDataConnection>
     <Relation Name="USD_QTY_SACU" ParentDataSource="null" ChildDataSource="null" ParentColumns="YYYYMM" ChildColumns="YYYYMM" Enabled="true"/>
@@ -121,7 +122,7 @@ namespace FastReport
   </Dictionary>
   <ReportPage Name="Page1" Landscape="true" PaperWidth="330" PaperHeight="215" LeftMargin="3.75" RightMargin="3.75" FirstPageSource="261" OtherPagesSource="261" Watermark.Font="Arial, 60pt">
     <ReportTitleBand Name="ReportTitle1" Width="1219.05"/>
-    <PageHeaderBand Name="PageHeader1" Top="4" Width="1219.05" Height="94.5" BeforePrintEvent="PageHeader_BeforePrint">
+    <PageHeaderBand Name="PageHeader1" Top="2" Width="1219.05" Height="94.5" BeforePrintEvent="PageHeader_BeforePrint">
       <TableObject Name="THeader" Top="56.7" Width="1219.05" Height="37.8">
         <TableColumn Name="Column243" Width="28.35"/>
         <TableColumn Name="Column244"/>
@@ -146,22 +147,22 @@ namespace FastReport
           <TableCell Name="Cell493" Border.Lines="All" Border.TopLine.Style="Double" Border.BottomLine.Style="Double" Text="NO." HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt" RowSpan="2"/>
           <TableCell Name="Cell494" Border.Lines="Right, Top, Bottom" Border.TopLine.Style="Double" Text="AVG / PERIOD" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt" ColSpan="2"/>
           <TableCell Name="Cell495" Border.Lines="Right, Top, Bottom" Border.TopLine.Style="Double" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt"/>
-          <TableCell Name="Cell496" Border.Lines="Right, Top, Bottom" Border.TopLine.Style="Double" Text="[UpperCase(Format(&quot;{0:MMM-yyyy}&quot;,AddMonths(DateSerial(ToInt32(Substring([SALES.YYYYMM],0,4)),ToInt32(Substring([SALES.YYYYMM],4,2)),1),-7)))]" VertAlign="Center" Font="MS Gothic, 8pt" ColSpan="2"/>
-          <TableCell Name="Cell497" Border.Lines="Right, Top, Bottom" Border.TopLine.Style="Double" VertAlign="Center" Font="MS Gothic, 8pt"/>
-          <TableCell Name="Cell518" Border.Lines="Right, Top, Bottom" Border.TopLine.Style="Double" Text="[UpperCase(Format(&quot;{0:MMM-yyyy}&quot;,AddMonths(DateSerial(ToInt32(Substring([SALES.YYYYMM],0,4)),ToInt32(Substring([SALES.YYYYMM],4,2)),1),-6)))]" VertAlign="Center" Font="MS Gothic, 8pt" ColSpan="2"/>
-          <TableCell Name="Cell519" Border.Lines="Right, Top, Bottom" Border.TopLine.Style="Double" VertAlign="Center" Font="MS Gothic, 8pt"/>
-          <TableCell Name="Cell520" Border.Lines="Right, Top, Bottom" Border.TopLine.Style="Double" Text="[UpperCase(Format(&quot;{0:MMM-yyyy}&quot;,AddMonths(DateSerial(ToInt32(Substring([SALES.YYYYMM],0,4)),ToInt32(Substring([SALES.YYYYMM],4,2)),1),-5)))]" VertAlign="Center" Font="MS Gothic, 8pt" ColSpan="2"/>
-          <TableCell Name="Cell521" Border.Lines="Right, Top, Bottom" Border.TopLine.Style="Double" VertAlign="Center" Font="MS Gothic, 8pt"/>
-          <TableCell Name="Cell522" Border.Lines="Right, Top, Bottom" Border.TopLine.Style="Double" Text="[UpperCase(Format(&quot;{0:MMM-yyyy}&quot;,AddMonths(DateSerial(ToInt32(Substring([SALES.YYYYMM],0,4)),ToInt32(Substring([SALES.YYYYMM],4,2)),1),-4)))]" VertAlign="Center" Font="MS Gothic, 8pt" ColSpan="2"/>
-          <TableCell Name="Cell523" Border.Lines="Right, Top, Bottom" Border.TopLine.Style="Double" VertAlign="Center" Font="MS Gothic, 8pt"/>
-          <TableCell Name="Cell524" Border.Lines="Right, Top, Bottom" Border.TopLine.Style="Double" Text="[UpperCase(Format(&quot;{0:MMM-yyyy}&quot;,AddMonths(DateSerial(ToInt32(Substring([SALES.YYYYMM],0,4)),ToInt32(Substring([SALES.YYYYMM],4,2)),1),-3)))]" VertAlign="Center" Font="MS Gothic, 8pt" ColSpan="2"/>
-          <TableCell Name="Cell525" Border.Lines="Right, Top, Bottom" Border.TopLine.Style="Double" VertAlign="Center" Font="MS Gothic, 8pt"/>
-          <TableCell Name="Cell526" Border.Lines="Right, Top, Bottom" Border.TopLine.Style="Double" Text="[UpperCase(Format(&quot;{0:MMM-yyyy}&quot;,AddMonths(DateSerial(ToInt32(Substring([SALES.YYYYMM],0,4)),ToInt32(Substring([SALES.YYYYMM],4,2)),1),-2)))]" VertAlign="Center" Font="MS Gothic, 8pt" ColSpan="2"/>
-          <TableCell Name="Cell527" Border.Lines="Right, Top, Bottom" Border.TopLine.Style="Double" VertAlign="Center" Font="MS Gothic, 8pt"/>
-          <TableCell Name="Cell528" Border.Lines="Right, Top, Bottom" Border.TopLine.Style="Double" Text="[UpperCase(Format(&quot;{0:MMM-yyyy}&quot;,AddMonths(DateSerial(ToInt32(Substring([SALES.YYYYMM],0,4)),ToInt32(Substring([SALES.YYYYMM],4,2)),1),-1)))]" VertAlign="Center" Font="MS Gothic, 8pt" ColSpan="2"/>
-          <TableCell Name="Cell529" Border.Lines="Right, Top, Bottom" Border.TopLine.Style="Double" VertAlign="Center" Font="MS Gothic, 8pt"/>
-          <TableCell Name="Cell530" Border.Lines="Right, Top, Bottom" Border.TopLine.Style="Double" Text="[UpperCase(Format(&quot;{0:MMM-yyyy}&quot;,AddMonths(DateSerial(ToInt32(Substring([SALES.YYYYMM],0,4)),ToInt32(Substring([SALES.YYYYMM],4,2)),1),0)))]" VertAlign="Center" Font="MS Gothic, 8pt" ColSpan="2"/>
-          <TableCell Name="Cell704" Border.Lines="Right, Top, Bottom" Border.TopLine.Style="Double" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell496" Border.Lines="Right, Top, Bottom" Border.TopLine.Style="Double" Text="[UpperCase(Format(&quot;{0:MMM-yyyy}&quot;,AddMonths(DateSerial(ToInt32(Substring([SALES.YYYYMM],0,4)),ToInt32(Substring([SALES.YYYYMM],4,2)),1),-7)))]" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt" ColSpan="2"/>
+          <TableCell Name="Cell497" Border.Lines="Right, Top, Bottom" Border.TopLine.Style="Double" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell518" Border.Lines="Right, Top, Bottom" Border.TopLine.Style="Double" Text="[UpperCase(Format(&quot;{0:MMM-yyyy}&quot;,AddMonths(DateSerial(ToInt32(Substring([SALES.YYYYMM],0,4)),ToInt32(Substring([SALES.YYYYMM],4,2)),1),-6)))]" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt" ColSpan="2"/>
+          <TableCell Name="Cell519" Border.Lines="Right, Top, Bottom" Border.TopLine.Style="Double" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell520" Border.Lines="Right, Top, Bottom" Border.TopLine.Style="Double" Text="[UpperCase(Format(&quot;{0:MMM-yyyy}&quot;,AddMonths(DateSerial(ToInt32(Substring([SALES.YYYYMM],0,4)),ToInt32(Substring([SALES.YYYYMM],4,2)),1),-5)))]" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt" ColSpan="2"/>
+          <TableCell Name="Cell521" Border.Lines="Right, Top, Bottom" Border.TopLine.Style="Double" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell522" Border.Lines="Right, Top, Bottom" Border.TopLine.Style="Double" Text="[UpperCase(Format(&quot;{0:MMM-yyyy}&quot;,AddMonths(DateSerial(ToInt32(Substring([SALES.YYYYMM],0,4)),ToInt32(Substring([SALES.YYYYMM],4,2)),1),-4)))]" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt" ColSpan="2"/>
+          <TableCell Name="Cell523" Border.Lines="Right, Top, Bottom" Border.TopLine.Style="Double" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell524" Border.Lines="Right, Top, Bottom" Border.TopLine.Style="Double" Text="[UpperCase(Format(&quot;{0:MMM-yyyy}&quot;,AddMonths(DateSerial(ToInt32(Substring([SALES.YYYYMM],0,4)),ToInt32(Substring([SALES.YYYYMM],4,2)),1),-3)))]" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt" ColSpan="2"/>
+          <TableCell Name="Cell525" Border.Lines="Right, Top, Bottom" Border.TopLine.Style="Double" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell526" Border.Lines="Right, Top, Bottom" Border.TopLine.Style="Double" Text="[UpperCase(Format(&quot;{0:MMM-yyyy}&quot;,AddMonths(DateSerial(ToInt32(Substring([SALES.YYYYMM],0,4)),ToInt32(Substring([SALES.YYYYMM],4,2)),1),-2)))]" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt" ColSpan="2"/>
+          <TableCell Name="Cell527" Border.Lines="Right, Top, Bottom" Border.TopLine.Style="Double" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell528" Border.Lines="Right, Top, Bottom" Border.TopLine.Style="Double" Text="[UpperCase(Format(&quot;{0:MMM-yyyy}&quot;,AddMonths(DateSerial(ToInt32(Substring([SALES.YYYYMM],0,4)),ToInt32(Substring([SALES.YYYYMM],4,2)),1),-1)))]" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt" ColSpan="2"/>
+          <TableCell Name="Cell529" Border.Lines="Right, Top, Bottom" Border.TopLine.Style="Double" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt"/>
+          <TableCell Name="Cell530" Border.Lines="Right, Top, Bottom" Border.TopLine.Style="Double" Text="[UpperCase(Format(&quot;{0:MMM-yyyy}&quot;,AddMonths(DateSerial(ToInt32(Substring([SALES.YYYYMM],0,4)),ToInt32(Substring([SALES.YYYYMM],4,2)),1),0)))]" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt" ColSpan="2"/>
+          <TableCell Name="Cell704" Border.Lines="Right, Top, Bottom" Border.TopLine.Style="Double" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt"/>
         </TableRow>
         <TableRow Name="Row29">
           <TableCell Name="Cell743" Border.Lines="Left, Right" Font="MS Gothic, 8pt"/>
@@ -201,8 +202,8 @@ namespace FastReport
         </Formats>
       </TextObject>
     </PageHeaderBand>
-    <GroupHeaderBand Name="GroupHeader1" Top="102.5" Width="1219.05" Condition="[SALES.YYYYMM]" SortOrder="None">
-      <DataBand Name="Data1" Top="106.5" Width="1219.05" Height="22.68" CanGrow="true" CanShrink="true" BeforePrintEvent="Data1_BeforePrint" AfterPrintEvent="Data1_AfterPrint" Guides="0,0,0,0" BeforeLayoutEvent="Data1_BeforeLayout" AfterLayoutEvent="Data1_AfterLayout" DataSource="DENIM_YD8MO" Filter="[SALES.YYYYMM] == [GetYear] + &quot;&quot; + PadLeft(ToString([GetMonth]),2,'0')" Columns.Layout="DownThenAcross" PrintIfDetailEmpty="true" PrintIfDatasourceEmpty="true">
+    <GroupHeaderBand Name="GroupHeader1" Top="98.5" Width="1219.05" Condition="[SALES.YYYYMM]" SortOrder="None">
+      <DataBand Name="Data1" Top="100.5" Width="1219.05" Height="22.68" CanGrow="true" CanShrink="true" BeforePrintEvent="Data1_BeforePrint" AfterPrintEvent="Data1_AfterPrint" Guides="0,0,0,0" BeforeLayoutEvent="Data1_BeforeLayout" AfterLayoutEvent="Data1_AfterLayout" DataSource="Table" Columns.Layout="DownThenAcross" PrintIfDetailEmpty="true" PrintIfDatasourceEmpty="true">
         <TableObject Name="TData" Width="1219.05" Height="22.68">
           <TableColumn Name="Column296" Width="28.35"/>
           <TableColumn Name="Column297"/>
@@ -239,14 +240,14 @@ namespace FastReport
             <TableCell Name="Cell717" Border.Lines="Right" Border.TopLine.Style="Double" Border.BottomLine.Style="Double" Text="[SALES.M5]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
             <TableCell Name="Cell718" Border.Lines="Right" Border.TopLine.Style="Double" Border.RightLine.Color="DarkGray" Border.BottomLine.Style="Double" Text="[SALES.PROD_CD7]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt"/>
             <TableCell Name="Cell719" Border.Lines="Right" Border.TopLine.Style="Double" Border.BottomLine.Style="Double" Text="[SALES.M6]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
-            <TableCell Name="Cell720" Border.Lines="Right" Border.TopLine.Style="Double" Border.RightLine.Color="DarkGray" Border.BottomLine.Style="Double" Text="[SALES.PROD_CD8]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
+            <TableCell Name="Cell720" Border.Lines="Right" Border.TopLine.Style="Double" Border.RightLine.Color="DarkGray" Border.BottomLine.Style="Double" Text="[SALES.PROD_CD8]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt"/>
             <TableCell Name="Cell721" Border.Lines="Right" Border.TopLine.Style="Double" Border.BottomLine.Style="Double" Text="[SALES.M7]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
             <TableCell Name="Cell722" Border.Lines="Right" Border.TopLine.Style="Double" Border.RightLine.Color="DarkGray" Border.BottomLine.Style="Double" Text="[SALES.PROD_CD9]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt"/>
             <TableCell Name="Cell723" Border.Lines="Right" Border.TopLine.Style="Double" Border.BottomLine.Style="Double" Text="[SALES.M8]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center" Font="MS Gothic, 8pt"/>
           </TableRow>
         </TableObject>
       </DataBand>
-      <GroupFooterBand Name="GroupFooter1" Top="133.18" Width="1219.05" Height="28.35" BeforePrintEvent="Group_BeforePrint">
+      <GroupFooterBand Name="GroupFooter1" Top="125.18" Width="1219.05" Height="28.35" BeforePrintEvent="Group_BeforePrint">
         <TableObject Name="TGFooter" Width="1219.05" Height="22.68">
           <TableColumn Name="Column315" Width="28.35"/>
           <TableColumn Name="Column316"/>
@@ -291,9 +292,9 @@ namespace FastReport
         </TableObject>
       </GroupFooterBand>
     </GroupHeaderBand>
-    <DataBand Name="Data404" Top="165.53" Width="1219.05" Height="37.8" Visible="false" CanGrow="true" BeforePrintEvent="Data404_BeforePrint">
+    <DataBand Name="Data404" Top="155.53" Width="1219.05" Height="37.8" Visible="false" CanGrow="true" BeforePrintEvent="Data404_BeforePrint">
       <TextObject Name="TxtNoData" Width="1219.05" Height="37.8" Text="THERE IS NO DATA FOR THIS PERIOD" HorzAlign="Center" VertAlign="Center" Font="MS Gothic, 8pt"/>
     </DataBand>
-    <PageFooterBand Name="PageFooter1" Top="207.33" Width="1219.05"/>
+    <PageFooterBand Name="PageFooter1" Top="195.33" Width="1219.05"/>
   </ReportPage>
 </Report>
